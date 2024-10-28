@@ -10,7 +10,6 @@ import java.sql.Time;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-@Table(name = "USERS")
 @AllArgsConstructor
 public class User {
 

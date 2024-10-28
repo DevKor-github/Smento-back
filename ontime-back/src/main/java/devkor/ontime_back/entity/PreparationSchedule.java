@@ -10,7 +10,7 @@ import java.sql.Time;
 public class PreparationSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String preparationId;
+    private Long preparationId;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
@@ -21,5 +21,5 @@ public class PreparationSchedule {
 
     private Time preparationTime;
 
-    private Long order;
+    private Long sortNum;
 }

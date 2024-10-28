@@ -9,7 +9,7 @@ import java.sql.Time;
 @Entity
 public class PreparationUser {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String preparationId;
+    private Long preparationId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -20,5 +20,5 @@ public class PreparationUser {
 
     private Time preparationTime;
 
-    private Long order;
+    private Long sortNum;
 }
