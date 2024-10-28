@@ -3,13 +3,13 @@ package devkor.ontime_back.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.sql.Time;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
+@Table(name = "USERS")
 @AllArgsConstructor
 public class User {
 
@@ -42,20 +42,22 @@ public class User {
 //    OAuth2 로그인은 추가 정보인 age, city를 로그인 시 따로 받지 X
 //    이후에 OAuth2 로그인 구현 시에 로그인이 성공하면 추가 정보를 입력하는 폼으로 이동하도록 구현
 
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
 
-//    @Enumerated(EnumType.STRING)
-//    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
     private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
 
     private String refreshToken; // refreshToken
 
-    // 유저 권한 설정
-//    public void authorizeUser() {
-//        this.role = Role.USER;
-//    }
+
+    public void authorizeUser() {
+        this.role = Role.USER;
+    }
+
 
     // 비밀번호 암호화
     public void passwordEncode(PasswordEncoder passwordEncoder) {
