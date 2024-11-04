@@ -9,7 +9,6 @@ import java.sql.Time;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-@Table(name = "USERS")
 @AllArgsConstructor
 public class User {
 
@@ -59,6 +58,10 @@ public class User {
     // 비밀번호 암호화
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
+    }
+
+    public void updateName(String updateName) {
+        this.name = updateName;
     }
 
     public void updatePassword(String updatePassword, PasswordEncoder passwordEncoder) {

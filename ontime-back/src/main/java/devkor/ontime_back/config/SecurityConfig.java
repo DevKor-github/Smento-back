@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devkor.ontime_back.global.jwt.JwtAuthenticationFilter;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
-//import devkor.ontime_back.global.login.CustomJsonUsernamePasswordAuthenticationFilter;
-//import devkor.ontime_back.global.login.LoginFailureHandler;
-//import devkor.ontime_back.global.login.LoginService;
-//import devkor.ontime_back.global.login.LoginSuccessHandler;
+import devkor.ontime_back.global.generallogin.filter.CustomJsonUsernamePasswordAuthenticationFilter;
+import devkor.ontime_back.global.generallogin.handler.LoginFailureHandler;
+import devkor.ontime_back.global.generallogin.service.LoginService;
+import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
 import devkor.ontime_back.global.oauth.CustomOAuth2UserService;
 import devkor.ontime_back.global.oauth.handler.OAuth2LoginFailureHandler;
 import devkor.ontime_back.global.oauth.handler.OAuth2LoginSuccessHandler;
@@ -25,6 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +40,7 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-//    private final LoginService loginService;
+    private final LoginService loginService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
@@ -63,7 +67,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/"))
+                        .logoutSuccessUrl("/logout-success"))
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
@@ -71,7 +75,12 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                 )
+                .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
+      // 1.jwtAuthenticationProcessingFilter 중복으로 삽입됨
+      // 2.LogoutFilter는 세션 로그아웃 필터여서 필요 없음
+      //  1,2 차후 수정 필요
 
         return http.build();
 
@@ -83,34 +92,34 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager() {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setPasswordEncoder(passwordEncoder());
-//        provider.setUserDetailsService(loginService);
-//        return new ProviderManager(provider);
-//    }
-//
-//    @Bean
-//    public LoginSuccessHandler loginSuccessHandler() {
-//        return new LoginSuccessHandler(jwtService, userRepository);
-//    }
-//
-//    @Bean
-//    public LoginFailureHandler loginFailureHandler() {
-//        return new LoginFailureHandler();
-//    }
-//
-//    @Bean
-//    public CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordAuthenticationFilter() {
-//        CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordLoginFilter
-//                = new CustomJsonUsernamePasswordAuthenticationFilter(objectMapper);
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
-//        return customJsonUsernamePasswordLoginFilter;
-//    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(loginService);
+        return new ProviderManager(provider);
+    }
+
+    @Bean
+    public LoginSuccessHandler loginSuccessHandler() {
+        return new LoginSuccessHandler(jwtTokenProvider, userRepository);
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler() {
+        return new LoginFailureHandler();
+    }
+
+    @Bean
+    public CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordAuthenticationFilter() {
+        CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordLoginFilter
+                = new CustomJsonUsernamePasswordAuthenticationFilter(objectMapper);
+        customJsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+        customJsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        customJsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        return customJsonUsernamePasswordLoginFilter;
+    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationProcessingFilter() {
