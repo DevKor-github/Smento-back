@@ -107,7 +107,7 @@ public class JwtTokenProvider {
                     .getClaim(EMAIL_CLAIM)
                     .asString());
         } catch (Exception e) {
-            log.error("액세스 토큰이 유효하지 않습니다.");
+            log.error("액세스 토큰이 유효하지 않습니다.as");
             return Optional.empty();
         }
     }

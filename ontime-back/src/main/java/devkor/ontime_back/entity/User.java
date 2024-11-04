@@ -9,7 +9,6 @@ import java.sql.Time;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-@Table(name = "USERS")
 @AllArgsConstructor
 public class User {
 
@@ -21,8 +20,6 @@ public class User {
     private String email; // 이메일
 
     private String password; // 비밀번호
-
-    private String nickname; // 닉네임
 
     private String imageUrl; // 프로필 이미지
 
@@ -64,8 +61,8 @@ public class User {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    public void updateNickname(String updateNickname) {
-        this.nickname = updateNickname;
+    public void updateName(String updateName) {
+        this.name = updateName;
     }
 
     public void updatePassword(String updatePassword, PasswordEncoder passwordEncoder) {

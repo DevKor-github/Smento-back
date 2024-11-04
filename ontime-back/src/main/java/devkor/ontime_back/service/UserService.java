@@ -24,7 +24,7 @@ public class UserService {
             throw new Exception("이미 존재하는 이메일입니다.");
         }
 
-        if (userRepository.findByNickname(userSignUpDto.getNickname()).isPresent()) {
+        if (userRepository.findByName(userSignUpDto.getName()).isPresent()) {
             throw new Exception("이미 존재하는 닉네임입니다.");
         }
 
@@ -32,7 +32,7 @@ public class UserService {
         User user = User.builder()
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
-                .nickname(userSignUpDto.getNickname())
+                .name(userSignUpDto.getName())
                 .role(Role.USER)
                 .build();
 
