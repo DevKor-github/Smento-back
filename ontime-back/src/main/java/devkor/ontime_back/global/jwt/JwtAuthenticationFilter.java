@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userRepository.findByRefreshToken(refreshToken) // refreshToken으로 유저 찾기
                 .ifPresent(user -> {
                     String reIssuedRefreshToken = reIssueRefreshToken(user); // refreshToken 재발급
-                    jwtTokenProvider.sendAccessAndRefreshToken(response, jwtTokenProvider.createAccessToken(user.getEmail()),
+                    jwtTokenProvider.sendAccessAndRefreshToken(response, jwtTokenProvider.createAccessToken(user.getEmail(), user.getId()),
                             reIssuedRefreshToken); // accessToken도 생성 후 전송
                 });
     }
@@ -79,9 +79,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("checkAccessTokenAndAuthentication() 호출");
         jwtTokenProvider.extractAccessToken(request)
                 .filter(jwtTokenProvider::isTokenValid)
-                .ifPresent(accessToken -> jwtTokenProvider.extractEmail(accessToken)
-                        .ifPresent(email -> userRepository.findByEmail(email)
-                                .ifPresent(this::saveAuthentication)));
+                .ifPresent(accessToken -> {
+                    jwtTokenProvider.extractEmail(accessToken)
+                            .ifPresent(email -> userRepository.findByEmail(email)
+                                    .ifPresent(this::saveAuthentication));
+
+                    jwtTokenProvider.extractUserId(accessToken)
+                            .ifPresent(userId -> log.info("추출된 userId: {}", userId));
+                });
 
         filterChain.doFilter(request, response);
     }
