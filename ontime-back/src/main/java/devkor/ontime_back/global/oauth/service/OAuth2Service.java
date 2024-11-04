@@ -2,7 +2,9 @@ package devkor.ontime_back.global.oauth.service;
 
 import devkor.ontime_back.dto.UserSignupRequest;
 import devkor.ontime_back.entity.User;
+import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +17,19 @@ import java.util.Optional;
 @Service
 public class OAuth2Service {
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public ResponseEntity<?> signup(UserSignupRequest request) {
+    public ResponseEntity<?> signup(String token, UserSignupRequest userSignupRequest) {
+        // 토큰을 검증하고 이메일 추출
+        Long userId = jwtTokenProvider.extractUserId(token).orElseThrow(() -> new RuntimeException("User ID not found in token"));
+
+
         // 이메일로 사용자 조회
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             // 추가 정보 업데이트
-            user.updateAdditionalInfo(request.getSpareTime(), request.getNote(), request.getScore());
+            user.updateAdditionalInfo(userSignupRequest.getSpareTime(), userSignupRequest.getNote(), userSignupRequest.getScore());
             // Role 변경 (GUEST -> USER)
             user.authorizeUser();
             userRepository.save(user);
