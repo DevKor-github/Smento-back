@@ -44,17 +44,19 @@ public class JwtTokenProvider {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email"; // jwt claim으로 email 사용
     private static final String BEARER = "Bearer "; //'Authorization(Key) = Bearer {토큰} (Value)' 형식
+    private static final String USER_ID_CLAIM = "userId";
 
     private final UserRepository userRepository;
 
 
     // accessToken 생성
-    public String createAccessToken(String email) {
+    public String createAccessToken(String email, Long userId) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(EMAIL_CLAIM, email)
+                .withClaim(USER_ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -112,6 +114,20 @@ public class JwtTokenProvider {
         }
     }
 
+    // accessToken에서 userId 추출
+    public Optional<Long> extractUserId(String accessToken) {
+        try {
+            return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
+                    .build()
+                    .verify(accessToken)
+                    .getClaim(USER_ID_CLAIM)
+                    .asLong());
+        } catch (Exception e) {
+            log.error("유효하지 않은 accessToken입니다.");
+            return Optional.empty();
+        }
+    }
+
     // accessToken header 설정
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
         response.setHeader(accessHeader, accessToken);
@@ -141,4 +157,5 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
 }

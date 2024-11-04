@@ -5,7 +5,6 @@ import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.entity.SocialType;
 import devkor.ontime_back.global.oauth.userinfo.GoogleOAuth2UserInfo;
 import devkor.ontime_back.global.oauth.userinfo.KakaoOAuth2UserInfo;
-import devkor.ontime_back.global.oauth.userinfo.NaverOAuth2UserInfo;
 import devkor.ontime_back.global.oauth.userinfo.OAuth2UserInfo;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,9 +28,6 @@ public class OAuthAttributes {
     public static OAuthAttributes of(SocialType socialType,
                                      String userNameAttributeName, Map<String, Object> attributes) {
 
-        if (socialType == SocialType.NAVER) {
-            return ofNaver(userNameAttributeName, attributes);
-        }
         if (socialType == SocialType.KAKAO) {
             return ofKakao(userNameAttributeName, attributes);
         }
@@ -49,13 +45,6 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .nameAttributeKey(userNameAttributeName)
                 .oauth2UserInfo(new GoogleOAuth2UserInfo(attributes))
-                .build();
-    }
-
-    public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributes.builder()
-                .nameAttributeKey(userNameAttributeName)
-                .oauth2UserInfo(new NaverOAuth2UserInfo(attributes))
                 .build();
     }
 
