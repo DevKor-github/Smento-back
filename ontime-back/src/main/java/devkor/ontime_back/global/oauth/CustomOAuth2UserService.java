@@ -22,8 +22,6 @@ import java.util.Map;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-
-    private static final String NAVER = "naver";
     private static final String KAKAO = "kakao";
 
     @Override
@@ -51,15 +49,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getKey())),
                 attributes,
                 extractAttributes.getNameAttributeKey(),
+                createdUser.getId(),
                 createdUser.getEmail(),
                 createdUser.getRole()
         );
     }
 
     private SocialType getSocialType(String registrationId) {
-        if(NAVER.equals(registrationId)) {
-            return SocialType.NAVER;
-        }
         if(KAKAO.equals(registrationId)) {
             return SocialType.KAKAO;
         }
