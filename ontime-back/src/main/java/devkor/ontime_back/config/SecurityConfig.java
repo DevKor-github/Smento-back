@@ -62,7 +62,6 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/sign-up").permitAll()
-                        .requestMatchers("/jwt-test").permitAll()
                         .requestMatchers("/oauth2/sign-up").permitAll()
                         .anyRequest().authenticated()
                 )
