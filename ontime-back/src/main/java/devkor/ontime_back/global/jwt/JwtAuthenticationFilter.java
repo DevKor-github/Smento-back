@@ -2,6 +2,7 @@ package devkor.ontime_back.global.jwt;
 
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -61,9 +61,10 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/sign-up").permitAll()
-                        .requestMatchers("/oauth2/sign-up").permitAll()
-                        .requestMatchers("/sign-up").permitAll()
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll()
+                        .requestMatchers("/oauth2/sign-up", "/sign-up").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
@@ -76,11 +77,10 @@ public class SecurityConfig {
                         )
                 )
                 .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
-                .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);
       // 1.jwtAuthenticationProcessingFilter 중복으로 삽입됨
       // 2.LogoutFilter는 세션 로그아웃 필터여서 필요 없음
-      //  1,2 차후 수정 필요
+      // 해결 완
 
         return http.build();
 
