@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/sign-up").permitAll()
                         .requestMatchers("/oauth2/sign-up").permitAll()
+                        .requestMatchers("/sign-up").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
