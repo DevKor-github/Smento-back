@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,13 +51,13 @@ public class JwtTokenProvider {
 
 
     // accessToken 생성
-    public String createAccessToken(String email, Long userId) {
+    public String createAccessToken(String email, UUID userId) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(EMAIL_CLAIM, email)
-                .withClaim(USER_ID_CLAIM, userId)
+                .withClaim(USER_ID_CLAIM, String.valueOf(userId))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
