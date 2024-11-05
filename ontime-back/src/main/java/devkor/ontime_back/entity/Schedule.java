@@ -5,13 +5,14 @@ import lombok.Getter;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Entity
 public class Schedule {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long scheduleId;
+    @Id
+    private UUID scheduleId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

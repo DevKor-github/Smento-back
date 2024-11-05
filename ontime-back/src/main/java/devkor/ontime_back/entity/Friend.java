@@ -3,13 +3,14 @@ package devkor.ontime_back.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @Entity
 public class Friend {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long friendId;
+    private UUID friendId;
 
     private String friendName;
 

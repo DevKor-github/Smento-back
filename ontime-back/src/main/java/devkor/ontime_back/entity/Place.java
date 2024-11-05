@@ -6,12 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @Entity
 public class Place {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long placeId;
+    @Id
+    private UUID placeId;
 
     private String placeName;
 }
