@@ -2,6 +2,7 @@ package devkor.ontime_back.global.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -83,14 +84,15 @@ public class JwtTokenProvider {
 
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
+        log.info("accesstoken: "+ accessToken + "refreshtoken" + refreshToken);
         log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
 
     // header에서 refreshToken 추출
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, "")); // 'Bearer XXX' 형식에서 "Bearer"를 삭제
+        // "x-refresh-token" 헤더에서 추출
+        return Optional.ofNullable(request.getHeader("refresh-token"))
+                .filter(refreshToken -> !refreshToken.isEmpty());
     }
 
     // header에서 accessToken 추출
@@ -151,11 +153,51 @@ public class JwtTokenProvider {
     public boolean isTokenValid(String token) {
         try {
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
+            log.info("유효한 토큰입니다.");
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
             return false;
         }
     }
+
+    public String createExpiredAccessToken(String email) {
+        Date now = new Date();
+        return JWT.create()
+                .withSubject(ACCESS_TOKEN_SUBJECT)
+                .withExpiresAt(new Date(now.getTime() - 36000000)) // 현재 시간보다 1초 이전으로 설정
+                .withClaim(EMAIL_CLAIM, email)
+                .sign(Algorithm.HMAC512(secretKey));
+    }
+
+    public String createAccessTokenFromRefreshToken(String refreshToken) {
+        // 1. refreshToken이 유효한지 확인
+        if (!isTokenValid(refreshToken)) {
+            throw new IllegalArgumentException("Invalid refresh token");
+        }
+
+        // 2. refreshToken에서 이메일 추출
+        Optional<String> emailOptional = extractEmail(refreshToken);
+        if (emailOptional.isEmpty()) {
+            throw new IllegalArgumentException("Could not extract email from refresh token");
+        }
+
+        String email = emailOptional.get();
+
+        // 3. 이메일로 사용자 조회
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        // 4. 새로운 accessToken 생성
+        String newAccessToken = createAccessToken(user.getEmail(), user.getId());
+
+        // 5. 새로운 accessToken 반환
+        return newAccessToken;
+    }
+
 
 }

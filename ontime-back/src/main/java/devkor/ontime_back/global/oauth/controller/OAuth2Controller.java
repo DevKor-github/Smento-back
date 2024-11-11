@@ -20,6 +20,7 @@ import java.util.Optional;
 public class OAuth2Controller {
 
     private final OAuth2Service oauth2Service;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody UserSignupRequest userSignupRequest) {
@@ -30,5 +31,6 @@ public class OAuth2Controller {
 
         return oauth2Service.signup(token, userSignupRequest);
     }
+
 
 }
