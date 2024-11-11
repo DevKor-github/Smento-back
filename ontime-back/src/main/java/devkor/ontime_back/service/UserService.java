@@ -33,7 +33,7 @@ public class UserService {
         }
 
         //UserSignUpDto에서 string 자료형의 id UUID 자료형로 변환
-        UUID id = UUID.fromString(userSignUpDto.getId());
+        Long id = userSignUpDto.getId();
         System.out.println("UUID string ver:"+id);
 
         // 자체 로그인시, USER로 설정

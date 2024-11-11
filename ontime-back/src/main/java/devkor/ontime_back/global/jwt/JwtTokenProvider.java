@@ -52,13 +52,13 @@ public class JwtTokenProvider {
 
 
     // accessToken 생성
-    public String createAccessToken(String email, UUID userId) {
+    public String createAccessToken(String email, Long userId) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(EMAIL_CLAIM, email)
-                .withClaim(USER_ID_CLAIM, String.valueOf(userId))
+                .withClaim(USER_ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -171,34 +171,6 @@ public class JwtTokenProvider {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public String createAccessTokenFromRefreshToken(String refreshToken) {
-        // 1. refreshToken이 유효한지 확인
-        if (!isTokenValid(refreshToken)) {
-            throw new IllegalArgumentException("Invalid refresh token");
-        }
-
-        // 2. refreshToken에서 이메일 추출
-        Optional<String> emailOptional = extractEmail(refreshToken);
-        if (emailOptional.isEmpty()) {
-            throw new IllegalArgumentException("Could not extract email from refresh token");
-        }
-
-        String email = emailOptional.get();
-
-        // 3. 이메일로 사용자 조회
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
-
-        User user = userOptional.get();
-
-        // 4. 새로운 accessToken 생성
-        String newAccessToken = createAccessToken(user.getEmail(), user.getId());
-
-        // 5. 새로운 accessToken 반환
-        return newAccessToken;
-    }
 
 
 }

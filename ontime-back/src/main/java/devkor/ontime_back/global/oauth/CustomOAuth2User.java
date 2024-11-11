@@ -12,13 +12,13 @@ import java.util.UUID;
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {
 
-    private UUID userId;
+    private Long userId;
     private String email;
     private Role role;
 
     public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities,
                             Map<String, Object> attributes, String nameAttributeKey,
-                            UUID userId, String email, Role role) {
+                            Long userId, String email, Role role) {
         super(authorities, attributes, nameAttributeKey);
         this.userId = userId;
         this.email = email;
