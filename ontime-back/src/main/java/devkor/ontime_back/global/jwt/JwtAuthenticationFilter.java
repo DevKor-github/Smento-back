@@ -42,11 +42,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        String accessToken= jwtTokenProvider.extractAccessToken(request) // header에서 refreshToken 추출
+                .filter(jwtTokenProvider::isTokenValid)
+                .orElse(null);
+        log.info("accesstoken check: " + accessToken);
+
         String refreshToken = jwtTokenProvider.extractRefreshToken(request) // header에서 refreshToken 추출
                 .filter(jwtTokenProvider::isTokenValid)
                 .orElse(null);
+        log.info("refreshtoken check: " + refreshToken);
 
-        if (refreshToken != null) { // accessToken 만료 -> refreshToken 존재
+        if (accessToken == null && refreshToken != null) { // accessToken 만료 -> refreshToken 존재
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
             return;
         }
@@ -56,22 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    // refreshToken로 검색 후 refreshToken, accessToken 재발급 후 전송
+    // refreshToken로 검색 후 accessToken 재발급 후 전송
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         userRepository.findByRefreshToken(refreshToken) // refreshToken으로 유저 찾기
                 .ifPresent(user -> {
-                    String reIssuedRefreshToken = reIssueRefreshToken(user); // refreshToken 재발급
-                    jwtTokenProvider.sendAccessAndRefreshToken(response, jwtTokenProvider.createAccessToken(user.getEmail(), user.getId()),
-                            reIssuedRefreshToken); // accessToken도 생성 후 전송
+                    jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(user.getEmail(), user.getId())); // accessToken 생성 후 전송
                 });
-    }
-
-    // refreshToken 재발급
-    private String reIssueRefreshToken(User user) {
-        String reIssuedRefreshToken = jwtTokenProvider.createRefreshToken();
-        user.updateRefreshToken(reIssuedRefreshToken);
-        userRepository.saveAndFlush(user);
-        return reIssuedRefreshToken;
     }
 
     // accessToken 확인 후 인증 확인
@@ -83,7 +79,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .ifPresent(accessToken -> {
                     jwtTokenProvider.extractEmail(accessToken)
                             .ifPresent(email -> userRepository.findByEmail(email)
-                                    .ifPresent(this::saveAuthentication));
+                                    .ifPresent(this::saveAuthentication)
+                            );
 
                     jwtTokenProvider.extractUserId(accessToken)
                             .ifPresent(userId -> log.info("추출된 userId: {}", userId));

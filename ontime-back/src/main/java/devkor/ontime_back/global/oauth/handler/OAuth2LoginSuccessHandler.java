@@ -33,7 +33,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
                 response.sendRedirect("/oauth2/sign-up");
             } else {
-                loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
+                try {
+                    loginSuccess(response, oAuth2User);  // 로그인에 성공한 경우 access, refresh 토큰 생성
+                    log.info("리디렉션");
+                    // 리디렉션은 되는데 그 과정에서 accesstoken, refreshtoken이 다 사라짐...
+
+                    response.sendRedirect("/your-api-endpoint");
+                } catch (Exception e) {
+                    log.error("리디렉션 처리 중 오류 발생: ", e);
+                }
             }
         } catch (Exception e) {
             throw e;
@@ -45,7 +53,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.createRefreshToken();
         log.info("accessToken 확인 {}", accessToken);
         response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
-        response.addHeader(jwtTokenProvider.getRefreshHeader(), "Bearer " + refreshToken);
+        response.addHeader("refresh-token", refreshToken);
 
         jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         jwtTokenProvider.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
