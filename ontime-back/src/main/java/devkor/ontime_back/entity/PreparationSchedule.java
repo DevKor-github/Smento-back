@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.sql.Time;
+import java.util.UUID;
 
 @Getter
 @Entity
 public class PreparationSchedule {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long preparationId;
+    private UUID preparationId;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
