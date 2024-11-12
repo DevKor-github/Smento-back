@@ -27,8 +27,10 @@ public class User {
     @Column(length = 30)
     private String name; // 이름
 
+    @Setter
     private Time spareTime; // 여유시간
 
+    @Setter
     @Lob // 대용량 텍스트 필드
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String note; // 주의사항
