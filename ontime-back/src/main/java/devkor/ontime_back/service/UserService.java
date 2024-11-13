@@ -36,13 +36,9 @@ public class UserService {
             throw new Exception("이미 존재하는 닉네임입니다.");
         }
 
-        //UserSignUpDto에서 string 자료형의 id UUID 자료형로 변환
-        Long id = userSignUpDto.getId();
-        System.out.println("UUID string ver:"+id);
-
         // 자체 로그인시, USER로 설정
         User user = User.builder()
-                .id(id)
+                .id(userSignUpDto.getId())
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .name(userSignUpDto.getName())
