@@ -1,5 +1,6 @@
 package devkor.ontime_back.controller;
 
+import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -62,6 +61,12 @@ public class UserController {
     @GetMapping("/jwt-test")
     public String jwtTest() {
         return "jwtTest 요청 성공";
+    }
+
+    @PutMapping("/{id}/additional-info")
+    public ResponseEntity<?> addInfo(@PathVariable Long id, @RequestBody UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
+        userService.addInfo(id, userAdditionalInfoDto);
+        return ResponseEntity.ok("추가 정보 기입 성공");
     }
 
 }
