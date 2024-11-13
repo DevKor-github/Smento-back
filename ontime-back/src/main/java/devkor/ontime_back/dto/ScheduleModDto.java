@@ -14,6 +14,8 @@ public class ScheduleModDto {
 
     private UUID scheduleId;
 
+    private UUID placeId;
+
     private String placeName;
 
     private String scheduleName;

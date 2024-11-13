@@ -17,7 +17,8 @@ public class Place {
 
     private String placeName;
 
-    public Place initPlaceName(String placeName) {
+    public Place initPlaceName(UUID placeId, String placeName) {
+        this.placeId = placeId;
         this.placeName = placeName;
         return this;
     }

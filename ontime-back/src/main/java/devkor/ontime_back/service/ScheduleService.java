@@ -109,7 +109,7 @@ public class ScheduleService {
         // place가 수정되었다면,,
         Place place = placeRepository.findByPlaceName(scheduleModDto.getPlaceName()).orElseGet(() -> {
             Place newPlace = new Place();
-            newPlace.initPlaceName(scheduleModDto.getPlaceName());
+            newPlace.initPlaceName(scheduleModDto.getPlaceId(), scheduleModDto.getPlaceName());
             return placeRepository.save(newPlace);
         });
 
@@ -133,7 +133,7 @@ public class ScheduleService {
         // place가 없으면 추가가 여기?
         Place place = placeRepository.findByPlaceName(scheduleAddDto.getPlaceName()).orElseGet(() -> {
             Place newPlace = new Place();
-            newPlace.initPlaceName(scheduleAddDto.getPlaceName());
+            newPlace.initPlaceName(scheduleAddDto.getPlaceId(), scheduleAddDto.getPlaceName());
             return placeRepository.save(newPlace);
         });
 
