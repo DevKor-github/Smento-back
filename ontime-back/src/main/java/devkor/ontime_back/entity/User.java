@@ -28,7 +28,7 @@ public class User {
     private String name; // 이름
 
     @Setter
-    private Time spareTime; // 여유시간
+    private Integer spareTime; // 여유시간
 
     @Setter
     @Lob // 대용량 텍스트 필드
@@ -47,7 +47,7 @@ public class User {
 
     private String refreshToken; // refreshToken
 
-    public void updateAdditionalInfo(Time spareTime, String note, Float score) {
+    public void updateAdditionalInfo(Integer spareTime, String note, Float score) {
         this.spareTime = spareTime;
         this.note = note;
         this.score = score;
