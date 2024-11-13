@@ -5,6 +5,7 @@ import devkor.ontime_back.dto.ScheduleDto;
 import devkor.ontime_back.dto.ScheduleModDto;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.service.ScheduleService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     // 전체 약속 조회
+    @Operation(summary = "Get all schedules", description = "Fetch all schedules based on some filters")
     @GetMapping("/show/all")
     public ResponseEntity<List<ScheduleDto>> getAllSchedules(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -67,6 +68,7 @@ public class ScheduleController {
     }
 
     // 약속 추가
+
     @PostMapping("/add")
     public ResponseEntity<Void> addSchedule(HttpServletRequest request, @RequestBody ScheduleAddDto scheduleAddDto) {
         Long userId = scheduleService.getUserIdFromToken(request);

@@ -13,6 +13,8 @@ import java.util.UUID;
 public class ScheduleAddDto {
     private UUID scheduleId;
 
+    private UUID placeId;
+
     private String placeName;
 
     private String scheduleName;
