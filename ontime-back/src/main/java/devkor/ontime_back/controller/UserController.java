@@ -1,5 +1,8 @@
 package devkor.ontime_back.controller;
 
+import devkor.ontime_back.dto.LatenessHistoryResponse;
+import devkor.ontime_back.dto.PunctualityPageResponse;
+import devkor.ontime_back.dto.ScheduleHistoryResponse;
 import devkor.ontime_back.service.ScheduleService;
 import devkor.ontime_back.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
