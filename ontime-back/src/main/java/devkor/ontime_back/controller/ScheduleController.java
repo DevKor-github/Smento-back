@@ -82,7 +82,7 @@ public class ScheduleController {
     public ResponseEntity<Void> isStartedSchedule(HttpServletRequest request, @PathVariable UUID scheduleId) {
         Long userId = scheduleService.getUserIdFromToken(request);
 
-        scheduleService.checkIsStarted(scheduleId);
+        scheduleService.checkIsStarted(scheduleId, userId);
         return ResponseEntity.ok().build();
     }
 

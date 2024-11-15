@@ -91,6 +91,7 @@ public class ScheduleService {
     // 약속 삭제
     public void deleteSchedule(UUID scheduleId, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
+        // schedule을 만든 userId인지 확인
         if (!schedule.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("User does not have permission to delete this schedule.");
         }
@@ -101,12 +102,11 @@ public class ScheduleService {
     public void modifySchedule(Long userId, ScheduleModDto scheduleModDto) {
         // schedule 확인
         Schedule schedule = scheduleRepository.findById(scheduleModDto.getScheduleId()).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleModDto.getScheduleId() + " not found."));
-        // userId 확인
+        // schedule을 만든 userId인지 확인
         if (!schedule.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("User does not have permission to delete this schedule.");
         }
-
-        // place가 수정되었다면,,
+        // place가 수정된 경우
         Place place = placeRepository.findByPlaceName(scheduleModDto.getPlaceName()).orElseGet(() -> {
             Place newPlace = new Place();
             newPlace.initPlaceName(scheduleModDto.getPlaceId(), scheduleModDto.getPlaceName());
@@ -155,9 +155,15 @@ public class ScheduleService {
     }
 
     // 버튼 누름
-    public void checkIsStarted(UUID scheduleId) {
+    public void checkIsStarted(UUID scheduleId, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
+
+        // schedule을 만든 userId인지 확인
+        if (!schedule.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("User does not have permission to delete this schedule.");
+        }
+
         schedule.startSchedule();
     }
 
