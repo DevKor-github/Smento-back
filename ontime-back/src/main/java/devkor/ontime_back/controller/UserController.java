@@ -6,10 +6,8 @@ import devkor.ontime_back.dto.ScheduleHistoryResponse;
 import devkor.ontime_back.service.ScheduleService;
 import devkor.ontime_back.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +27,14 @@ public class UserController {
         List<ScheduleHistoryResponse> scheduleHistory = scheduleService.getScheduleHistory(userId);
 
         return new PunctualityPageResponse(punctualityScore, latenessHistory, scheduleHistory);
+    }
+
+    // 성실도 점수 초기화
+    @PutMapping("/{userId}/reset-punctuality")
+    public ResponseEntity<String> resetPunctualityScore(@PathVariable Long userId) {
+        userService.resetPunctualityScore(userId);
+
+        return ResponseEntity.ok("성실도 점수가 초기화 되었습니다!");
     }
 }
 
