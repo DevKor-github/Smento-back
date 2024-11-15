@@ -35,6 +35,9 @@ public class User {
 
     private Float punctualityScore; // 성실도 점수
 
+    private Integer scheduleCountAfterReset; // 성실도 점수 초기화 이후 약속 개수
+    private Integer latenessCountAfterReset; // 성실도 점수 초기화 이후 지각한 약속 개수
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
