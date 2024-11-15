@@ -19,6 +19,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
     List<Schedule> findAllByUserIdAndScheduleTimeBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Schedule s WHERE s.scheduleTime BETWEEN :startOfDay AND :endOfDay")
-    List<Schedule> findSchedulesForTomorrow(LocalDateTime startOfDay, LocalDateTime endOfDay);
+    // 특정 시간 범위 내에 시작되는 약속 조회 (예: 다음 날 또는 당일 약속)
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleTime BETWEEN :start AND :end")
+    List<Schedule> findSchedulesBetween(LocalDateTime start, LocalDateTime end);
+
+    // 특정 시간에 시작하는 약속 조회 (예: 5분 후 약속)
+    @Query("SELECT s FROM Schedule s WHERE FUNCTION('HOUR', s.scheduleTime) = :hour AND FUNCTION('MINUTE', s.scheduleTime) = :minute")
+    List<Schedule> findSchedulesStartingAt(int hour, int minute);
 }
