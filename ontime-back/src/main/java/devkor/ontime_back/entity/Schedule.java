@@ -41,6 +41,8 @@ public class Schedule {
 
     private Time scheduleSpareTime; // 스케줄 별 여유시간
 
+    private Integer latenessTime; // 지각 시간 (NULL이면 약속 전, 0이면 약속 성공, N(양수)면 N분 지각)
+
     @Lob // 대용량 텍스트 필드
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String scheduleNote; // 스케줄 별 주의사항

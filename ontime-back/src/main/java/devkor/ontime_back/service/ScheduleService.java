@@ -1,8 +1,6 @@
 package devkor.ontime_back.service;
 
-import devkor.ontime_back.dto.ScheduleAddDto;
-import devkor.ontime_back.dto.ScheduleDto;
-import devkor.ontime_back.dto.ScheduleModDto;
+import devkor.ontime_back.dto.*;
 import devkor.ontime_back.entity.Place;
 import devkor.ontime_back.entity.Schedule;
 import devkor.ontime_back.entity.User;
@@ -165,6 +163,30 @@ public class ScheduleService {
         }
 
         schedule.startSchedule();
+    }
+
+    // 지각 히스토리 반환
+    public List<LatenessHistoryResponse> getLatenessHistory(Long userId) {
+        return scheduleRepository.findLatenessHistoryByUserId(userId).stream()
+                .map(schedule -> new LatenessHistoryResponse(
+                        schedule.getScheduleId(),
+                        schedule.getScheduleName(),
+                        schedule.getScheduleTime(),
+                        schedule.getLatenessTime()
+                ))
+                .toList();
+    }
+
+    // 약속 히스토리 반환
+    public List<ScheduleHistoryResponse> getScheduleHistory(Long userId) {
+        return scheduleRepository.findAllByUserId(userId).stream()
+                .map(schedule -> new ScheduleHistoryResponse(
+                        schedule.getScheduleId(),
+                        schedule.getScheduleName(),
+                        schedule.getScheduleTime(),
+                        schedule.getLatenessTime()
+                ))
+                .toList();
     }
 
     private ScheduleDto mapToDto(Schedule schedule) {

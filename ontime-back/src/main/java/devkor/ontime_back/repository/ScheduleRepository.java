@@ -4,6 +4,7 @@ package devkor.ontime_back.repository;
 import devkor.ontime_back.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -26,4 +27,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     // 특정 시간에 시작하는 약속 조회 (예: 5분 후 약속)
     @Query("SELECT s FROM Schedule s WHERE FUNCTION('HOUR', s.scheduleTime) = :hour AND FUNCTION('MINUTE', s.scheduleTime) = :minute")
     List<Schedule> findSchedulesStartingAt(int hour, int minute);
+
+    // 지각 히스토리 조회
+    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.latenessTime > 0")
+    List<Schedule> findLatenessHistoryByUserId(@Param("userId") Long userId);
+
+    // 약속 히스토리 조회
+    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId")
+    List<Schedule> findAllByUserId(@Param("userId") Long userId);
 }

@@ -3,8 +3,6 @@ package devkor.ontime_back.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import java.sql.Time;
-import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,7 +33,7 @@ public class User {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String note; // 주의사항
 
-    private Float score; // 성실도 점수
+    private Float punctualityScore; // 성실도 점수
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -47,10 +45,10 @@ public class User {
 
     private String refreshToken; // refreshToken
 
-    public void updateAdditionalInfo(Integer spareTime, String note, Float score) {
+    public void updateAdditionalInfo(Integer spareTime, String note, Float punctualityScore) {
         this.spareTime = spareTime;
         this.note = note;
-        this.score = score;
+        this.punctualityScore = punctualityScore;
     }
 
     public void authorizeUser() {
@@ -73,5 +71,9 @@ public class User {
 
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
+    }
+
+    public void resetPunctualityScore() {
+        this.punctualityScore = (float) 0;
     }
 }
