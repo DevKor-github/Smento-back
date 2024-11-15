@@ -33,9 +33,12 @@ public class User {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String note; // 주의사항
 
+    @Setter
     private Float punctualityScore; // 성실도 점수
 
+    @Setter
     private Integer scheduleCountAfterReset; // 성실도 점수 초기화 이후 약속 개수
+    @Setter
     private Integer latenessCountAfterReset; // 성실도 점수 초기화 이후 지각한 약속 개수
 
     @Enumerated(EnumType.STRING)
@@ -76,7 +79,10 @@ public class User {
         this.refreshToken = updateRefreshToken;
     }
 
+    //성실도 점수 초기화
     public void resetPunctualityScore() {
-        this.punctualityScore = (float) 0;
+        this.punctualityScore = (float) -1;
+        this.scheduleCountAfterReset = 0;
+        this.latenessCountAfterReset = 0;
     }
 }
