@@ -189,6 +189,18 @@ public class ScheduleService {
                 .toList();
     }
 
+    // 지각 시간 업데이트
+    public void updateLatenessTime(FinishPreparationDto finishPreparationDto) {
+        UUID scheduleId = finishPreparationDto.getScheduleId();
+        Integer latenessTime = finishPreparationDto.getLatenessTime();
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
+
+        schedule.setLatenessTime(latenessTime);
+        scheduleRepository.save(schedule);
+    }
+
     private ScheduleDto mapToDto(Schedule schedule) {
         return new ScheduleDto(
                 schedule.getScheduleId(),

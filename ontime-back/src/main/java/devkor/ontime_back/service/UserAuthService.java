@@ -40,6 +40,9 @@ public class UserAuthService {
                 .password(userSignUpDto.getPassword())
                 .name(userSignUpDto.getName())
                 .role(Role.USER)
+                .punctualityScore((float)-1)
+                .scheduleCountAfterReset(0)
+                .latenessCountAfterReset(0)
                 .build();
 
         // 비밀번호 암호화 후 저장
