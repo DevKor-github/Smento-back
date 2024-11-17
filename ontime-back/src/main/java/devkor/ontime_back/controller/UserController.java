@@ -1,9 +1,6 @@
 package devkor.ontime_back.controller;
 
-import devkor.ontime_back.dto.LatenessHistoryResponse;
-import devkor.ontime_back.dto.PunctualityPageResponse;
-import devkor.ontime_back.dto.ScheduleHistoryResponse;
-import devkor.ontime_back.dto.UpdatePunctualityScoreDto;
+import devkor.ontime_back.dto.*;
 import devkor.ontime_back.service.ScheduleService;
 import devkor.ontime_back.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -38,15 +35,16 @@ public class UserController {
         return ResponseEntity.ok("성실도 점수가 초기화 되었습니다!");
     }
 
-    // 성실도 점수 업데이트(약속 준비과정 종료시 request)
-    @PutMapping("/{userId}/update-punctuality")
-    public ResponseEntity<String> updatePunctualityScore(
+    // 약속 준비 종료 이후 지각시간(Schedule 테이블), 성실도 점수(User 테이블) 업데이트
+    @PutMapping("/{userId}/finish-preparation")
+    public ResponseEntity<String> finishPreparation(
             @PathVariable Long userId,
-            @RequestBody UpdatePunctualityScoreDto updatePunctualityScoreDto) {
+            @RequestBody FinishPreparationDto finishPreparationDto) {
 
-        userService.updatePunctualityScore(userId, updatePunctualityScoreDto.getLatenessTime());
+        scheduleService.updateLatenessTime(finishPreparationDto);
+        userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
 
-        return ResponseEntity.ok("성실도 점수가 성공적으로 업데이트 되었습니다!");
+        return ResponseEntity.ok("해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!");
     }
 }
 
