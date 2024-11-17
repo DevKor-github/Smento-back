@@ -23,6 +23,6 @@ public class ScheduleDto {
     private LocalDateTime scheduleTime;
     private Time scheduleSpareTime;
     private String scheduleNote;
-
+    private Integer latenessTime;
 
 }

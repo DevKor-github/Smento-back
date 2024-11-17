@@ -209,7 +209,8 @@ public class ScheduleService {
                 schedule.getMoveTime(),
                 schedule.getScheduleTime(),
                 schedule.getScheduleSpareTime(),
-                schedule.getScheduleNote()
+                schedule.getScheduleNote(),
+                schedule.getLatenessTime()
         );
     }
 
