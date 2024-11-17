@@ -1,13 +1,18 @@
 package devkor.ontime_back.service;
 
+import devkor.ontime_back.dto.ChangePasswordDto;
+import devkor.ontime_back.dto.ChangePasswordResponse;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.entity.User;
+import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.entity.Role;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +26,14 @@ public class UserAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    // 엑세스토큰에서 UserId 추출
+    public Long getUserIdFromToken(HttpServletRequest request) {
+        String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
+        String refreshToken = request.getHeader("refresh-token");
+        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("User ID not found in token"));
+    }
 
     // 자체 로그인 회원가입
     public void signUp(UserSignUpDto userSignUpDto) throws Exception {
@@ -58,5 +71,24 @@ public class UserAuthService {
         userRepository.save(user);
     }
 
+    public ChangePasswordResponse changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
+            return new ChangePasswordResponse(false, "현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새로운 비밀번호와 현재 비밀번호 비교
+        if (passwordEncoder.matches(changePasswordDto.getNewPassword(), user.getPassword())) {
+            return new ChangePasswordResponse(false, "새 비밀번호는 현재 비밀번호와 다르게 설정해주세요.");
+        }
+
+        // 새로운 비밀번호 저장
+        user.updatePassword(changePasswordDto.getNewPassword(), passwordEncoder);
+        userRepository.save(user);
+        return new ChangePasswordResponse(true, "비밀번호가 성공적으로 변경되었습니다.");
+    }
 
 }

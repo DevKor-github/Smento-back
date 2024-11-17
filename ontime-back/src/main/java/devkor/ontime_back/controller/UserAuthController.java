@@ -1,17 +1,23 @@
 package devkor.ontime_back.controller;
 
+import devkor.ontime_back.dto.ChangePasswordDto;
+import devkor.ontime_back.dto.ChangePasswordResponse;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
+import devkor.ontime_back.entity.User;
+import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.service.UserAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 
@@ -20,6 +26,7 @@ import java.util.Map;
 public class UserAuthController {
 
     private final UserAuthService userAuthService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "회원가입")
     @ApiResponses(value = {
@@ -50,6 +57,20 @@ public class UserAuthController {
             @RequestBody Map<String, String> loginRequest
     ) {
         return "로그인 요청 성공"; // 실제 로그인 처리는 Security 필터에서 수행
+    }
+
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(HttpServletRequest request, @RequestBody ChangePasswordDto changePasswordDto) {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        ChangePasswordResponse changePasswordResponse = userAuthService.changePassword(userId, changePasswordDto);
+
+        if (changePasswordResponse.isSuccess()) {
+            return ResponseEntity.ok(changePasswordResponse.getMessage());
+        } else {
+            return ResponseEntity.badRequest().body(changePasswordResponse.getMessage());
+        }
     }
 
 
