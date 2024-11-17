@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/sign-up", "/sign-up", "/*/additional-info").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout

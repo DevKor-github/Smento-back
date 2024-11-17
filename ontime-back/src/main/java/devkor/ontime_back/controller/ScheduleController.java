@@ -1,8 +1,6 @@
 package devkor.ontime_back.controller;
 
-import devkor.ontime_back.dto.ScheduleAddDto;
-import devkor.ontime_back.dto.ScheduleDto;
-import devkor.ontime_back.dto.ScheduleModDto;
+import devkor.ontime_back.dto.*;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,7 +84,14 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
+    // 지각 히스토리 조회
+    @GetMapping("/lateness-history")
+    public ResponseEntity<List<LatenessHistoryResponse>> getPunctualityPage(HttpServletRequest request) {
+        Long userId = scheduleService.getUserIdFromToken(request);
+        List<LatenessHistoryResponse> latenessHistory = scheduleService.getLatenessHistory(userId);
 
+        return ResponseEntity.ok(latenessHistory);
+    }
 
 
 }

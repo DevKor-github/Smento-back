@@ -17,14 +17,12 @@ public class UserController {
     private final UserService userService;
     private final ScheduleService scheduleService;
 
-    // 성실도 페이지 데이터 반환
-    @GetMapping("/{userId}/punctuality")
-    public PunctualityPageResponse getPunctualityPage(@PathVariable Long userId) {
+    // 성실도 점수 조회
+    @GetMapping("/{userId}/punctuality-score")
+    public ResponseEntity<Float> getPunctualityPage(@PathVariable Long userId) {
         float punctualityScore = userService.getPunctualityScore(userId); // -1 or float 0~100 반환
-        List<LatenessHistoryResponse> latenessHistory = scheduleService.getLatenessHistory(userId);
-        List<ScheduleHistoryResponse> scheduleHistory = scheduleService.getScheduleHistory(userId);
 
-        return new PunctualityPageResponse(punctualityScore, latenessHistory, scheduleHistory);
+        return ResponseEntity.ok(punctualityScore);
     }
 
     // 성실도 점수 초기화
