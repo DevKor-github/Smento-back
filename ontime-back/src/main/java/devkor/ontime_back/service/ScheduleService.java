@@ -177,18 +177,6 @@ public class ScheduleService {
                 .toList();
     }
 
-    // 약속 히스토리 반환
-    public List<ScheduleHistoryResponse> getScheduleHistory(Long userId) {
-        return scheduleRepository.findAllByUserId(userId).stream()
-                .map(schedule -> new ScheduleHistoryResponse(
-                        schedule.getScheduleId(),
-                        schedule.getScheduleName(),
-                        schedule.getScheduleTime(),
-                        schedule.getLatenessTime()
-                ))
-                .toList();
-    }
-
     // 지각 시간 업데이트
     public void updateLatenessTime(FinishPreparationDto finishPreparationDto) {
         UUID scheduleId = finishPreparationDto.getScheduleId();
