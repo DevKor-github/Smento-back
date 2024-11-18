@@ -51,10 +51,9 @@ public class User {
 
     private String refreshToken; // refreshToken
 
-    public void updateAdditionalInfo(Integer spareTime, String note, Float punctualityScore) {
+    public void updateAdditionalInfo(Integer spareTime, String note) {
         this.spareTime = spareTime;
         this.note = note;
-        this.punctualityScore = punctualityScore;
     }
 
     public void authorizeUser() {

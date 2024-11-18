@@ -10,5 +10,4 @@ import java.sql.Time;
 public class SocialUserSignupDto {
     private Integer spareTime;  // 여유시간
     private String note;     // 주의사항
-    private Float score;     // 성실도 점수
 }
