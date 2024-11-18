@@ -2,6 +2,8 @@ package devkor.ontime_back.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class UserSetting {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user; // 사용자 ID (외래 키)
 
     @Column(nullable = false)

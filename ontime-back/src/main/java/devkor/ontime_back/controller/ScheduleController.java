@@ -230,8 +230,28 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
-    // 지각 히스토리 조회
-    @GetMapping("/lateness-history")
+    @Operation(
+            summary = "지각 히스토리 조회 (지각시간이 0초과인 약속들 조회)",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "지각 히스토리 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 넣으면 됨.",
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "2XX", description = "지각 히스토리 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "[\n  {\n    \"scheduleId\": \"a304cde3-8ee9-4054-971a-300aacc2189b\",\n    \"scheduleName\": \"정보대 해커톤\",\n    \"scheduleTime\": \"2024-11-15T17:05:00\",\n    \"latenessTime\": 3\n  },\n  {\n    \"scheduleId\": \"b784cde3-9ff9-4054-872a-500bbcc2198c\",\n    \"scheduleName\": \"Ontime 회의\",\n    \"scheduleTime\": \"2024-11-16T10:00:00\",\n    \"latenessTime\": 5\n  }\n]"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "지각 히스토리 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
+    @GetMapping("/lateness-history") // 지각 히스토리 조회
     public ResponseEntity<List<LatenessHistoryResponse>> getPunctualityPage(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
         List<LatenessHistoryResponse> latenessHistory = scheduleService.getLatenessHistory(userId);
