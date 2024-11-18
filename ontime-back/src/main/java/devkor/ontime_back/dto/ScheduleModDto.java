@@ -26,5 +26,8 @@ public class ScheduleModDto {
 
     private Time scheduleSpareTime; // 스케줄 별 여유시간
 
+    private Integer latenessTime;
+
     private String scheduleNote; // 스케줄 별 주의사항
+
 }

@@ -118,8 +118,8 @@ public class ScheduleService {
                 scheduleModDto.getMoveTime(),
                 scheduleModDto.getScheduleTime(),
                 scheduleModDto.getScheduleSpareTime(),
+                scheduleModDto.getLatenessTime(),
                 scheduleModDto.getScheduleNote());
-
     }
 
     // 약속 추가
