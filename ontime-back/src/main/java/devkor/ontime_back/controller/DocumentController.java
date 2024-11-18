@@ -27,7 +27,7 @@ public class DocumentController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "이용약관 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "이용약관 ~~~ 입니다."))),
+            @ApiResponse(responseCode = "200", description = "이용약관 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "이용약관 ~~~ 입니다."))),
             @ApiResponse(responseCode = "4XX", description = "이용약관 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @GetMapping("/terms")
@@ -49,7 +49,7 @@ public class DocumentController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "개인정보처리방침 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "이용약관 ~~~ 입니다."))),
+            @ApiResponse(responseCode = "200", description = "개인정보처리방침 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "이용약관 ~~~ 입니다."))),
             @ApiResponse(responseCode = "4XX", description = "개인정보처리방침 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @GetMapping("/privacy")
