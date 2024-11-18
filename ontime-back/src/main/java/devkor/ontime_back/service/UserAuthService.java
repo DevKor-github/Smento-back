@@ -39,7 +39,7 @@ public class UserAuthService {
     }
 
     // 자체 로그인 회원가입
-    public void signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new Exception("이미 존재하는 이메일입니다.");
@@ -72,6 +72,7 @@ public class UserAuthService {
                 .build();
 
         userSettingRepository.save(userSetting);
+        return user.getId();
     }
 
     public void addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
