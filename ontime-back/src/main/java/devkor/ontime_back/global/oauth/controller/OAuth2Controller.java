@@ -37,7 +37,7 @@ public class OAuth2Controller {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "추가정보 기입 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "User information updated successfully."))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PostMapping("/sign-up")
     public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody SocialUserSignupDto socialUserSignupDto) {
