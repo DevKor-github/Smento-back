@@ -27,7 +27,7 @@ public class OAuth2Service {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             // 추가 정보 업데이트
-            user.updateAdditionalInfo(socialUserSignupDto.getSpareTime(), socialUserSignupDto.getNote(), socialUserSignupDto.getScore());
+            user.updateAdditionalInfo(socialUserSignupDto.getSpareTime(), socialUserSignupDto.getNote());
             // Role 변경 (GUEST -> USER)
             user.authorizeUser();
             userRepository.save(user);
