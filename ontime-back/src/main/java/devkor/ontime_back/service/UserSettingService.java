@@ -20,7 +20,23 @@ public class UserSettingService {
                 userSettingUpdateDto.getIsNotificationsEnabled(),
                 userSettingUpdateDto.getSoundVolume(),
                 userSettingUpdateDto.getIsPlayOnSpeaker(),
-                userSettingUpdateDto.getIs24HourFormat());
+                userSettingUpdateDto.getIs24HourFormat()
+        );
+
+        userSettingRepository.save(userSetting);
+    }
+
+    public void resetSetting(Long userId) {
+        UserSetting userSetting = userSettingRepository.findByUserId(userId)
+                .orElseThrow(()-> new IllegalArgumentException("UserSetting not found with given userId"));
+
+        // scheduleDto에서 수정
+        userSetting.updateUserSetting(
+                true,
+                50,
+                true,
+                true
+        );
 
         userSettingRepository.save(userSetting);
     }

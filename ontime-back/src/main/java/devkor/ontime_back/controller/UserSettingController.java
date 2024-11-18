@@ -20,11 +20,20 @@ public class UserSettingController {
     private final UserSettingService userSettingService;
 
     @PutMapping("/update")
-    public ResponseEntity<String> modifySchedule(HttpServletRequest request, @RequestBody UserSettingUpdateDto userSettingUpdateDto) {
+    public ResponseEntity<String> updateSetting(HttpServletRequest request, @RequestBody UserSettingUpdateDto userSettingUpdateDto) {
         Long userId = userAuthService.getUserIdFromToken(request);
 
         userSettingService.updateSetting(userId, userSettingUpdateDto);
 
         return ResponseEntity.ok("사용자 앱 설정 업데이트 완료");
+    }
+
+    @PutMapping("/reset")
+    public ResponseEntity<String> resetSetting(HttpServletRequest request) {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        userSettingService.resetSetting(userId);
+
+        return ResponseEntity.ok("사용자 앱 설정 초기화 완료");
     }
 }
