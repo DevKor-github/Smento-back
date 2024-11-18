@@ -39,7 +39,7 @@ public class UserController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "성실도 점수 조회 성공", content = @Content(
+            @ApiResponse(responseCode = "200", description = "성실도 점수 조회 성공", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
                             example = "{\n  \"punctuality\": 87.4\n}"
@@ -69,7 +69,7 @@ public class UserController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "성실도 점수 초기회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "성실도 점수가 초기화 되었습니다!"))),
+            @ApiResponse(responseCode = "200", description = "성실도 점수 초기회 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "성실도 점수가 초기화 되었습니다!"))),
             @ApiResponse(responseCode = "4XX", description = "성실도 점수 초기화 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/reset-punctuality") // 성실도 점수 초기화
@@ -93,7 +93,7 @@ public class UserController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "지각시간, 성실도점수 업데이트 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!"))),
+            @ApiResponse(responseCode = "200", description = "지각시간, 성실도점수 업데이트 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!"))),
             @ApiResponse(responseCode = "4XX", description = "지각시간, 성실도점수 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/finish-preparation") // 약속 준비 종료 이후 지각시간(Schedule 테이블), 성실도 점수(User 테이블) 업데이트

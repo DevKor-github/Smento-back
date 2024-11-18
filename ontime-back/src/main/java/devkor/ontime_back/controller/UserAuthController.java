@@ -31,7 +31,7 @@ public class UserAuthController {
 
     @Operation(summary = "일반 회원가입")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "회원가입 성공", content = @Content(
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
                             example = "{\n  \"message\": \"회원가입 성공\",\n  \"userId\": 1}"
@@ -62,7 +62,7 @@ public class UserAuthController {
 
     @Operation(summary = "일반 로그인 (로그인 요청을 통해 JWT 토큰을 발급받음)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "일반 로그인 성공(반환 문자열 없음)", content = @Content(mediaType = "application/json", schema = @Schema(example = " "))),
+            @ApiResponse(responseCode = "200", description = "일반 로그인 성공(반환 문자열 없음)", content = @Content(mediaType = "application/json", schema = @Schema(example = " "))),
             @ApiResponse(responseCode = "4XX", description = "일반 로그인 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PostMapping("/login")
@@ -93,10 +93,10 @@ public class UserAuthController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "비밀번호가 성공적으로 변경되었습니다"))),
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "비밀번호가 성공적으로 변경되었습니다"))),
             @ApiResponse(responseCode = "4XX", description = "비밀번호 변경 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "새 비밀번호는 현재 비밀번호와 다르게 설정해주세요")))
     })
-    @PostMapping("/change-password")
+    @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(HttpServletRequest request, @RequestBody ChangePasswordDto changePasswordDto) {
         Long userId = userAuthService.getUserIdFromToken(request);
 
@@ -111,7 +111,7 @@ public class UserAuthController {
 
     @Operation(summary = "계정 삭제 (User 데이터 하드 삭제)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "계정 삭제 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "계정이 성공적으로 삭제되었습니다"))),
+            @ApiResponse(responseCode = "200", description = "계정 삭제 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "계정이 성공적으로 삭제되었습니다"))),
             @ApiResponse(responseCode = "4XX", description = "계정 삭제 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @DeleteMapping("/user/delete")
@@ -148,7 +148,7 @@ public class UserAuthController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "추가 정보 기입 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "추가 정보 기입 성공"))),
+            @ApiResponse(responseCode = "200", description = "추가 정보 기입 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "추가 정보 기입 성공"))),
             @ApiResponse(responseCode = "4XX", description = "추가 정보 기입 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/{userId}/additional-info")

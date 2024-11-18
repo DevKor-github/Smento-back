@@ -38,7 +38,7 @@ public class UserSettingController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "사용자 앱 설정 업데이트 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 업데이트 완료")
+            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 업데이트 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 업데이트 완료")
             )),
             @ApiResponse(responseCode = "4XX", description = "사용자 앱 설정 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
@@ -65,7 +65,7 @@ public class UserSettingController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "사용자 앱 설정 초기화 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 초기화 완료")
+            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 초기화 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 초기화 완료")
             )),
             @ApiResponse(responseCode = "4XX", description = "사용자 앱 설정 초기화 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })

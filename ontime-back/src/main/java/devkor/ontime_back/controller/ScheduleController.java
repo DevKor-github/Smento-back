@@ -243,7 +243,7 @@ public class ScheduleController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "지각 히스토리 조회 성공", content = @Content(
+            @ApiResponse(responseCode = "200", description = "지각 히스토리 조회 성공", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
                             example = "[\n  {\n    \"scheduleId\": \"a304cde3-8ee9-4054-971a-300aacc2189b\",\n    \"scheduleName\": \"정보대 해커톤\",\n    \"scheduleTime\": \"2024-11-15T17:05:00\",\n    \"latenessTime\": 3\n  },\n  {\n    \"scheduleId\": \"b784cde3-9ff9-4054-872a-500bbcc2198c\",\n    \"scheduleName\": \"Ontime 회의\",\n    \"scheduleTime\": \"2024-11-16T10:00:00\",\n    \"latenessTime\": 5\n  }\n]"

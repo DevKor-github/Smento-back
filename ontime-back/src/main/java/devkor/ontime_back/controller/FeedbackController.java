@@ -37,7 +37,7 @@ public class FeedbackController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "2XX", description = "피드백 저장 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "피드백이 성공적으로 저장되었습니다")
+            @ApiResponse(responseCode = "200", description = "피드백 저장 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "피드백이 성공적으로 저장되었습니다")
             )),
             @ApiResponse(responseCode = "4XX", description = "피드백 저장 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
