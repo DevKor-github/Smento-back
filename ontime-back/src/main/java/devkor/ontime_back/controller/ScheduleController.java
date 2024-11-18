@@ -45,7 +45,7 @@ public class ScheduleController {
                                     example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Study Room\", \n \"scheduleName\": \"Friends Meeting\",\n \"moveTime\": \"01:20:00\",\n \"scheduleTime\": \"2024-11-16T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Prepare present for friend.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \n \"placeName\": \"Cafe Lounge\", \n \"scheduleName\": \"School Meeting\",\n \"moveTime\": \"00:20:00\",\n \"scheduleTime\": \"2024-11-14T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Check project updates and next steps\",\n \"latenessTime\": 0\n  }]"
                             )
                     )),
-                    @ApiResponse(responseCode = "404", description = "스케줄을 찾을 수 없음",
+                    @ApiResponse(responseCode = "4XX", description = "스케줄을 찾을 수 없음",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
@@ -81,7 +81,7 @@ public class ScheduleController {
                                     example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa1\", \n \"placeName\": \"Cafe\", \n \"scheduleName\": \"Professor Meeting\",\n \"moveTime\": \"00:10:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Ready for everything.\",\n \"latenessTime\": 0\n  }]"
                             )
                     )),
-            @ApiResponse(responseCode = "404", description = "오늘 스케줄을 찾을 수 없음",
+            @ApiResponse(responseCode = "4XX", description = "오늘 스케줄을 찾을 수 없음",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
@@ -117,7 +117,7 @@ public class ScheduleController {
                                     example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa1\", \n \"placeName\": \"Cafe\", \n \"scheduleName\": \"Professor Meeting\",\n \"moveTime\": \"00:10:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Ready for everything.\",\n \"latenessTime\": 0\n  }]"
                             )
                     )),
-            @ApiResponse(responseCode = "404", description = "이달의 스케줄을 찾을 수 없음",
+            @ApiResponse(responseCode = "4XX", description = "이달의 스케줄을 찾을 수 없음",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
@@ -145,7 +145,7 @@ public class ScheduleController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "일정 삭제 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = " "))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @DeleteMapping("/delete/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(HttpServletRequest request, @PathVariable UUID scheduleId) {
@@ -171,7 +171,7 @@ public class ScheduleController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "일정 수정 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/modify")
     public ResponseEntity<Void> modifySchedule(HttpServletRequest request, @RequestBody ScheduleModDto scheduleModDto) {
@@ -197,7 +197,7 @@ public class ScheduleController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "일정 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PostMapping("/add")
     public ResponseEntity<Void> addSchedule(HttpServletRequest request, @RequestBody ScheduleAddDto scheduleAddDto) {
@@ -220,7 +220,7 @@ public class ScheduleController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PatchMapping("/start/{scheduleId}")
     public ResponseEntity<Void> isStartedSchedule(HttpServletRequest request, @PathVariable UUID scheduleId) {
