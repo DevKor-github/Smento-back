@@ -48,12 +48,13 @@ public class Schedule {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String scheduleNote; // 스케줄 별 주의사항
 
-    public void updateSchedule(Place place, String scheduleName, Time time, LocalDateTime scheduleTime, Time scheduleSpareTime, String scheduleNote) {
+    public void updateSchedule(Place place, String scheduleName, Time time, LocalDateTime scheduleTime, Time scheduleSpareTime, Integer latenessTime, String scheduleNote) {
         this.place = place;
         this.scheduleName = scheduleName;
         this.moveTime = time;
         this.scheduleTime = scheduleTime;
         this.scheduleSpareTime = scheduleSpareTime;
+        this.latenessTime = latenessTime;
         this.scheduleNote = scheduleNote;
     }
 

@@ -4,6 +4,7 @@ import devkor.ontime_back.dto.*;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +25,33 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     // 전체 약속 조회
-    @Operation(summary = "Get all schedules", description = "Fetch all schedules based on some filters")
+    @Operation(summary = "사용자의 모든 일정 조회",
+                requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "모든 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨",
+                required = true,
+                content = @Content(
+                    schema = @Schema(
+                            type = "object",
+                            example = "{}"
+                    )
+                )
+                )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "스케줄 목록 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Study Room\", \n \"scheduleName\": \"Friends Meeting\",\n \"moveTime\": \"01:20:00\",\n \"scheduleTime\": \"2024-11-16T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Prepare present for friend.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \n \"placeName\": \"Cafe Lounge\", \n \"scheduleName\": \"School Meeting\",\n \"moveTime\": \"00:20:00\",\n \"scheduleTime\": \"2024-11-14T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Check project updates and next steps\",\n \"latenessTime\": 0\n  }]"
+                            )
+                    )),
+                    @ApiResponse(responseCode = "404", description = "스케줄을 찾을 수 없음",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
+                            )
+                    )
+    })
     @GetMapping("/show/all")
     public ResponseEntity<List<ScheduleDto>> getAllSchedules(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -34,6 +61,33 @@ public class ScheduleController {
     }
 
     // 오늘의 약속 조회
+    @Operation(summary = "사용자의 오늘 일정 조회",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "오늘 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "오늘 스케줄 목록 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa1\", \n \"placeName\": \"Cafe\", \n \"scheduleName\": \"Professor Meeting\",\n \"moveTime\": \"00:10:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Ready for everything.\",\n \"latenessTime\": 0\n  }]"
+                            )
+                    )),
+            @ApiResponse(responseCode = "404", description = "오늘 스케줄을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
+                    )
+            )
+    })
     @GetMapping("/show/today")
     public ResponseEntity<List<ScheduleDto>> getTodaySchedules(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -43,6 +97,33 @@ public class ScheduleController {
     }
 
     // 이달의 약속 조회
+    @Operation(summary = "사용자의 이달 일정 조회",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "이달 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이달의 스케줄 목록 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "[{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }, {\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa1\", \n \"placeName\": \"Cafe\", \n \"scheduleName\": \"Professor Meeting\",\n \"moveTime\": \"00:10:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:15:00\",\n \"scheduleNote\": \"Ready for everything.\",\n \"latenessTime\": 0\n  }]"
+                            )
+                    )),
+            @ApiResponse(responseCode = "404", description = "이달의 스케줄을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
+                    )
+            )
+    })
     @GetMapping("/show/month")
     public ResponseEntity<List<ScheduleDto>> getMonthSchedules(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -52,6 +133,20 @@ public class ScheduleController {
     }
 
     // 약속 삭제
+    @Operation(summary = "사용자 일정 삭제",
+            parameters = {
+                    @Parameter(
+                            name = "scheduleId",
+                            description = "삭제할 일정의 ID",
+                            required = true,
+                            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "일정 삭제 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = " "))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
     @DeleteMapping("/delete/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(HttpServletRequest request, @PathVariable UUID scheduleId) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -61,6 +156,23 @@ public class ScheduleController {
     }
 
     // 약속 수정
+    @Operation(
+            summary = "사용자 일정 수정",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "사용자 수정 일정 JSON 데이터",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeId\": \"70d460da-6a82-4c57-a285-567cdeda5670\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "일정 수정 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
     @PutMapping("/modify")
     public ResponseEntity<Void> modifySchedule(HttpServletRequest request, @RequestBody ScheduleModDto scheduleModDto) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -70,7 +182,23 @@ public class ScheduleController {
     }
 
     // 약속 추가
-
+    @Operation(
+            summary = "사용자 일정 추가",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "사용자 일정 추가 JSON 데이터",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeId\": \"70d460da-6a82-4c57-a285-567cdeda5670\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"isChange\": false\n, \n \"isStarted\": false\n, \n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\"  }"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "일정 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
     @PostMapping("/add")
     public ResponseEntity<Void> addSchedule(HttpServletRequest request, @RequestBody ScheduleAddDto scheduleAddDto) {
         Long userId = scheduleService.getUserIdFromToken(request);
@@ -80,6 +208,20 @@ public class ScheduleController {
     }
 
     // 시작 버튼 누름
+    @Operation(summary = "일정 시작 버튼 누름",
+            parameters = {
+                    @Parameter(
+                            name = "scheduleId",
+                            description = "시작할 일정의 ID",
+                            required = true,
+                            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "일정 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = ""))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
     @PatchMapping("/start/{scheduleId}")
     public ResponseEntity<Void> isStartedSchedule(HttpServletRequest request, @PathVariable UUID scheduleId) {
         Long userId = scheduleService.getUserIdFromToken(request);
