@@ -14,4 +14,6 @@ public class UserSignUpDto {
     private String email;
     private String password;
     private String name;
+
+    private UUID userSettingId;
 }

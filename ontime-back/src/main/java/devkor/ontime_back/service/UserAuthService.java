@@ -5,9 +5,11 @@ import devkor.ontime_back.dto.ChangePasswordResponse;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.entity.User;
+import devkor.ontime_back.entity.UserSetting;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.entity.Role;
+import devkor.ontime_back.repository.UserSettingRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.NoSuchElementException;
 public class UserAuthService {
 
     private final UserRepository userRepository;
+    private final UserSettingRepository userSettingRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -61,6 +64,14 @@ public class UserAuthService {
         // 비밀번호 암호화 후 저장
         user.passwordEncode(passwordEncoder);
         userRepository.save(user);
+
+        // 사용자 앱 설정 세팅(pk와 fk만 세팅, 나머지는 디폴트설정값(엔티티에 정의)으로 생성됨)
+        UserSetting userSetting = UserSetting.builder()
+                .userSettingId(userSignUpDto.getUserSettingId())
+                .user(user)
+                .build();
+
+        userSettingRepository.save(userSetting);
     }
 
     public void addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
