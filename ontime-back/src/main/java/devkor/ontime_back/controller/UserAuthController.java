@@ -73,6 +73,14 @@ public class UserAuthController {
         }
     }
 
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<String> deleteUser(HttpServletRequest request) {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        userAuthService.deleteUser(userId);
+        return ResponseEntity.ok("계정이 성공적으로 삭제되었습니다");
+    }
+
 
     @Operation(summary = "JWT 테스트")
     @ApiResponses(value = {

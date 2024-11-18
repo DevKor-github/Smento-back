@@ -91,4 +91,11 @@ public class UserAuthService {
         return new ChangePasswordResponse(true, "비밀번호가 성공적으로 변경되었습니다.");
     }
 
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        userRepository.delete(user);
+    }
+
 }
