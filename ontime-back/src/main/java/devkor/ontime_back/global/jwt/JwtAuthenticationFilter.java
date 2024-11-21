@@ -60,13 +60,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (refreshToken == null) { // accessToken X: 403 에러 / accessToken O: 인증 성공
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
+
+        filterChain.doFilter(request, response);
+
     }
 
     // refreshToken로 검색 후 accessToken 재발급 후 전송
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         userRepository.findByRefreshToken(refreshToken) // refreshToken으로 유저 찾기
                 .ifPresent(user -> {
-                    jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(user.getEmail(), user.getId())); // accessToken 생성 후 전송
+                    String newAccessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId()); // accessToken 생성
+                    log.info("New accessToken issued: " + newAccessToken); // 재발급된 accessToken 출력
+                    jwtTokenProvider.sendAccessToken(response, newAccessToken); // accessToken 전송
+                    // jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(user.getEmail(), user.getId())); // accessToken 생성 후 전송
                 });
     }
 

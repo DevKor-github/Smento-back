@@ -56,7 +56,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
+                .withExpiresAt(new Date(now.getTime() + 30000))
                 .withClaim(EMAIL_CLAIM, email)
                 .withClaim(USER_ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
@@ -91,9 +91,9 @@ public class JwtTokenProvider {
 
     // header에서 refreshToken 추출
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        // "x-refresh-token" 헤더에서 추출
-        return Optional.ofNullable(request.getHeader("refresh-token"))
-                .filter(refreshToken -> !refreshToken.isEmpty());
+        return Optional.ofNullable(request.getHeader(refreshHeader))
+                .filter(refreshToken -> refreshToken.startsWith(BEARER))
+                .map(refreshToken -> refreshToken.replace(BEARER, "")); // 'Bearer XXX' 형식에서 "Bearer"를 삭제
     }
 
     // header에서 accessToken 추출
