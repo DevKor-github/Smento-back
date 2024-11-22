@@ -56,7 +56,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(now.getTime() + 30000))
+                .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(EMAIL_CLAIM, email)
                 .withClaim(USER_ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
