@@ -60,9 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (refreshToken == null) { // accessToken X: 403 에러 / accessToken O: 인증 성공
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
-
-        filterChain.doFilter(request, response);
-
     }
 
     // refreshToken로 검색 후 accessToken 재발급 후 전송
