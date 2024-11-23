@@ -61,6 +61,8 @@ public class Schedule {
     public void startSchedule() {
         this.isStarted = true;
     }
+
+    public void changePreparationSchedule() {this.isChange = true;}
 }
 
 

@@ -259,5 +259,15 @@ public class ScheduleController {
         return ResponseEntity.ok(latenessHistory);
     }
 
+    @GetMapping("/get/preparation/{scheduleId}")
+    public ResponseEntity<List<PreparationDto>> getPreparation(HttpServletRequest request, @PathVariable UUID scheduleId) {
+        Long userId = scheduleService.getUserIdFromToken(request);
+        List<PreparationDto> preparationDtoList = scheduleService.getPreparations(userId, scheduleId);
+
+        return ResponseEntity.ok(preparationDtoList);
+    }
+
+
+
 
 }
