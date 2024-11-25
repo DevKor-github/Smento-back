@@ -164,7 +164,7 @@ public class ScheduleController {
                     content = @Content(
                             schema = @Schema(
                                     type = "object",
-                                    example = "{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeId\": \"70d460da-6a82-4c57-a285-567cdeda5670\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Birthday Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }"
+                                    example = "{\n \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \n \"placeId\": \"70d460da-6a82-4c57-a285-567cdeda5670\", \n \"placeName\": \"Home\", \n \"scheduleName\": \"Party\",\n \"moveTime\": \"00:00:00\",\n \"scheduleTime\": \"2024-11-15T19:30:00\",\n \"scheduleSpareTime\": \"00:20:00\",\n \"scheduleNote\": \"Write a message.\",\n \"latenessTime\": 0\n  }"
                             )
                     )
             )
