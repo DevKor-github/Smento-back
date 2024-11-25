@@ -259,6 +259,35 @@ public class ScheduleController {
         return ResponseEntity.ok(latenessHistory);
     }
 
+    @Operation(summary = "준비과정 조회",
+            parameters = {
+                    @Parameter(
+                            name = "scheduleId",
+                            description = "확인할 일정의 ID",
+                            required = true,
+                            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "준비과정 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "[\n {\n \"preparationId\": \"123e4567-e89b-12d3-a456-426614174011\",\n \"preparationName\": \"Step 1: Wake up\",\n \"preparationTime\": 5,\n \"nextPreparationId\": \"123e4567-e89b-12d3-a456-426614174012\"\n },\n {\n\"preparationId\": \"123e4567-e89b-12d3-a456-426614174012\",\n\"preparationName\": \"Step 2: Brush teeth\",\n \"preparationTime\": 15,\n \"nextPreparationId\": \"123e4567-e89b-12d3-a456-426614174013\"\n },\n {\n\"preparationId\": \"123e4567-e89b-12d3-a456-426614174013\",\n\"preparationName\": \"Step 3: Wearing Clothes\",\n\"preparationTime\": 15,\n\"nextPreparationId\": \"123e4567-e89b-12d3-a456-426614174014\"\n },\n{\n\"preparationId\": \"123e4567-e89b-12d3-a456-426614174014\",\n\"preparationName\": \"Step 4: Breakfast\",\n\"preparationTime\": 30,\n\"nextPreparationId\": null\n }\n ]"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "준비과정 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
+    @GetMapping("/get/preparation/{scheduleId}")
+    public ResponseEntity<List<PreparationDto>> getPreparation(HttpServletRequest request, @PathVariable UUID scheduleId) {
+        Long userId = scheduleService.getUserIdFromToken(request);
+        List<PreparationDto> preparationDtoList = scheduleService.getPreparations(userId, scheduleId);
+
+        return ResponseEntity.ok(preparationDtoList);
+    }
+
+
+
 
     @Operation(
             summary = "약속 준비 종료 이후 지각시간, 성실도점수 업데이트 (약속 준비 종료 이후 호출해야함)",

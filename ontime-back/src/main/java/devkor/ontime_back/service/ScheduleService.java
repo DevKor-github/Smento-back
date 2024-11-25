@@ -5,9 +5,7 @@ import devkor.ontime_back.entity.Place;
 import devkor.ontime_back.entity.Schedule;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
-import devkor.ontime_back.repository.PlaceRepository;
-import devkor.ontime_back.repository.ScheduleRepository;
-import devkor.ontime_back.repository.UserRepository;
+import devkor.ontime_back.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,6 +31,8 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PreparationScheduleRepository preparationScheduleRepository;
+    private final PreparationUserRepository preparationUserRepository;
 
     // userId 추출
     public Long getUserIdFromToken(HttpServletRequest request) {
@@ -195,6 +196,37 @@ public class ScheduleService {
     public void finishSchedule(Long userId, FinishPreparationDto finishPreparationDto) {
         updateLatenessTime(finishPreparationDto);
         userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
+    }
+    public List<PreparationDto> getPreparations(Long userId, UUID scheduleId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("Schedule not found with id: " + scheduleId));
+
+        if (Boolean.TRUE.equals(schedule.getIsChange())) {
+            return preparationScheduleRepository.findBySchedule(schedule).stream()
+                    .map(preparationSchedule -> new PreparationDto(
+                            preparationSchedule.getPreparationId(),
+                            preparationSchedule.getPreparationName(),
+                            preparationSchedule.getPreparationTime(),
+                            preparationSchedule.getNextPreparation() != null
+                                    ? preparationSchedule.getNextPreparation().getPreparationId()
+                                    : null
+                    ))
+                    .collect(Collectors.toList());
+        } else {
+            return preparationUserRepository.findByUser(schedule.getUser()).stream()
+                    .map(preparationUser -> new PreparationDto(
+                            preparationUser.getPreparationId(),
+                            preparationUser.getPreparationName(),
+                            preparationUser.getPreparationTime(),
+                            preparationUser.getNextPreparation() != null
+                                    ? preparationUser.getNextPreparation().getPreparationId()
+                                    : null
+                    ))
+                    .collect(Collectors.toList());
+        }
     }
 
     private ScheduleDto mapToDto(Schedule schedule) {
