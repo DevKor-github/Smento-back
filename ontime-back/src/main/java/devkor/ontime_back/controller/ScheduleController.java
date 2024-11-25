@@ -139,7 +139,7 @@ public class ScheduleController {
                             name = "scheduleId",
                             description = "삭제할 일정의 ID",
                             required = true,
-                            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                            example = "3fa85f64-5717-4562-b3fc-2c963f66afe5"
                     )
             }
     )
@@ -214,7 +214,7 @@ public class ScheduleController {
                             name = "scheduleId",
                             description = "시작할 일정의 ID",
                             required = true,
-                            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                            example = "3fa85f64-5717-4562-b3fc-2c963f66afe5"
                     )
             }
     )
