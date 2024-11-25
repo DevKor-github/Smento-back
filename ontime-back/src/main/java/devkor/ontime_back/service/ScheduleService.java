@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final UserService userService;
+
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
@@ -190,6 +192,11 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
     }
 
+    @Transactional
+    public void finishSchedule(Long userId, FinishPreparationDto finishPreparationDto) {
+        updateLatenessTime(finishPreparationDto);
+        userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
+    }
     public List<PreparationDto> getPreparations(Long userId, UUID scheduleId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
