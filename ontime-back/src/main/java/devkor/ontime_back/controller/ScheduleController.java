@@ -260,4 +260,34 @@ public class ScheduleController {
     }
 
 
+    @Operation(
+            summary = "약속 준비 종료 이후 지각시간, 성실도점수 업데이트 (약속 준비 종료 이후 호출해야함)",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "성실도 점수 초기화 요청 JSON 데이터",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\"scheduleId\": \"a304cde3-8ee9-4054-971a-300aacc2189a\", \"latenessTime\": 3}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "지각시간, 성실도점수 업데이트 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!"))),
+            @ApiResponse(responseCode = "4XX", description = "지각시간, 성실도점수 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
+    @PutMapping("/finish") // 약속 준비 종료 이후 지각시간(Schedule 테이블), 성실도 점수(User 테이블) 업데이트
+    public ResponseEntity<String> finishSchedule(
+            HttpServletRequest request,
+            @RequestBody FinishPreparationDto finishPreparationDto) {
+
+        Long userId = scheduleService.getUserIdFromToken(request);
+
+        scheduleService.finishSchedule(userId, finishPreparationDto);
+
+        return ResponseEntity.ok("해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!");
+    }
+
+
 }

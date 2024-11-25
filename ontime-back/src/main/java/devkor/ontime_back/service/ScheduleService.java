@@ -26,6 +26,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final UserService userService;
+
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
@@ -187,6 +189,12 @@ public class ScheduleService {
 
         schedule.setLatenessTime(latenessTime);
         scheduleRepository.save(schedule);
+    }
+
+    @Transactional
+    public void finishSchedule(Long userId, FinishPreparationDto finishPreparationDto) {
+        updateLatenessTime(finishPreparationDto);
+        userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
     }
 
     private ScheduleDto mapToDto(Schedule schedule) {
