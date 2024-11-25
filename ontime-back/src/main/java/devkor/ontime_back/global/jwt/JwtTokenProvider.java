@@ -26,7 +26,7 @@ import java.util.UUID;
 @Transactional
 public class JwtTokenProvider {
 
-    @Value("${jwt.secretKey}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
     @Value("${jwt.access.expiration}")
@@ -41,15 +41,13 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
-
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email"; // jwt claim으로 email 사용
-    private static final String BEARER = "Bearer "; //'Authorization(Key) = Bearer {토큰} (Value)' 형식
+    private static final String BEARER = "Bearer "; // 'Authorization(Key) = Bearer {토큰} (Value)' 형식
     private static final String USER_ID_CLAIM = "userId";
 
     private final UserRepository userRepository;
-
 
     // accessToken 생성
     public String createAccessToken(String email, Long userId) {
@@ -85,7 +83,7 @@ public class JwtTokenProvider {
 
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
-        log.info("accesstoken: "+ accessToken + "refreshtoken" + refreshToken);
+        log.info("accesstoken: " + accessToken + "refreshtoken" + refreshToken);
         log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
 
@@ -146,8 +144,9 @@ public class JwtTokenProvider {
         userRepository.findByEmail(email)
                 .ifPresentOrElse(
                         user -> user.updateRefreshToken(refreshToken),
-                        () -> { throw new RuntimeException("일치하는 회원이 없습니다."); }
-                );
+                        () -> {
+                            throw new RuntimeException("일치하는 회원이 없습니다.");
+                        });
     }
 
     // token 유효성 확인
@@ -170,7 +169,5 @@ public class JwtTokenProvider {
                 .withClaim(EMAIL_CLAIM, email)
                 .sign(Algorithm.HMAC512(secretKey));
     }
-
-
 
 }
