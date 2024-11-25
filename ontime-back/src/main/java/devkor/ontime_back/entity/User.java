@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Entity
 @Builder
 @AllArgsConstructor
-@Table(name = "\"USER\"")
 public class User {
 
     @Id
@@ -61,6 +60,7 @@ public class User {
         this.role = Role.USER;
     }
 
+
     // 비밀번호 암호화
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
@@ -78,7 +78,7 @@ public class User {
         this.refreshToken = updateRefreshToken;
     }
 
-    // 성실도 점수 초기화
+    //성실도 점수 초기화
     public void resetPunctualityScore() {
         this.punctualityScore = (float) -1;
         this.scheduleCountAfterReset = 0;
