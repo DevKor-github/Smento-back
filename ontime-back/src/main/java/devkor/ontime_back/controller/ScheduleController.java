@@ -28,14 +28,7 @@ public class ScheduleController {
     // 전체 약속 조회
     @Operation(summary = "사용자의 모든 일정 조회",
                 requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                description = "모든 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨",
-                required = true,
-                content = @Content(
-                    schema = @Schema(
-                            type = "object",
-                            example = "{}"
-                    )
-                )
+                description = "모든 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨"
                 )
     )
     @ApiResponses(value = {
@@ -54,11 +47,11 @@ public class ScheduleController {
                     )
     })
     @GetMapping("/show/all")
-    public ResponseEntity<List<ScheduleDto>> getAllSchedules(HttpServletRequest request) {
+    public ResponseEntity<ApiResponseForm<List<ScheduleDto>>> getAllSchedules(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
 
         List<ScheduleDto> schedules = scheduleService.showAllSchedules(userId);
-        return ResponseEntity.ok(schedules);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(schedules));
     }
 
 //    // 오늘의 약속 조회
