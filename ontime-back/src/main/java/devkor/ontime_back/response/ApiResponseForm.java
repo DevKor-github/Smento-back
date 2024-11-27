@@ -18,7 +18,12 @@ public class ApiResponseForm<T> {
         this.data = data;
     }
 
-    // 성공 응답을 위한 메서드
+    // 성공 응답을 위한 메서드 (message를 받는 경우)
+    public static <T> ApiResponseForm<T> success(T data, String message) {
+        return new ApiResponseForm<>("success", "200", message, data);
+    }
+
+    // 성공 응답을 위한 메서드 (message를 받지 않는 경우)
     public static <T> ApiResponseForm<T> success(T data) {
         return new ApiResponseForm<>("success", "200", "OK", data);
     }
