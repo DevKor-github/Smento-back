@@ -55,38 +55,28 @@ public class ScheduleService {
 
     }
 
-    // 오늘의 약속 조회
-    public List<ScheduleDto> showTodaySchedules(Long userId) {
-        LocalDateTime now = LocalDateTime.now(); // 현재 시간
-        LocalDateTime endofToday = LocalDateTime.now()
-                .plusDays(1)
-                .withHour(23)
-                .withMinute(59)
-                .withSecond(59)
-                .withNano(999999999); // 내일 자정 전까지의 시각
+    // 특정 기간의 약속 조회
+    public List<ScheduleDto> showSchedulesByPeriod(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Schedule> periodScheduleList;
 
-        List<Schedule> todayScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBetween(userId, now, endofToday);
+        if (startDate == null && endDate != null) {
+            // StartDate가 null인 경우, EndDate 이전의 일정 모두 반환
+            periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBefore(userId, endDate);
+        } else if (endDate == null && startDate != null) {
+            // EndDate가 null인 경우, StartDate 이후의 일정 모두 반환
+            periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeAfter(userId, startDate);
+        } else if (startDate != null && endDate != null) {
+            // StartDate와 EndDate 모두 존재하는 경우, 해당 기간의 일정 반환
+            periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBetween(
+                    userId, startDate, endDate);
+        } else {
+            // StartDate와 EndDate가 모두 null인 경우, 모든 일정 반환
+            periodScheduleList = scheduleRepository.findAllByUserId(userId);
+        }
 
-        return todayScheduleList.stream()
+        return periodScheduleList.stream()
                 .map(this::mapToDto)
-                .toList();
-    }
-
-    // 이달의 약속 조회
-    public List<ScheduleDto> showMonthSchedule(Long userId){
-        LocalDateTime startOfMonth = LocalDateTime.now()
-                .withDayOfMonth(1) // 이번 달의 첫째 날
-                .withHour(0).withMinute(0).withSecond(0).withNano(0); // 00:00:00.000
-
-        LocalDateTime endOfMonth = LocalDateTime.now()
-                .withDayOfMonth(LocalDateTime.now().toLocalDate().lengthOfMonth()) // 이번 달의 마지막 날
-                .withHour(23).withMinute(59).withSecond(59).withNano(999999999); // 23:59:59.999999999
-
-        List<Schedule> monthScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBetween(userId, startOfMonth, endOfMonth);
-
-        return monthScheduleList.stream()
-                .map(this::mapToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // 약속 삭제
