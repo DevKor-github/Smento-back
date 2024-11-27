@@ -16,4 +16,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ApiResponseForm.error(errorCode.getCode(), errorCode.getMessage()));
     }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponseForm<Void>> handleInvalidTokenException(InvalidTokenException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponseForm.error("401", ex.getMessage()));
+    }
+
 }

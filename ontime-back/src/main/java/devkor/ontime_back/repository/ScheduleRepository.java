@@ -18,6 +18,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
     void deleteById(UUID scheduleId);
 
+    List<Schedule> findAllByUserIdAndScheduleTimeBefore(Long userId, LocalDateTime endDate);
+    List<Schedule> findAllByUserIdAndScheduleTimeAfter(Long userId, LocalDateTime startDate);
     List<Schedule> findAllByUserIdAndScheduleTimeBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
     // 특정 시간 범위 내에 시작되는 약속 조회 (예: 다음 날 또는 당일 약속)
@@ -35,4 +37,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     // 약속 히스토리 조회
     @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId")
     List<Schedule> findAllByUserId(@Param("userId") Long userId);
+
 }
