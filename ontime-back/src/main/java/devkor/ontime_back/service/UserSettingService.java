@@ -15,7 +15,6 @@ public class UserSettingService {
         UserSetting userSetting = userSettingRepository.findByUserId(userId)
                 .orElseThrow(()-> new IllegalArgumentException("UserSetting not found with given userId"));
 
-        // scheduleDto에서 수정
         userSetting.updateUserSetting(
                 userSettingUpdateDto.getIsNotificationsEnabled(),
                 userSettingUpdateDto.getSoundVolume(),
@@ -30,7 +29,6 @@ public class UserSettingService {
         UserSetting userSetting = userSettingRepository.findByUserId(userId)
                 .orElseThrow(()-> new IllegalArgumentException("UserSetting not found with given userId"));
 
-        // scheduleDto에서 수정
         userSetting.updateUserSetting(
                 true,
                 50,

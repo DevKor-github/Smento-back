@@ -20,6 +20,12 @@ public enum ErrorCode {
     INVALID_INPUT("1002", "Invalid Input: The input provided is invalid or not in the expected format.", HttpStatus.BAD_REQUEST),
     RESOURCE_ALREADY_EXISTS("1003", "Resource Already Exists: The resource you are trying to create already exists.", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_ACCESS("1004", "Unauthorized Access: You do not have permission to perform this action.", HttpStatus.UNAUTHORIZED),
+    EMAIL_ALREADY_EXIST("1005", "이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST),
+    NAME_ALREADY_EXIST("1006", "이미 존재하는 이름입니다.", HttpStatus.BAD_REQUEST),
+    USER_SETTING_ALREADY_EXIST("1007", "이미 존재하는 userSettingId 입니다.", HttpStatus.BAD_REQUEST),
+    PASSWORD_INCORRECT("1008", "기존 비밀번호가 틀렸습니다.", HttpStatus.BAD_REQUEST),
+    SAME_PASSWORD("1009", "새 비밀번호와 기존 비밀번호가 일치합니다.", HttpStatus.BAD_REQUEST),
+    SCHEDULE_NOT_FOUND("1010", "해당 약속이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     // 공통 오류 메시지
     UNEXPECTED_ERROR("1000", "Unexpected Error: An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR);
