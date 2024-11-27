@@ -1,7 +1,6 @@
 package devkor.ontime_back.service;
 
 import devkor.ontime_back.dto.ChangePasswordDto;
-import devkor.ontime_back.dto.ChangePasswordResponse;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.entity.User;
@@ -10,6 +9,8 @@ import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.repository.UserSettingRepository;
+import devkor.ontime_back.response.ErrorCode;
+import devkor.ontime_back.response.GeneralException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +43,15 @@ public class UserAuthService {
     public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
-            throw new Exception("이미 존재하는 이메일입니다.");
+            throw new GeneralException(ErrorCode.EMAIL_ALREADY_EXIST);
         }
 
         if (userRepository.findByName(userSignUpDto.getName()).isPresent()) {
-            throw new Exception("이미 존재하는 닉네임입니다.");
+            throw new GeneralException(ErrorCode.NAME_ALREADY_EXIST);
+        }
+
+        if (userSettingRepository.findByUserSettingId(userSignUpDto.getUserSettingId()).isPresent()) {
+            throw new GeneralException(ErrorCode.USER_SETTING_ALREADY_EXIST);
         }
 
         // 자체 로그인시, USER로 설정
@@ -83,24 +88,23 @@ public class UserAuthService {
         userRepository.save(user);
     }
 
-    public ChangePasswordResponse changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+    public void changePassword(Long userId, ChangePasswordDto changePasswordDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
-            return new ChangePasswordResponse(false, "현재 비밀번호가 일치하지 않습니다.");
+            throw new GeneralException(ErrorCode.PASSWORD_INCORRECT);
         }
 
         // 새로운 비밀번호와 현재 비밀번호 비교
         if (passwordEncoder.matches(changePasswordDto.getNewPassword(), user.getPassword())) {
-            return new ChangePasswordResponse(false, "새 비밀번호는 현재 비밀번호와 다르게 설정해주세요.");
+            throw new GeneralException(ErrorCode.SAME_PASSWORD);
         }
 
         // 새로운 비밀번호 저장
         user.updatePassword(changePasswordDto.getNewPassword(), passwordEncoder);
         userRepository.save(user);
-        return new ChangePasswordResponse(true, "비밀번호가 성공적으로 변경되었습니다.");
     }
 
     public void deleteUser(Long userId) {

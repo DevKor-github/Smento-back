@@ -2,6 +2,7 @@ package devkor.ontime_back.controller;
 
 import devkor.ontime_back.dto.ScheduleModDto;
 import devkor.ontime_back.dto.UserSettingUpdateDto;
+import devkor.ontime_back.response.ApiResponseForm;
 import devkor.ontime_back.service.UserAuthService;
 import devkor.ontime_back.service.UserSettingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,17 +39,22 @@ public class UserSettingController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 업데이트 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 업데이트 완료")
+            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 업데이트 완료", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"사용자 앱 설정이 성공적으로 업데이트되었습니다!\",\n  \"data\": null\n}"
+                    )
             )),
             @ApiResponse(responseCode = "4XX", description = "사용자 앱 설정 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/update")
-    public ResponseEntity<String> updateSetting(HttpServletRequest request, @RequestBody UserSettingUpdateDto userSettingUpdateDto) {
+    public ResponseEntity<ApiResponseForm<?>> updateSetting(HttpServletRequest request, @RequestBody UserSettingUpdateDto userSettingUpdateDto) {
         Long userId = userAuthService.getUserIdFromToken(request);
 
         userSettingService.updateSetting(userId, userSettingUpdateDto);
 
-        return ResponseEntity.ok("사용자 앱 설정 업데이트 완료");
+        String message = "사용자 앱 설정이 성공적으로 업데이트되었습니다!";
+        return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 
     @Operation(
@@ -65,16 +71,21 @@ public class UserSettingController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 초기화 완료", content = @Content(mediaType = "application/json", schema = @Schema(example = "사용자 앱 설정 초기화 완료")
+            @ApiResponse(responseCode = "200", description = "사용자 앱 설정 초기화 완료", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"사용자 앱 설정이 성공적으로 초기화되었습니다! (soundVolume 50, 나머지 모두 true)\",\n  \"data\": null\n}"
+                    )
             )),
             @ApiResponse(responseCode = "4XX", description = "사용자 앱 설정 초기화 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PutMapping("/reset")
-    public ResponseEntity<String> resetSetting(HttpServletRequest request) {
+    public ResponseEntity<ApiResponseForm<?>> resetSetting(HttpServletRequest request) {
         Long userId = userAuthService.getUserIdFromToken(request);
 
         userSettingService.resetSetting(userId);
 
-        return ResponseEntity.ok("사용자 앱 설정 초기화 완료");
+        String message = "사용자 앱 설정이 성공적으로 초기화되었습니다! (soundVolume 50, 나머지 모두 true)";
+        return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 }

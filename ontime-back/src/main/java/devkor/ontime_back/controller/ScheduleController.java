@@ -180,17 +180,18 @@ public class ScheduleController {
             @ApiResponse(responseCode = "200", description = "지각 히스토리 조회 성공", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            example = "[\n  {\n    \"scheduleId\": \"a304cde3-8ee9-4054-971a-300aacc2189b\",\n    \"scheduleName\": \"정보대 해커톤\",\n    \"scheduleTime\": \"2024-11-15T17:05:00\",\n    \"latenessTime\": 3\n  },\n  {\n    \"scheduleId\": \"b784cde3-9ff9-4054-872a-500bbcc2198c\",\n    \"scheduleName\": \"Ontime 회의\",\n    \"scheduleTime\": \"2024-11-16T10:00:00\",\n    \"latenessTime\": 5\n  }\n]"
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"지각 히스토리 조회 성공!\",\n  \"data\": [\n    {\n      \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\",\n      \"scheduleName\": \"BirthDay Party\",\n      \"scheduleTime\": \"2024-12-23T19:30:00\",\n      \"latenessTime\": 12\n    },\n    {\n      \"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe6\",\n      \"scheduleName\": \"Chirstmas Party\",\n      \"scheduleTime\": \"2024-12-25T19:30:00\",\n      \"latenessTime\": 5\n    }\n  ]\n}"
                     )
             )),
-            @ApiResponse(responseCode = "4XX", description = "지각 히스토리 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "4XX", description = "지각 히스토리 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(토큰 오류 제외 비즈니스 로직 오류는 없음)")))
     })
     @GetMapping("/lateness-history") // 지각 히스토리 조회
     public ResponseEntity<ApiResponseForm<List<LatenessHistoryResponse>>> getPunctualityPage(HttpServletRequest request) {
         Long userId = scheduleService.getUserIdFromToken(request);
         List<LatenessHistoryResponse> latenessHistory = scheduleService.getLatenessHistory(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(latenessHistory));
+        String message = "지각 히스토리 조회 성공!";
+        return ResponseEntity.ok(ApiResponseForm.success(latenessHistory, message));
     }
 
     @Operation(summary = "준비과정 조회",
@@ -231,17 +232,22 @@ public class ScheduleController {
                     content = @Content(
                             schema = @Schema(
                                     type = "object",
-                                    example = "{\"scheduleId\": \"a304cde3-8ee9-4054-971a-300aacc2189a\", \"latenessTime\": 3}"
+                                    example = "{\"scheduleId\": \"3fa85f64-5717-4562-b3fc-2c963f66afe5\", \"latenessTime\": 3}"
                             )
                     )
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "지각시간, 성실도점수 업데이트 성공", content = @Content(mediaType = "application/json", schema = @Schema(example = "해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!"))),
-            @ApiResponse(responseCode = "4XX", description = "지각시간, 성실도점수 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+            @ApiResponse(responseCode = "200", description = "지각시간, 성실도점수 업데이트 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"지각시간과 성실도점수가 성공적으로 업데이트 되었습니다!\",\n  \"data\": null\n}"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "지각시간, 성실도점수 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(스케줄ID에 해당하는 약속이 없을 때 Schedule Not Found 메세지 반환)")))
     })
     @PutMapping("/finish") // 약속 준비 종료 이후 지각시간(Schedule 테이블), 성실도 점수(User 테이블) 업데이트
-    public ResponseEntity<ApiResponseForm<String>> finishSchedule(
+    public ResponseEntity<ApiResponseForm<?>> finishSchedule(
             HttpServletRequest request,
             @RequestBody FinishPreparationDto finishPreparationDto) {
 
@@ -249,7 +255,8 @@ public class ScheduleController {
 
         scheduleService.finishSchedule(userId, finishPreparationDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success("해당 약속의 지각시간과 해당 유저의 성실도점수가 성공적으로 업데이트 되었습니다!"));
+        String message = "지각시간과 성실도점수가 성공적으로 업데이트 되었습니다!";
+        return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 
 

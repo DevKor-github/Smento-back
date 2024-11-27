@@ -6,6 +6,8 @@ import devkor.ontime_back.entity.Schedule;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.*;
+import devkor.ontime_back.response.ErrorCode;
+import devkor.ontime_back.response.GeneralException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -176,7 +178,7 @@ public class ScheduleService {
         Integer latenessTime = finishPreparationDto.getLatenessTime();
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
+                .orElseThrow(() -> new GeneralException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         schedule.setLatenessTime(latenessTime);
         scheduleRepository.save(schedule);
@@ -187,6 +189,7 @@ public class ScheduleService {
         updateLatenessTime(finishPreparationDto);
         userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
     }
+
     public List<PreparationDto> getPreparations(Long userId, UUID scheduleId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
