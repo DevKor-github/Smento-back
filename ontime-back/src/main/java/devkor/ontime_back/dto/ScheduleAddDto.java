@@ -27,7 +27,7 @@ public class ScheduleAddDto {
 
     private Boolean isStarted; // 버튼누름여부
 
-    private Time scheduleSpareTime; // 스케줄 별 여유시간
+    private Integer scheduleSpareTime; // 스케줄 별 여유시간
 
     private String scheduleNote; // 스케줄 별 주의사항
 }

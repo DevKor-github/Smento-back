@@ -24,7 +24,7 @@ public class ScheduleModDto {
 
     private LocalDateTime scheduleTime; // 약속시각
 
-    private Time scheduleSpareTime; // 스케줄 별 여유시간
+    private Integer scheduleSpareTime; // 스케줄 별 여유시간
 
     private Integer latenessTime;
 
