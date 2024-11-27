@@ -21,7 +21,7 @@ public class ScheduleDto {
     private String scheduleName;
     private Time moveTime;
     private LocalDateTime scheduleTime;
-    private Time scheduleSpareTime;
+    private Integer scheduleSpareTime;
     private String scheduleNote;
     private Integer latenessTime;
 

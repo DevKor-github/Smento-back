@@ -39,7 +39,7 @@ public class Schedule {
 
     private Boolean isStarted; // 버튼누름여부
 
-    private Time scheduleSpareTime; // 스케줄 별 여유시간
+    private Integer scheduleSpareTime; // 스케줄 별 여유시간
 
     @Setter
     private Integer latenessTime; // 지각 시간 (NULL이면 약속 전, 0이면 약속 성공, N(양수)면 N분 지각)
@@ -48,10 +48,10 @@ public class Schedule {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String scheduleNote; // 스케줄 별 주의사항
 
-    public void updateSchedule(Place place, String scheduleName, Time time, LocalDateTime scheduleTime, Time scheduleSpareTime, Integer latenessTime, String scheduleNote) {
+    public void updateSchedule(Place place, String scheduleName, Time moveTime, LocalDateTime scheduleTime, Integer scheduleSpareTime, Integer latenessTime, String scheduleNote) {
         this.place = place;
         this.scheduleName = scheduleName;
-        this.moveTime = time;
+        this.moveTime = moveTime;
         this.scheduleTime = scheduleTime;
         this.scheduleSpareTime = scheduleSpareTime;
         this.latenessTime = latenessTime;
