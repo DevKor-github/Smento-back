@@ -52,7 +52,7 @@ public class UserController {
             @ApiResponse(responseCode = "4XX", description = "성실도 점수 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @GetMapping("/punctuality-score") // 성실도 점수 조회
-    public ResponseEntity<ApiResponseForm<PunctualityScoreResponse>> getPunctualityPage(HttpServletRequest request) {
+    public ResponseEntity<ApiResponseForm<PunctualityScoreResponse>> getPunctualityScore(HttpServletRequest request) {
         Long userId = userAuthService.getUserIdFromToken(request);
         float punctualityScore = userService.getPunctualityScore(userId); // -1 or float 0~100 반환
 
