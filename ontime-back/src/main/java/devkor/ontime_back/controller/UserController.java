@@ -92,5 +92,38 @@ public class UserController {
         return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 
+
+    @Operation(
+            summary = "사용자 여유시간 업데이트",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "사용자 여유시간 업데이트 요청 JSON 데이터",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\"newSpareTime\": 30}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 여유시간 업데이트 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"사용자 여유시간이 성공적으로 업데이트되었습니다!\",\n  \"data\": null\n}"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "사용자 여유시간 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponseForm<?>> updateSetting(HttpServletRequest request, @RequestBody UpdateSpareTimeDto updateSpareTimeDto) {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        userService.updateSpareTime(userId, updateSpareTimeDto);
+
+        String message = "사용자 여유시간이 성공적으로 업데이트되었습니다!";
+        return ResponseEntity.ok(ApiResponseForm.success(null, message));
+    }
+
 }
 
