@@ -84,4 +84,7 @@ public class User {
         this.scheduleCountAfterReset = 0;
         this.latenessCountAfterReset = 0;
     }
+
+    //여유 시간 업데이트
+    public void updateSpareTime(Integer newSpareTime) { this.spareTime = newSpareTime; }
 }

@@ -1,5 +1,6 @@
 package devkor.ontime_back.service;
 
+import devkor.ontime_back.dto.UpdateSpareTimeDto;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,15 @@ public class UserService {
         float punctualityScore = (1 - ((float) lateSchedules / totalSchedules)) * 100;
 
         user.setPunctualityScore(punctualityScore);
+        userRepository.save(user);
+    }
+
+    public void updateSpareTime(Long userId, UpdateSpareTimeDto updateSpareTimeDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.updateSpareTime(updateSpareTimeDto.getNewSpareTime());
+
         userRepository.save(user);
     }
 }
