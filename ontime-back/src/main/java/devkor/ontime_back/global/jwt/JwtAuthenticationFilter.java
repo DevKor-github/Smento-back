@@ -1,7 +1,11 @@
 package devkor.ontime_back.global.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
+import devkor.ontime_back.response.ApiResponseForm;
+import devkor.ontime_back.response.ErrorCode;
+import devkor.ontime_back.response.InvalidTokenException;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,29 +41,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
-            filterChain.doFilter(request, response);
-            return;
+        try {
+            if (request.getRequestURI().equals(NO_CHECK_URL)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String accessToken= jwtTokenProvider.extractAccessToken(request) // header에서 refreshToken 추출
+                    .filter(jwtTokenProvider::isTokenValid)
+                    .orElse(null);
+            log.info("accesstoken check: " + accessToken);
+
+            String refreshToken = jwtTokenProvider.extractRefreshToken(request) // header에서 refreshToken 추출
+                    .filter(jwtTokenProvider::isTokenValid)
+                    .orElse(null);
+            log.info("refreshtoken check: " + refreshToken);
+
+            if (accessToken == null && refreshToken != null) { // accessToken 만료 -> refreshToken 존재
+                checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+                return;
+            }
+
+            // accessToken이 유효하지 않은 경우 -> 401 Unauthorized 또는 403 Forbidden
+            if (accessToken != null && !jwtTokenProvider.isTokenValid(accessToken)) {
+                log.error("Invalid or missing access token.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or missing access token");
+                return; // 여기서 필터 체인 진행을 멈추고 401을 바로 반환
+            }
+
+            if (refreshToken == null) { // accessToken X: 403 에러 / accessToken O: 인증 성공
+                checkAccessTokenAndAuthentication(request, response, filterChain);
+            }
+        }
+        catch (InvalidTokenException ex) {
+            handleInvalidTokenException(response, ex);
         }
 
-        String accessToken= jwtTokenProvider.extractAccessToken(request) // header에서 refreshToken 추출
-                .filter(jwtTokenProvider::isTokenValid)
-                .orElse(null);
-        log.info("accesstoken check: " + accessToken);
-
-        String refreshToken = jwtTokenProvider.extractRefreshToken(request) // header에서 refreshToken 추출
-                .filter(jwtTokenProvider::isTokenValid)
-                .orElse(null);
-        log.info("refreshtoken check: " + refreshToken);
-
-        if (accessToken == null && refreshToken != null) { // accessToken 만료 -> refreshToken 존재
-            checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
-            return;
-        }
-
-        if (refreshToken == null) { // accessToken X: 403 에러 / accessToken O: 인증 성공
-            checkAccessTokenAndAuthentication(request, response, filterChain);
-        }
     }
 
     // refreshToken로 검색 후 accessToken 재발급 후 전송
@@ -124,5 +141,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return password.toString();
+    }
+
+    private void handleInvalidTokenException(HttpServletResponse response, InvalidTokenException ex) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        // ErrorCode에서 정보를 가져옴
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        // ErrorCode를 사용하여 ApiResponseForm 생성
+        ApiResponseForm<Void> errorResponse = ApiResponseForm.error(
+                errorCode.getCode(),
+                errorCode.getMessage()
+        );
+
+        // ObjectMapper를 사용하여 JSON 변환 후 응답에 기록
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }
