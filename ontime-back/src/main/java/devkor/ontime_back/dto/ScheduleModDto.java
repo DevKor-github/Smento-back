@@ -20,7 +20,7 @@ public class ScheduleModDto {
 
     private String scheduleName;
 
-    private Time moveTime; // 이동시간
+    private Integer moveTime; // 이동시간
 
     private LocalDateTime scheduleTime; // 약속시각
 

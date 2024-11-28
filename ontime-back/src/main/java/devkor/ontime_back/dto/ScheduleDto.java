@@ -19,7 +19,7 @@ public class ScheduleDto {
     private UUID scheduleId;
     private String placeName;
     private String scheduleName;
-    private Time moveTime;
+    private Integer moveTime;
     private LocalDateTime scheduleTime;
     private Integer scheduleSpareTime;
     private String scheduleNote;
