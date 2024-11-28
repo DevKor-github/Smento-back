@@ -31,7 +31,7 @@ public class Schedule {
     @Column(nullable = false, length = 30)
     private String scheduleName;
 
-    private Time moveTime; // 이동시간
+    private Integer moveTime; // 이동시간
 
     private LocalDateTime scheduleTime; // 약속시각
 
@@ -48,7 +48,7 @@ public class Schedule {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String scheduleNote; // 스케줄 별 주의사항
 
-    public void updateSchedule(Place place, String scheduleName, Time moveTime, LocalDateTime scheduleTime, Integer scheduleSpareTime, Integer latenessTime, String scheduleNote) {
+    public void updateSchedule(Place place, String scheduleName, Integer moveTime, LocalDateTime scheduleTime, Integer scheduleSpareTime, Integer latenessTime, String scheduleNote) {
         this.place = place;
         this.scheduleName = scheduleName;
         this.moveTime = moveTime;
