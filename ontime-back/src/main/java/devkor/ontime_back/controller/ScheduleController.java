@@ -65,6 +65,41 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(schedules));
     }
 
+    // id로 스케줄 조회
+    @Operation(summary = "일정 id로 일정 조회",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "모든 일정 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨"
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "스케줄 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = "{\n \"status\": \"success\",\n \"code\": \"200\",\n \"message\": \"OK\",\n \"data\": [\n {\n \"scheduleId\": \"123e4567-e89b-12d3-a456-426614170105\",\n\"placeName\": \"My home\",\n\"scheduleName\": \"Family Meetings\",\n\"moveTime\": \"00:20:00\",\n\"scheduleTime\": \"2024-11-18T19:30:00\",\n\"scheduleSpareTime\": 15,\n\"scheduleNote\": \"Check project updates and next steps.\",\n\"latenessTime\": null\n },\n{\n\"scheduleId\": \"123e4567-e89b-12d3-a456-426614170106\",\n\"placeName\": \"My home\",\n\"scheduleName\": \"Family Meetingss\",\n\"moveTime\": \"00:20:00\",\n\"scheduleTime\": \"2024-11-18T19:30:00\",\n\"scheduleSpareTime\": 15,\n\"scheduleNote\": \"Check project updates and next steps.\",\n\"latenessTime\": null\n },\n{\n\"scheduleId\": \"123e4567-e89b-12d3-a456-426614170455\",\n\"placeName\": \"My home\",\n\"scheduleName\": \"Family Meetings\",\n\"moveTime\": \"00:20:00\",\n\"scheduleTime\": \"2024-11-18T19:30:00\",\n\"scheduleSpareTime\": 15,\n\"scheduleNote\": \"Check project updates and next steps.\",\n\"latenessTime\": null\n },\n "
+                            )
+                    )),
+            @ApiResponse(responseCode = "4XX", description = "스케줄을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"error\": \"No schedules found.\"}")
+                    )
+            )
+    })
+    @GetMapping("/show/id")
+    public ResponseEntity<ApiResponseForm<ScheduleDto>> getScheduleById(
+            HttpServletRequest request,
+            @Parameter(description = "조회할 스케줄 ID (UUID 형식)",
+                    required = true,
+                    example = "3fa85f64-5717-4562-b3fc-2c963f66afe5")
+            @RequestParam UUID scheduleId) {
+
+        Long userId = scheduleService.getUserIdFromToken(request);
+        ScheduleDto schedule = scheduleService.showScheduleByScheduleId(userId, scheduleId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(schedule));
+    }
+
     // 약속 삭제
     @Operation(summary = "사용자 일정 삭제",
             parameters = {
