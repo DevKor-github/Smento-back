@@ -43,19 +43,6 @@ public class ScheduleService {
         return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("User ID not found in token"));
     }
 
-    // 모든 약속 조회
-    public List<ScheduleDto> showAllSchedules(Long userId) {
-        List<Schedule> scheduleList = scheduleRepository.findAllyByUserId(userId);
-
-        if (scheduleList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return scheduleList.stream()
-                .map(this::mapToDto)
-                .toList();
-
-    }
 
     // 특정 기간의 약속 조회
     public List<ScheduleDto> showSchedulesByPeriod(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -79,6 +66,15 @@ public class ScheduleService {
         return periodScheduleList.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    public ScheduleDto showScheduleByScheduleId(Long userId, UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("The specified schedule does not exist."));
+        if (!schedule.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("User does not have permission to delete this schedule.");
+        }
+        return mapToDto(schedule);
     }
 
     // 약속 삭제
@@ -225,7 +221,7 @@ public class ScheduleService {
     private ScheduleDto mapToDto(Schedule schedule) {
         return new ScheduleDto(
                 schedule.getScheduleId(),
-                schedule.getPlace().getPlaceName(),
+                schedule.getPlace(),
                 schedule.getScheduleName(),
                 schedule.getMoveTime(),
                 schedule.getScheduleTime(),
