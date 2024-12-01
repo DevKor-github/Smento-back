@@ -138,6 +138,7 @@ public class ScheduleService {
                 .scheduleNote(scheduleAddDto.getScheduleNote())
                 .isChange(false)
                 .isStarted(false)
+                .latenessTime(-1)
                 .build();
 
         scheduleRepository.save(schedule);
