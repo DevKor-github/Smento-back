@@ -60,7 +60,9 @@ jobs:
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
       # 5. Gradle 빌드
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: |
+          cd ontime-back  
+          ./gradlew build -x test
 
       # 6. EC2 서버로 Docker Compose 파일과 jar 파일 전송
       - name: Deploy to EC2
