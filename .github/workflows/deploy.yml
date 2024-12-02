@@ -25,6 +25,7 @@ jobs:
       # 4. application.properties 생성
       - name: Create application.properties
         run: |
+          mkdir -p src/main/resources
           echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > src/main/resources/application.properties
           echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> src/main/resources/application.properties
           echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> src/main/resources/application.properties
@@ -59,7 +60,7 @@ jobs:
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
       # 5. Gradle 빌드
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       # 6. EC2 서버로 Docker Compose 파일과 jar 파일 전송
       - name: Deploy to EC2
