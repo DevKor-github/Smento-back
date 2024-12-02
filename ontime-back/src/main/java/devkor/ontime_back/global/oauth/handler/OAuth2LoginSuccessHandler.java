@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
 
 @Slf4j
 @Component
@@ -30,12 +32,22 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
                 log.info("회원가입 accessToken 확인 {}", accessToken);
-                response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
-                response.addHeader("redirect-url", "/oauth2/sign-up");
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("{\"accessToken\":\"" + accessToken + "\", \"redirectUrl\":\"/oauth2/sign-up\"}");
+//                response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
+//                response.addHeader("redirect-url", "/oauth2/sign-up");
+
+//                response.sendRedirect("/oauth2/sign-up");
             } else {
                 try {
                     loginSuccess(response, oAuth2User);  // 로그인에 성공한 경우 access, refresh 토큰 생성
-                    // 리디렉션은 되는데 그 과정에서 accesstoken, refreshtoken이 다 사라짐...
+                    // 토큰과 리디렉션 URL을 JSON으로 반환
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
+                    String refreshToken = jwtTokenProvider.createRefreshToken();
+                    response.getWriter().write("{\"accessToken\":\"" + accessToken + "\", \"refreshToken\":\"" + refreshToken + "\"}");
                 } catch (Exception e) {
                     log.error("리디렉션 처리 중 오류 발생: ", e);
                 }
