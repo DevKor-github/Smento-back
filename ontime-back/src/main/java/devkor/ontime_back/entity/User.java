@@ -51,6 +51,8 @@ public class User {
 
     private String refreshToken; // refreshToken
 
+    private String firebaseToken;
+
     public void updateAdditionalInfo(Integer spareTime, String note) {
         this.spareTime = spareTime;
         this.note = note;

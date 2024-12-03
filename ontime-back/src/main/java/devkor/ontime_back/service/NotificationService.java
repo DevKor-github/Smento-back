@@ -1,5 +1,7 @@
 package devkor.ontime_back.service;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
 import devkor.ontime_back.entity.Schedule;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.entity.UserSetting;
@@ -42,6 +44,21 @@ public class NotificationService {
     private void sendNotificationToUser(Schedule schedule, String message) {
         // 사용자 디바이스로 알림을 보내는 로직으로 변환 해야함. (예: FCM 사용)
         User user = schedule.getUser();
-        System.out.println(user.getName() + "님 " + message + "\n약속: " + schedule);
+        String firebaseToken = user.getFirebaseToken();
+
+        System.out.println(user.getName() + "님 " + message + "\n약속: " + schedule); // 테스트용. 파이어베이스 확인되면 이 라인삭제해야함
+
+        Message firebaseMessage = Message.builder()
+                        .putData("title", "약속 알림")
+                        .putData("content", user.getName() + "님 " + message + "\n약속: " + schedule)
+                        .setToken(firebaseToken)
+                        .build();
+
+        try {
+            String response = FirebaseMessaging.getInstance().send(firebaseMessage);
+            System.out.println("Successfully sent message: " + response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
