@@ -10,6 +10,7 @@ import devkor.ontime_back.global.generallogin.service.LoginService;
 import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
 import devkor.ontime_back.global.oauth.CustomOAuth2UserService;
 import devkor.ontime_back.global.oauth.handler.OAuth2LoginFailureHandler;
+//import devkor.ontime_back.global.oauth.handler.OAuth2LoginSuccessHandler;
 import devkor.ontime_back.global.oauth.handler.OAuth2LoginSuccessHandler;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll()
-                        .requestMatchers("/oauth2/sign-up", "/sign-up", "/*/additional-info").permitAll()
+                        .requestMatchers("/oauth2/sign-up", "oauth2/success", "login/success", "/oauth2/google/registerOrLogin", "/oauth2/kakao/registerOrLogin", "/sign-up", "/*/additional-info").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
