@@ -28,29 +28,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 Login 성공!");
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-            // User의 Role이 GUEST -> 회원가입 페이지로 리다이렉트
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
-                log.info("회원가입 accessToken 확인 {}", accessToken);
-                response.setContentType("application/json");
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write("{\"accessToken\":\"" + accessToken + "\", \"redirectUrl\":\"/oauth2/sign-up\"}");
-//                response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
-//                response.addHeader("redirect-url", "/oauth2/sign-up");
-
-//                response.sendRedirect("/oauth2/sign-up");
             } else {
-                try {
-                    loginSuccess(response, oAuth2User);  // 로그인에 성공한 경우 access, refresh 토큰 생성
-                    // 토큰과 리디렉션 URL을 JSON으로 반환
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
-                    String refreshToken = jwtTokenProvider.createRefreshToken();
-                    response.getWriter().write("{\"accessToken\":\"" + accessToken + "\", \"refreshToken\":\"" + refreshToken + "\"}");
-                } catch (Exception e) {
-                    log.error("리디렉션 처리 중 오류 발생: ", e);
-                }
+                response.sendRedirect("/login/oauth2/code/google");
+
             }
         } catch (Exception e) {
             throw e;
@@ -58,13 +40,19 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     }
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-        String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
-        String refreshToken = jwtTokenProvider.createRefreshToken();
-        log.info("accessToken 확인 {}", accessToken);
-        response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + accessToken);
-        response.addHeader(jwtTokenProvider.getAccessHeader(), "Bearer " + refreshToken);
+        try {
+            // accessToken과 refreshToken 생성
+            String accessToken = jwtTokenProvider.createAccessToken(oAuth2User.getEmail(), oAuth2User.getUserId());
+            String refreshToken = jwtTokenProvider.createRefreshToken();
 
-        jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        jwtTokenProvider.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
+            // 응답 형식 설정 (JSON)
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            // accessToken과 refreshToken을 JSON 형태로 반환
+            response.getWriter().write("{\"accessToken\":\"" + accessToken + "\", \"refreshToken\":\"" + refreshToken + "\"}");
+        } catch (Exception e) {
+            log.error("로그인 성공 처리 중 오류 발생: ", e);
+        }
     }
 }
