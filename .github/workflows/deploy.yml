@@ -73,9 +73,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -t -i private_key.pem $USER@$HOST "mkdir -p /home/$USER/app"  
+          ssh -i private_key.pem $USER@$HOST "sudo mkdir -p /home/$USER/app"  
           # 서버 호스트 키를 known_hosts에 추가
-          mkdir -p ~/.ssh
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
           # 프로젝트 전송
           scp -i private_key.pem -r ./* $USER@$HOST:/home/$USER/app/
