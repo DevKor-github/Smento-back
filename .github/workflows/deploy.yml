@@ -93,5 +93,5 @@ jobs:
             sudo docker rm $CONTAINER_ID
           fi
 
-          sudo docker pull {{ secrets.DOCKER_IMAGE_NAME }}:latest
-          sudo docker run --name ${{ secrets.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul {{ secrets.DOCKER_IMAGE_NAME }}:latest
+          sudo docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          sudo docker run --name ${{ secrets.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ secrets.DOCKER_IMAGE_NAME }}:latest
