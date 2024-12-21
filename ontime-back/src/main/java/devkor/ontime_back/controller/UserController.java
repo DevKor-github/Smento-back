@@ -115,7 +115,7 @@ public class UserController {
             )),
             @ApiResponse(responseCode = "4XX", description = "사용자 여유시간 업데이트 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
-    @PutMapping("/update")
+    @PutMapping("/spare-time")
     public ResponseEntity<ApiResponseForm<?>> updateSetting(HttpServletRequest request, @RequestBody UpdateSpareTimeDto updateSpareTimeDto) {
         Long userId = userAuthService.getUserIdFromToken(request);
 
