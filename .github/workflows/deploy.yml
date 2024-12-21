@@ -89,6 +89,11 @@ jobs:
         target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
         script: |
           cd /home/ubuntu/OnTime-back/ontime-back
+          CONTAINER_ID=$(sudo docker ps -aq --filter "name=ontime-container")
+          if [ ! -z "$CONTAINER_ID" ]; then
+          sudo docker stop $CONTAINER_ID
+          sudo docker rm $CONTAINER_ID
+          fi
           # 기존 컨테이너 중지 및 제거
           sudo docker-compose down || true
           # 소스 코드 빌드 및 컨테이너 실행
