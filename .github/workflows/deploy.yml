@@ -71,7 +71,12 @@ jobs:
           chmod 600 private_key.pem
           ssh -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo mkdir -p /home/${{ secrets.EC2_USER }}/app"  
           # 서버 호스트 키를 known_hosts에 추가
+          # 기존 키 제거
+          ssh-keygen -R ${{ secrets.EC2_HOST }}
+          # 키 재등록
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          # 등록된 키를 출력하여 확인 (디버깅용)
+          cat ~/.ssh/known_hosts
           # 프로젝트 전송
           scp -i private_key.pem -r ./* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/
           # SSH 접속하여 Docker Compose 실행
