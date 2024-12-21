@@ -19,9 +19,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      # # 3. Gradle Wrapper 검증
-      # - name: Set up Gradle
-      #   uses: gradle/wrapper-validation-action@v1
+      # 3. Gradle Wrapper 검증
+      - name: Set up Gradle
+        uses: gradle/wrapper-validation-action@v1
       # 4. application.properties 생성
       - name: Create application.properties
         run: |
