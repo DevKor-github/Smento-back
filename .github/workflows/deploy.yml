@@ -76,7 +76,7 @@ jobs:
           scp -i private_key.pem -r ./* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/
           # SSH 접속하여 Docker Compose 실행
           ssh -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-            cd /home/${{ secrets.EC2_USER }/app
+            cd /home/${{ secrets.EC2_USER }}/app
             docker-compose down
             docker-compose up --build -d
           EOF
