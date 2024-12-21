@@ -7,7 +7,7 @@ on:
       - dev/deploy1
 
 jobs:
-  build:
+  build-and-docker:
     runs-on: ubuntu-latest
     steps:
       # 1. 코드 체크아웃
@@ -63,29 +63,35 @@ jobs:
         run: |
           cd ontime-back  
           ./gradlew build -x test
+          
+      # 6. Docker Image 빌드
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
-      # 6. EC2 서버로 Docker Compose 파일과 jar 파일 전송
-      - name: Deploy to EC2
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 
-          sudo mkdir -p /home/${{ secrets.EC2_USER }}/app  
-          # 서버 호스트 키를 known_hosts에 추가
-          # 기존 키 제거
-          ssh-keygen -R ${{ secrets.EC2_HOST }}
-          # 키 재등록
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          # 등록된 키를 출력하여 확인 (디버깅용)
-          cat ~/.ssh/known_hosts
-          # 프로젝트 전송
-          scp -i private_key.pem -r ./* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/
-          # SSH 접속하여 Docker Compose 실행
-          ssh -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-            cd /home/${{ secrets.EC2_USER }}/app
-            docker-compose down
-            docker-compose up --build -d
-          EOF
-      # 7. 배포 완료 확인
-      - name: Verify Deployment
-        run: curl http://${{ secrets.EC2_HOST }}:8080/actuator/health
+      - name: Login to Docker Hub using Access Token
+        run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push the Docker image
+        run: docker push ${{ secrets.DOCKER_IMAGE_NAME }}:latest
+
+  deploy-to-ec2:
+    needs: build-and-docker
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
+
+          if [ ! -z "$CONTAINER_ID" ]; then
+            sudo docker stop $CONTAINER_ID
+            sudo docker rm $CONTAINER_ID
+          fi
+
+          # sudo docker pull ${{ secrets.DOCKER_HUB }}
+          # sudo docker run --name ${{ secrets.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ secrets.DOCKER_HUB }}
