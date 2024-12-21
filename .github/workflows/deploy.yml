@@ -66,7 +66,9 @@ jobs:
           
       # 6. Docker Image 빌드
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_IMAGE_NAME }}:latest
+        run: |
+          cd ontime-back
+          docker build ./ontime-back --file ./ontime-back/Dockerfile --tag ${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
       - name: Login to Docker Hub using Access Token
         run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
