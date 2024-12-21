@@ -66,16 +66,12 @@ jobs:
 
       # 6. EC2 서버로 Docker Compose 파일과 jar 파일 전송
       - name: Deploy to EC2
-        # env:
-          # SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          # HOST: ${{ secrets.EC2_HOST }}
-          # USER: ${{ secrets.EC2_USER }}
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo mkdir -p /home/${{ secrets.EC2_USER }}/app"  
           # 서버 호스트 키를 known_hosts에 추가
-          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
           # 프로젝트 전송
           scp -i private_key.pem -r ./* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/
           # SSH 접속하여 Docker Compose 실행
