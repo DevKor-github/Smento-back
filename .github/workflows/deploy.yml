@@ -86,9 +86,9 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         source: ./ # 현재 GitHub Actions의 소스 코드 디렉토리
-        target: /home/ubuntu/your-project/ # EC2 서버에 업로드될 디렉토리
+        target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
         script: |
-          cd /home/ec2-user/your-project/
+          cd /home/ubuntu/OnTime-back/
           # 기존 컨테이너 중지 및 제거
           sudo docker-compose down || true
           # 소스 코드 빌드 및 컨테이너 실행
