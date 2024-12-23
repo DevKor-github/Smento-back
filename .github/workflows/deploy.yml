@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: ./src/main/resources/application.properties
-          target: /home/ubuntu/OnTime-back/ontime-back/src/main/resources/
+          target: /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
       # 5. Gradle 빌드
       - name: Build with Gradle
         run: |
