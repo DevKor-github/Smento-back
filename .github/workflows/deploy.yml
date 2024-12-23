@@ -25,6 +25,7 @@ jobs:
       # 4. application.properties 생성
       - name: Create application.properties
         run: |
+          mkdir -p src/main/resources
           cat <<EOF > src/main/resources/application.properties
           spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}
           spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
