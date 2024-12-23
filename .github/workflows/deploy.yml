@@ -25,8 +25,8 @@ jobs:
       # 4. application.properties 생성
       - name: Create application.properties
         run: |
-          mkdir -p src/main/resources
-          cat <<EOF > src/main/resources/application.properties
+          mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources
+          cat <<EOF > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
           spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}
           spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
           spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
@@ -61,7 +61,7 @@ jobs:
           management.endpoint.health.show-details=always
           EOF
       - name: Check application.properties
-        run: cat src/main/resources/application.properties
+        run: cat /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
       # 5. Gradle 빌드
       - name: Build with Gradle
         run: |
