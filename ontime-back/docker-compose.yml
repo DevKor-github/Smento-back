@@ -13,8 +13,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container-ontime:3306/ontime_db
       SPRING_DATASOURCE_USERNAME: ontime
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-#    volumes:
-#      - /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties:/app/src/main/resources/application.properties
+    volumes:
+      - /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties:/app/src/main/resources/application.properties
     depends_on:
       - mysql # mysql 서비스가 실행된 이후에 backend를 실행
 
