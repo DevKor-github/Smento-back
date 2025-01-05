@@ -101,6 +101,8 @@ jobs:
           # 소스 코드 빌드 및 컨테이너 실행
           sudo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
           MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+          ONTIME_PASSWORD=${{ secrets.ONTIME_PASSWORD }} \
+          ONTIME_HOST=${{ secrets.ONTIME_HOST }} \
           SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
           SPRING_APPLICATION_NAME=${{ secrets.SPRING_APPLICATION_NAME }} \
           SPRING_JPA_HIBERNATE_DDL_AUTO=create \
