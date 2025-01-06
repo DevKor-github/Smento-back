@@ -23,8 +23,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
       # 4. application.properties 생성
-      - name: Print working directory
-        run: pwd
       - name: Create application.properties
         run: |
           mkdir -p src/main/resources
@@ -60,16 +58,15 @@ jobs:
           echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
           echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
-      - name: Check application.properties
-        run: cat src/main/resources/application.properties
-      - name: Upload application.properties to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: ./src/main/resources/application.properties
-          target: /home/ubuntu/OnTime-back/ontime-back
+      # # 4. application.properties EC2 배포
+      # - name: Upload application.properties to EC2
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USER }}
+      #     key: ${{ secrets.EC2_SSH_KEY }}
+      #     source: ./src/main/resources/application.properties
+      #     target: /home/ubuntu/OnTime-back/ontime-back
       # 5. Gradle 빌드
       - name: Build with Gradle
         run: |
