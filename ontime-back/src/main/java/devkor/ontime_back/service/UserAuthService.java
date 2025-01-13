@@ -40,6 +40,7 @@ public class UserAuthService {
     }
 
     // 자체 로그인 회원가입
+    @Transactional
     public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {

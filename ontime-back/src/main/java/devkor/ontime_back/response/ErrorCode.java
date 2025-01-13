@@ -26,6 +26,7 @@ public enum ErrorCode {
     PASSWORD_INCORRECT("1008", "기존 비밀번호가 틀렸습니다.", HttpStatus.BAD_REQUEST),
     SAME_PASSWORD("1009", "새 비밀번호와 기존 비밀번호가 일치합니다.", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_FOUND("1010", "해당 약속이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+    FIREBASE("1011", "FIREBASE로 메세지를 발송하였으나 오류가 발생했습니다.(유효하지 않은 토큰 등)", HttpStatus.BAD_REQUEST),
 
     // 공통 오류 메시지
     UNEXPECTED_ERROR("1000", "Unexpected Error: An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR);
