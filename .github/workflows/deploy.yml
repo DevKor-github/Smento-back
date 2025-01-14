@@ -78,14 +78,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
+    - name: Upload files to EC2
+      uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         source: ./ # 현재 GitHub Actions의 소스 코드 디렉토리
         target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
+        
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
         debug: true
         script: |
           mkdir -p /home/ubuntu/OnTime-back/ontime-back
