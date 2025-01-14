@@ -42,7 +42,6 @@ public class NotificationService {
     }
 
     private void sendNotificationToUser(Schedule schedule, String message) {
-        // 사용자 디바이스로 알림을 보내는 로직으로 변환 해야함. (예: FCM 사용)
         User user = schedule.getUser();
         String firebaseToken = user.getFirebaseToken();
 
