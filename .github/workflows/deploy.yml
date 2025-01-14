@@ -87,6 +87,7 @@ jobs:
         source: ./ # 현재 GitHub Actions의 소스 코드 디렉토리
         target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
         script: |
+          mkdir -p /home/ubuntu/OnTime-back/ontime-back
           cd /home/ubuntu/OnTime-back/ontime-back
           CONTAINER_ID=$(sudo docker ps -aq --filter "name=ontime-container")
           if [ ! -z "$CONTAINER_ID" ]; then
