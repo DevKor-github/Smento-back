@@ -93,7 +93,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: /home/runner/work/OnTime-back/OnTime-back/
+        source: /home/runner/work/OnTime-back/OnTime-back
         target: /home/ubuntu/OnTime-back/ 
         debug: true
  
