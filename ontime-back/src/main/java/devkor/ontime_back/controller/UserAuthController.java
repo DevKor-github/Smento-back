@@ -48,10 +48,10 @@ public class UserAuthController {
     })
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponseForm<UserSignUpResponse>> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
-        Long userId = userAuthService.signUp(userSignUpDto);
+        User user = userAuthService.signUp(userSignUpDto);
 
         String message = "회원가입이 성공적으로 완료되었습니다. 추가 정보를 기입해주세요( {userId}/additional-info )";
-        return ResponseEntity.ok(ApiResponseForm.success(new UserSignUpResponse(userId), message));
+        return ResponseEntity.ok(ApiResponseForm.success(new UserSignUpResponse(user.getId()), message));
     }
 
 
