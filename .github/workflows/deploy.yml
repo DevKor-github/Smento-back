@@ -88,7 +88,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: ./* # 현재 GitHub Actions의 소스 코드 디렉토리
+        source: ontime-back/ # 현재 GitHub Actions의 소스 코드 디렉토리
         target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
         debug: true
  
