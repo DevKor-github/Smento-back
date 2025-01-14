@@ -88,13 +88,13 @@ jobs:
     
     steps:
     - name: Upload files to EC2
-      uses: appleboy/scp-action@master
+      uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: /home/runner/work/OnTime-back/OnTime-back
-        target: /home/ubuntu/OnTime-back/ 
+        source: "*"
+        target: "/home/ubuntu/OnTime-back"
         debug: true
  
         
