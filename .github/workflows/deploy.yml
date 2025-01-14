@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - deploy
-      - dev/deploy1
 
 jobs:
   build-and-docker:
@@ -87,15 +86,15 @@ jobs:
 
     
     steps:
-    - name: Upload files to EC2
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "*"
-        target: "/home/ubuntu/OnTime-back"
-        debug: true
+    # - name: Upload files to EC2
+    #   uses: appleboy/scp-action@v0.1.7
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USER }}
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     source: "*"
+    #     target: "/home/ubuntu/OnTime-back"
+    #     debug: true
  
         
     - name: Deploy to EC2
