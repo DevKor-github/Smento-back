@@ -15,7 +15,12 @@ jobs:
         uses: actions/checkout@v3
         
       - name: List files in Runner
-        run: ls -la
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents of the directory:"
+          ls -la
+          
       # 2. JDK 설치
       - name: Set up JDK 21 # 실행 환경에서 사용 중인 JDK 확인 (java -version)
         uses: actions/setup-java@v2
@@ -88,8 +93,8 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: ontime-back/ # 현재 GitHub Actions의 소스 코드 디렉토리
-        target: /home/ubuntu/OnTime-back/ # EC2 서버에 업로드될 디렉토리
+        source: ./ 
+        target: /home/ubuntu/OnTime-back/ 
         debug: true
  
         
