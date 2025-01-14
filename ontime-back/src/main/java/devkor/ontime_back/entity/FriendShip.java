@@ -18,7 +18,7 @@ public class FriendShip {
     private Long requesterId;
 
     @Column(nullable = false)
-    private Long recieverId;
+    private Long receiverId;
 
     private String status;
 }

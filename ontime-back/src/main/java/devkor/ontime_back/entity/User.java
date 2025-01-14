@@ -57,10 +57,13 @@ public class User {
     @Setter
     private String firebaseToken;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserSetting userSetting;
+
     @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
     private List<FriendShip> requestedFriendship = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receivedId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL)
     private List<FriendShip> receivedFriendship = new ArrayList<>();
 
     public void updateAdditionalInfo(Integer spareTime, String note) {
@@ -99,4 +102,9 @@ public class User {
 
     //여유 시간 업데이트
     public void updateSpareTime(Integer newSpareTime) { this.spareTime = newSpareTime; }
+
+    //유저세팅과 연결
+    public void setUserSetting(UserSetting userSetting) {
+        this.userSetting = userSetting;
+    }
 }

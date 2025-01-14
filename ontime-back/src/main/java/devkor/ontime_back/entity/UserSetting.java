@@ -20,7 +20,6 @@ public class UserSetting {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user; // 사용자 ID (외래 키)
 
     @Column(nullable = false)

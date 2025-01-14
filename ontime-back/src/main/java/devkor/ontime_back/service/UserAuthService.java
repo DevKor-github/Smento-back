@@ -41,7 +41,7 @@ public class UserAuthService {
 
     // 자체 로그인 회원가입
     @Transactional
-    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public User signUp(UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new GeneralException(ErrorCode.EMAIL_ALREADY_EXIST);
@@ -66,10 +66,8 @@ public class UserAuthService {
                 .scheduleCountAfterReset(0)
                 .latenessCountAfterReset(0)
                 .build();
-
         // 비밀번호 암호화 후 저장
         user.passwordEncode(passwordEncoder);
-        userRepository.save(user);
 
         // 사용자 앱 설정 세팅(pk와 fk만 세팅, 나머지는 디폴트설정값(엔티티에 정의)으로 생성됨)
         UserSetting userSetting = UserSetting.builder()
@@ -77,8 +75,10 @@ public class UserAuthService {
                 .user(user)
                 .build();
 
-        userSettingRepository.save(userSetting);
-        return user.getId();
+        user.setUserSetting(userSetting);
+        userRepository.save(user);
+
+        return user;
     }
 
     public void addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
