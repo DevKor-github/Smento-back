@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -53,6 +56,12 @@ public class User {
 
     @Setter
     private String firebaseToken;
+
+    @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
+    private List<FriendShip> requestedFriendship = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receivedId", cascade = CascadeType.ALL)
+    private List<FriendShip> receivedFriendship = new ArrayList<>();
 
     public void updateAdditionalInfo(Integer spareTime, String note) {
         this.spareTime = spareTime;
