@@ -60,7 +60,7 @@ public class User {
     @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
     private List<FriendShip> requestedFriendship = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receivedId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL)
     private List<FriendShip> receivedFriendship = new ArrayList<>();
 
     public void updateAdditionalInfo(Integer spareTime, String note) {
