@@ -57,7 +57,6 @@ public class UserAuthService {
 
         // 자체 로그인시, USER로 설정
         User user = User.builder()
-                .id(userSignUpDto.getId())
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .name(userSignUpDto.getName())
