@@ -12,7 +12,7 @@ import devkor.ontime_back.repository.UserSettingRepository;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserAuthService {
@@ -75,22 +75,26 @@ public class UserAuthService {
                 .build();
 
         user.setUserSetting(userSetting);
+        userRepository.save(user); //CASCADE옵션 덕분에 userRepository만 save해주면 됨(userSettingRepository는 save안해줘도 부모인 user를 따라 저장됨)
+
+        return user;
+    }
+
+    @Transactional
+    public User addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저 id입니다."));
+        user.setSpareTime(userAdditionalInfoDto.getSpareTime());
+        user.setNote(userAdditionalInfoDto.getNote());
         userRepository.save(user);
 
         return user;
     }
 
-    public void addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("없는 유저 id임"));
-        user.setSpareTime(userAdditionalInfoDto.getSpareTime());
-        user.setNote(userAdditionalInfoDto.getNote());
-        userRepository.save(user);
-    }
-
-    public void changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+    @Transactional
+    public User changePassword(Long userId, ChangePasswordDto changePasswordDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저 id입니다."));
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
@@ -105,13 +109,18 @@ public class UserAuthService {
         // 새로운 비밀번호 저장
         user.updatePassword(changePasswordDto.getNewPassword(), passwordEncoder);
         userRepository.save(user);
+
+        return user;
     }
 
-    public void deleteUser(Long userId) {
+    @Transactional
+    public Long deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         userRepository.delete(user);
+
+        return userId;
     }
 
 }

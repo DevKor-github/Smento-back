@@ -12,8 +12,8 @@ public class TestSecurityConfig {
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("login/success", "/sign-up", "/*/additional-info").permitAll()
-                        .anyRequest().authenticated());
+                        //.requestMatchers("/login", "login/success", "/sign-up", "/*/additional-info").permitAll()
+                        .anyRequest().permitAll());
 
         return http.build();
     }
