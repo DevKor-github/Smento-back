@@ -2,11 +2,13 @@ package devkor.ontime_back;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import devkor.ontime_back.controller.UserAuthController;
+import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(
@@ -25,5 +27,11 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected UserRepository userRepository;
+
+    @MockBean
+    protected AuthenticationManager authenticationManager;
+
+    @MockBean
+    protected LoginSuccessHandler loginSuccessHandler;
 
 }
