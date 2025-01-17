@@ -56,8 +56,8 @@ class UserAuthServiceTest {
         // then
         assertThat(addedUser.getId()).isNotNull();
         assertThat(addedUser)
-                .extracting("email", "name")
-                .contains("user@example.com", "junbeom");
+                .extracting("email", "name", "punctualityScore", "scheduleCountAfterReset", "latenessCountAfterReset")
+                .contains("user@example.com", "junbeom", -1f, 0, 0);
         assertThat(passwordEncoder.matches("password1234", addedUser.getPassword())).isTrue();
         assertThat(userSetting).isNotNull();
         assertThat(userSetting.getUserSettingId())
@@ -190,9 +190,9 @@ class UserAuthServiceTest {
         assertThat(passwordEncoder.matches("password12345", passwordChangedUser.getPassword())).isTrue();
      }
 
-    @DisplayName("비밀번호 변경 시 존재하지 않는 유저를 인자로 넘기는 경우 예외가 발생한다.")
+    @DisplayName("비밀번호 변경 시 존재하지 않는 유저id를 인자로 넘기는 경우 예외가 발생한다.")
     @Test
-    void changePasswordWithWrongUser(){
+    void changePasswordWithWrongUserId(){
         // given(유저 데이터 하드저장 및 비밀번호 변경 DTO 생성)
         User addedUser = User.builder()
                 .email("user@example.com")

@@ -56,7 +56,7 @@ public class UserController {
         Long userId = userAuthService.getUserIdFromToken(request);
         float punctualityScore = userService.getPunctualityScore(userId); // -1 or float 0~100 반환
 
-        String message = "-1이면 성실도 점수 초기화 직후의 상태. 0~100의 float면 성실도 점수";
+        String message = "-1이면 성실도점수 초기화 직후의 상태. 0~100의 float 자료형이면 성실도 점수";
         return ResponseEntity.ok(ApiResponseForm.success(new PunctualityScoreResponse(punctualityScore), message));
     }
 

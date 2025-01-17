@@ -102,6 +102,7 @@ class UserAuthControllerTest extends ControllerTestSupport {
                 .newPassword("password12345")
                 .build();
 
+        when(userAuthService.getUserIdFromToken(any())).thenReturn(1L);
         // 원래 changePassword는 User객체를 반환하지만 컨트롤러에서는 반환값을 사용하지 않으므로 null로 설정하였음.
         when(userAuthService.changePassword(any(Long.class), any(ChangePasswordDto.class))).thenReturn(null);
 
@@ -122,8 +123,8 @@ class UserAuthControllerTest extends ControllerTestSupport {
     @Test
     void deleteUser() throws Exception {
         // given
-        // 원래 changePassword는 삭제된 유저의 Id를 반환하지만 컨트롤러에서는 반환값을 사용하지 않으므로 null로 설정하였음.
-        when(userAuthService.deleteUser(any(Long.class))).thenReturn(null);
+        when(userAuthService.getUserIdFromToken(any())).thenReturn(1L);
+        when(userAuthService.deleteUser(any(Long.class))).thenReturn(1L);
 
         // when // then
         mockMvc.perform(
