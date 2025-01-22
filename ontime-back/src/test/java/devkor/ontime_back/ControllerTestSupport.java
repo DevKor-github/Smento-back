@@ -1,6 +1,7 @@
 package devkor.ontime_back;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import devkor.ontime_back.controller.ScheduleController;
 import devkor.ontime_back.controller.UserAuthController;
 import devkor.ontime_back.controller.UserController;
 import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
@@ -17,7 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(
         controllers = {
                 UserAuthController.class,
-                UserController.class
+                UserController.class,
+                ScheduleController.class
         }
 )
 public abstract class ControllerTestSupport {
