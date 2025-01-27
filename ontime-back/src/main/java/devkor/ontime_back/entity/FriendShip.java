@@ -32,4 +32,9 @@ public class FriendShip {
         this.receiverId = receiverId;
         this.status = status;
     }
+
+    public void setReceiverId(Long recieverId) {
+        this.receiverId = recieverId;
+    }
+
 }
