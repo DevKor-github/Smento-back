@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class FriendshipService {
         FriendShip friendShip = FriendShip.builder()
                 .friendShipId(friendShipId)
                 .requesterId(requesterId)
-                .status("PENDING")
+                .acceptStatus("PENDING")
                 .build();
         friendshipRepository.save(friendShip);
 
@@ -38,9 +39,9 @@ public class FriendshipService {
 
 
     @Transactional
-    public User getFriendRequester(Long recieverId, UUID friendshipId) {
+    public User getFriendRequester(Long receiverId, UUID friendshipId) {
 
-        userRepository.findById(recieverId)
+        userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
 
         FriendShip friendShip = friendshipRepository.findByFriendShipId(friendshipId)
@@ -48,11 +49,56 @@ public class FriendshipService {
 
 
         // UUID로 조회한 FriendShip 데이터에 수신자 ID 세팅
-        friendShip.setReceiverId(recieverId);
+        friendShip.setReceiverId(receiverId);
         friendshipRepository.save(friendShip);
 
         // UUID로 조회한 FriendShip 데이터의 요청자 조회 및 반환
         return userRepository.findById(friendShip.getRequesterId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구추가 요청자 id입니다. 해당 유저가 탈퇴했을 수 있습니다."));
     }
+
+    @Transactional
+    public void updateAcceptStatus(Long receiverId, UUID friendshipId, String acceptStatus) {
+
+        userRepository.findById(receiverId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
+
+        FriendShip friendShip = friendshipRepository.findByFriendShipId(friendshipId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 요청입니다."));
+
+        System.out.println(friendShip);
+        System.out.println(friendShip.getReceiverId());
+
+        if (!friendShip.getReceiverId().equals(receiverId)) {
+            throw new IllegalArgumentException("수신자 ID가 친구관계 ID와 매칭되지 않습니다.");
+        }
+
+        friendShip.setAcceptStatus(acceptStatus);
+        friendshipRepository.save(friendShip);
+    }
+
+    // 친구 목록 조회
+    // 친구 요청자와 수신자에서 각각 ACCEPTED 상태인 친구관계를 조회하여 친구목록을 반환
+    public List<User> getFriendList(Long userId) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
+
+        List<FriendShip> friendShips = friendshipRepository.findByRequesterIdAndAcceptStatus(userId, "ACCEPTED");
+        List<User> friendList = new java.util.ArrayList<>(friendShips.stream()
+                .map(friendShip -> userRepository.findById(friendShip.getReceiverId())
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다.")))
+                .toList());
+
+        List<FriendShip> friendShips2 = friendshipRepository.findByReceiverIdAndAcceptStatus(userId, "ACCEPTED");
+        List<User> friendList2 = friendShips2.stream()
+                .map(friendShip -> userRepository.findById(friendShip.getRequesterId())
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다.")))
+                .toList();
+
+        friendList.addAll(friendList2);
+
+        return friendList;
+    }
+
 }

@@ -23,18 +23,21 @@ public class FriendShip {
     @Column
     private Long receiverId;
 
-    private String status; // "PENDING", "ACCEPTED", "REJECTED"
+    private String acceptStatus; // "PENDING", "ACCEPTED", "REJECTED"
 
     @Builder
-    public FriendShip(UUID friendShipId, Long requesterId, Long receiverId, String status) {
+    public FriendShip(UUID friendShipId, Long requesterId, Long receiverId, String acceptStatus) {
         this.friendShipId = friendShipId;
         this.requesterId = requesterId;
         this.receiverId = receiverId;
-        this.status = status;
+        this.acceptStatus = acceptStatus;
     }
 
     public void setReceiverId(Long recieverId) {
         this.receiverId = recieverId;
     }
 
+    public void setAcceptStatus(String acceptStatus) {
+        this.acceptStatus = acceptStatus;
+    }
 }
