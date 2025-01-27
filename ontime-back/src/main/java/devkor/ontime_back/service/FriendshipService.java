@@ -1,6 +1,8 @@
 package devkor.ontime_back.service;
 
+import devkor.ontime_back.dto.FriendDto;
 import devkor.ontime_back.entity.FriendShip;
+import devkor.ontime_back.entity.GetFriendListResponse;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.FriendshipRepository;
 import devkor.ontime_back.repository.UserRepository;
@@ -9,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,12 +36,12 @@ public class FriendshipService {
                 .build();
         friendshipRepository.save(friendShip);
 
-        return "http://ontime.com/friendship/" + friendShipId;
+        return String.valueOf(friendShipId);
     }
 
 
     @Transactional
-    public User getFriendRequester(Long receiverId, UUID friendshipId) {
+    public User getFriendShipRequester(Long receiverId, UUID friendshipId) {
 
         userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
@@ -66,9 +68,6 @@ public class FriendshipService {
         FriendShip friendShip = friendshipRepository.findByFriendShipId(friendshipId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 요청입니다."));
 
-        System.out.println(friendShip);
-        System.out.println(friendShip.getReceiverId());
-
         if (!friendShip.getReceiverId().equals(receiverId)) {
             throw new IllegalArgumentException("수신자 ID가 친구관계 ID와 매칭되지 않습니다.");
         }
@@ -79,24 +78,32 @@ public class FriendshipService {
 
     // 친구 목록 조회
     // 친구 요청자와 수신자에서 각각 ACCEPTED 상태인 친구관계를 조회하여 친구목록을 반환
-    public List<User> getFriendList(Long userId) {
+    public List<FriendDto> getFriendList(Long userId) {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
 
         List<FriendShip> friendShips = friendshipRepository.findByRequesterIdAndAcceptStatus(userId, "ACCEPTED");
-        List<User> friendList = new java.util.ArrayList<>(friendShips.stream()
-                .map(friendShip -> userRepository.findById(friendShip.getReceiverId())
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다.")))
-                .toList());
+        List<FriendDto> friendList = friendShips.stream()
+                .map(friendShip -> {
+                    User user = userRepository.findById(friendShip.getReceiverId())
+                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다."));
+                    return new FriendDto(user.getId(), user.getName(), user.getEmail());
+                })
+                .collect(Collectors.toList());
 
         List<FriendShip> friendShips2 = friendshipRepository.findByReceiverIdAndAcceptStatus(userId, "ACCEPTED");
-        List<User> friendList2 = friendShips2.stream()
-                .map(friendShip -> userRepository.findById(friendShip.getRequesterId())
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다.")))
-                .toList();
+        List<FriendDto> friendList2 = friendShips2.stream()
+                .map(friendShip -> {
+                    User user = userRepository.findById(friendShip.getRequesterId())
+                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 id입니다."));
+                    return new FriendDto(user.getId(), user.getName(), user.getEmail());
+                })
+                .collect(Collectors.toList());
 
         friendList.addAll(friendList2);
+
+        System.out.println("friendList: " + friendList);
 
         return friendList;
     }

@@ -1,11 +1,13 @@
 package devkor.ontime_back;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import devkor.ontime_back.controller.FriendShipController;
 import devkor.ontime_back.controller.ScheduleController;
 import devkor.ontime_back.controller.UserAuthController;
 import devkor.ontime_back.controller.UserController;
 import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
 import devkor.ontime_back.repository.UserRepository;
+import devkor.ontime_back.service.FriendshipService;
 import devkor.ontime_back.service.ScheduleService;
 import devkor.ontime_back.service.UserAuthService;
 import devkor.ontime_back.service.UserService;
@@ -19,7 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
         controllers = {
                 UserAuthController.class,
                 UserController.class,
-                ScheduleController.class
+                ScheduleController.class,
+                FriendShipController.class
         }
 )
 public abstract class ControllerTestSupport {
@@ -37,6 +40,12 @@ public abstract class ControllerTestSupport {
     protected UserService userService;
 
     @MockBean
+    protected ScheduleService scheduleService;
+
+    @MockBean
+    protected FriendshipService friendshipService;
+
+    @MockBean
     protected UserRepository userRepository;
 
     @MockBean
@@ -44,8 +53,5 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected LoginSuccessHandler loginSuccessHandler;
-
-    @MockBean
-    protected ScheduleService scheduleService;
 
 }
