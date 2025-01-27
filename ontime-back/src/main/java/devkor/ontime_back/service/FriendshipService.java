@@ -103,8 +103,6 @@ public class FriendshipService {
 
         friendList.addAll(friendList2);
 
-        System.out.println("friendList: " + friendList);
-
         return friendList;
     }
 

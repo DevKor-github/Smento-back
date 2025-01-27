@@ -45,8 +45,8 @@ class FriendShipControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("친구추가 링크 생성 성공. 반환되는 UUID로 친구추가 요청 데이터를 조회하고, 친구추가 요청을 수락하거나 거절할 수 있음."))
-                .andExpect(jsonPath("$.data").value(String.valueOf(uuid)));
+                .andExpect(jsonPath("$.message").value("친구추가 링크 생성 및 반환 성공. 반환되는 UUID로 친구추가 요청 데이터를 조회하고, 친구추가 요청을 수락하거나 거절할 수 있음."))
+                .andExpect(jsonPath("$.data.friendShipId").value(uuid.toString()));
     }
 
     @DisplayName("친구추가 요청자 조회에 성공한다")
@@ -73,7 +73,7 @@ class FriendShipControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("친구추가 요청자 조회 성공. 친구추가 요청자의 ID 반환"))
+                .andExpect(jsonPath("$.message").value("친구추가 요청자 조회 성공"))
                 .andExpect(jsonPath("$.data.requesterId").value(1))
                 .andExpect(jsonPath("$.data.requesterName").value("junbeom"))
                 .andExpect(jsonPath("$.data.requesterEmail").value("user@example.com"));
@@ -88,7 +88,7 @@ class FriendShipControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/friends/accept/" + UUID.randomUUID())
+                        post("/friends/update-status/" + UUID.randomUUID())
                                 .content("{\"acceptStatus\": \"ACCEPTED\"}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -108,7 +108,7 @@ class FriendShipControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/friends/accept/" + UUID.randomUUID())
+                        post("/friends/update-status/" + UUID.randomUUID())
                                 .content("{\"acceptStatus\": \"REJECTED\"}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
