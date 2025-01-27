@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.sql.Time;
 
+@ToString
 @Getter
 public class UserAdditionalInfoDto {
     private Integer spareTime;  // 여유시간

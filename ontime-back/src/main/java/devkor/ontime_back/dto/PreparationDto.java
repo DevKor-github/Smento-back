@@ -17,4 +17,13 @@ public class PreparationDto {
 
     private UUID nextPreparationId;
 
+    @Override
+    public String toString() {
+        return "PreparationDto{" +
+                "preparationId=" + preparationId +
+                ", preparationName='" + preparationName + '\'' +
+                ", preparationTime=" + preparationTime +
+                ", nextPreparationId=" + nextPreparationId +
+                '}';
+    }
 }
