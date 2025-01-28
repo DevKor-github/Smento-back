@@ -29,7 +29,7 @@ public class UserAuthController {
     private final UserRepository userRepository;
 
     @Operation(
-            summary = "일반 회원가입",
+            summary = "일반 회원가입 (회원가입 시 자동으로 로그인도 되어 헤더에 JWT토큰을 반환함)",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "회원가입 요청 JSON 데이터",
                     required = true,
@@ -42,7 +42,7 @@ public class UserAuthController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"회원가입이 성공적으로 완료되었습니다. 추가 정보를 기입해주세요( {userId}/additional-info )\",\n  \"data\": {\n    \"userId\": 1\n  }}"
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"회원가입이 성공적으로 완료되었습니다. 온보딩을 진행해주세요( /user/onboarding )\",\n  \"data\": {\n    \"userId\": 1\n  }}"
                     )
             )),
             @ApiResponse(responseCode = "4XX", description = "회원가입 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(이메일이 이미 존재할 경우, 이름이 이미 존재할 경우 다르게 출력)")))
@@ -51,14 +51,14 @@ public class UserAuthController {
     public ResponseEntity<ApiResponseForm<UserSignUpResponse>> signUp(HttpServletRequest request, HttpServletResponse response, @RequestBody UserSignUpDto userSignUpDto) throws Exception {
         User user = userAuthService.signUp(request, response, userSignUpDto);
 
-        String message = "회원가입이 성공적으로 완료되었습니다. 추가 정보를 기입해주세요( {userId}/additional-info )";
+        String message = "회원가입이 성공적으로 완료되었습니다. 온보딩을 진행해주세요( /user/onboarding )";
         return ResponseEntity.ok(ApiResponseForm.success(new UserSignUpResponse(user.getId()), message));
     }
 
 
     @Operation(summary = "일반 로그인 (로그인 요청을 통해 JWT 토큰을 발급받음)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "일반 로그인 성공(반환 문자열 없음. 헤더에 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(example = " "))),
+            @ApiResponse(responseCode = "200", description = "일반 로그인 성공(반환 문자열 없음. 헤더에 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(example = "{\n  \"message\": \"유저의 ROLE이 GUEST이므로 온보딩API를 호출해 온보딩을 진행해야합니다.\", \"role\": \"GUEST\"}"))),
             @ApiResponse(responseCode = "4XX", description = "일반 로그인 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
     })
     @PostMapping("/login")
@@ -135,38 +135,6 @@ public class UserAuthController {
         userAuthService.deleteUser(userId);
 
         String message = "계정이 성공적으로 삭제되었습니다!";
-        return ResponseEntity.ok(ApiResponseForm.success(null, message));
-    }
-
-
-    @Operation(
-            summary = "추가 정보 기입 (일반 회원가입 직후 추가 정보 기입)",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "추가 정보 기입 요청 JSON 데이터",
-                    required = true,
-                    content = @Content(
-                            schema = @Schema(
-                                    type = "object",
-                                    example = "{\"spareTime\": 10, \"note\": \"이번엔 약속 꼭 지켜보자!\"}"
-                            )
-                    )
-            )
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "추가 정보 기입 성공", content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"추가 정보가 성공적으로 기입되었습니다!\",\n  \"data\": null\n}"
-                    )
-            )),
-            @ApiResponse(responseCode = "4XX", description = "추가 정보 기입 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(토큰 오류 제외 비즈니스 로직 오류는 없음)")))
-    })
-    @PutMapping("/{userId}/additional-info")
-    public ResponseEntity<ApiResponseForm<?>> addInfo(
-            @PathVariable Long userId, @RequestBody UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
-        userAuthService.addInfo(userId, userAdditionalInfoDto);
-
-        String message = "추가 정보가 성공적으로 기입되었습니다!";
         return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 

@@ -53,10 +53,11 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
 
+                        String msg = user.getRole().name().equals("GUEST") ? "유저의 ROLE이 GUEST이므로 온보딩API를 호출해 온보딩을 진행해야합니다." : "로그인에 성공하였습니다.";
                         // JSON 응답 생성
                         String responseBody = String.format(
-                                "{\"email\": \"%s\", \"role\": \"%s\"}",
-                                email, user.getRole().name()
+                                "{\"message\": \"%s\", \"role\": \"%s\"}",
+                                msg, user.getRole().name()
                         );
 
                         // 응답 바디에 작성
