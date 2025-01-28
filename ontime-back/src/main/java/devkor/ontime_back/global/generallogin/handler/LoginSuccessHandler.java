@@ -4,6 +4,7 @@ import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.persister.entity.EntityNameUse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,6 +46,25 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                     log.info("로그인에 성공하였습니다. 이메일 : {}", email);
                     log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);
                     log.info("발급된 AccessToken 만료 기간 : {}", accessTokenExpiration);
+
+
+                    try {
+                        // 응답 Content-Type 설정
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+
+                        // JSON 응답 생성
+                        String responseBody = String.format(
+                                "{\"email\": \"%s\", \"role\": \"%s\"}",
+                                email, user.getRole().name()
+                        );
+
+                        // 응답 바디에 작성
+                        response.getWriter().write(responseBody);
+                        response.getWriter().flush();
+                    } catch (IOException e) {
+                        log.error("응답 바디 작성 중 오류 발생", e);
+                    }
                 });
     }
 

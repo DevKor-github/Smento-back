@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +48,8 @@ public class UserAuthController {
             @ApiResponse(responseCode = "4XX", description = "회원가입 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(이메일이 이미 존재할 경우, 이름이 이미 존재할 경우 다르게 출력)")))
     })
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponseForm<UserSignUpResponse>> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
-        User user = userAuthService.signUp(userSignUpDto);
+    public ResponseEntity<ApiResponseForm<UserSignUpResponse>> signUp(HttpServletRequest request, HttpServletResponse response, @RequestBody UserSignUpDto userSignUpDto) throws Exception {
+        User user = userAuthService.signUp(request, response, userSignUpDto);
 
         String message = "회원가입이 성공적으로 완료되었습니다. 추가 정보를 기입해주세요( {userId}/additional-info )";
         return ResponseEntity.ok(ApiResponseForm.success(new UserSignUpResponse(user.getId()), message));
