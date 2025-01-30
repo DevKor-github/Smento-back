@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -33,12 +36,10 @@ public class User {
     @Column(columnDefinition = "TEXT") // 명시적으로 TEXT 타입으로 정의
     private String note; // 주의사항
 
-    @Setter
     private Float punctualityScore; // 성실도 점수
 
-    @Setter
     private Integer scheduleCountAfterReset; // 성실도 점수 초기화 이후 약속 개수
-    @Setter
+
     private Integer latenessCountAfterReset; // 성실도 점수 초기화 이후 지각한 약속 개수
 
     @Enumerated(EnumType.STRING)
@@ -53,6 +54,15 @@ public class User {
 
     @Setter
     private String firebaseToken;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserSetting userSetting;
+
+    @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
+    private List<FriendShip> requestedFriendship = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL)
+    private List<FriendShip> receivedFriendship = new ArrayList<>();
 
     public void updateAdditionalInfo(Integer spareTime, String note) {
         this.spareTime = spareTime;
@@ -89,5 +99,24 @@ public class User {
     }
 
     //여유 시간 업데이트
-    public void updateSpareTime(Integer newSpareTime) { this.spareTime = newSpareTime; }
+    public void setSpareTime(Integer newSpareTime) { this.spareTime = newSpareTime; }
+
+    //유저세팅과 연결
+    public void setUserSetting(UserSetting userSetting) {
+        this.userSetting = userSetting;
+    }
+
+    // 약속 수 초기화 및 설정
+    public void setScheduleCountAfterReset(Integer scheduleCount) {
+        this.scheduleCountAfterReset = scheduleCount;
+    }
+
+    // 지각 수 초기화 및 설정
+    public void setLatenessCountAfterReset(Integer latenessCount) {
+        this.latenessCountAfterReset = latenessCount;
+    }
+
+    public void setPunctualityScore(float punctualityScore) {
+        this.punctualityScore = punctualityScore;
+    }
 }

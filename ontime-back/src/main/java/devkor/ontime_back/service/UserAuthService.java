@@ -1,5 +1,6 @@
 package devkor.ontime_back.service;
 
+import com.google.api.Http;
 import devkor.ontime_back.dto.ChangePasswordDto;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
@@ -12,7 +13,8 @@ import devkor.ontime_back.repository.UserSettingRepository;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserAuthService {
@@ -41,7 +43,7 @@ public class UserAuthService {
 
     // 자체 로그인 회원가입
     @Transactional
-    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public User signUp(HttpServletRequest request, HttpServletResponse response, UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new GeneralException(ErrorCode.EMAIL_ALREADY_EXIST);
@@ -57,19 +59,16 @@ public class UserAuthService {
 
         // 자체 로그인시, USER로 설정
         User user = User.builder()
-                .id(userSignUpDto.getId())
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .name(userSignUpDto.getName())
-                .role(Role.USER)
+                .role(Role.GUEST)
                 .punctualityScore((float)-1)
                 .scheduleCountAfterReset(0)
                 .latenessCountAfterReset(0)
                 .build();
-
         // 비밀번호 암호화 후 저장
         user.passwordEncode(passwordEncoder);
-        userRepository.save(user);
 
         // 사용자 앱 설정 세팅(pk와 fk만 세팅, 나머지는 디폴트설정값(엔티티에 정의)으로 생성됨)
         UserSetting userSetting = UserSetting.builder()
@@ -77,21 +76,35 @@ public class UserAuthService {
                 .user(user)
                 .build();
 
-        userSettingRepository.save(userSetting);
-        return user.getId();
+        user.setUserSetting(userSetting);
+        userRepository.save(user); //CASCADE옵션 덕분에 userRepository만 save해주면 됨(userSettingRepository는 save안해줘도 부모인 user를 따라 저장됨)
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+
+        jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+
+        user.updateRefreshToken(refreshToken);
+        userRepository.saveAndFlush(user);
+
+        return user;
     }
 
-    public void addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
+    @Transactional
+    public User addInfo(Long id, UserAdditionalInfoDto userAdditionalInfoDto) throws Exception {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("없는 유저 id임"));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저 id입니다."));
         user.setSpareTime(userAdditionalInfoDto.getSpareTime());
         user.setNote(userAdditionalInfoDto.getNote());
         userRepository.save(user);
+
+        return user;
     }
 
-    public void changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+    @Transactional
+    public User changePassword(Long userId, ChangePasswordDto changePasswordDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저 id입니다."));
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
@@ -106,13 +119,18 @@ public class UserAuthService {
         // 새로운 비밀번호 저장
         user.updatePassword(changePasswordDto.getNewPassword(), passwordEncoder);
         userRepository.save(user);
+
+        return user;
     }
 
-    public void deleteUser(Long userId) {
+    @Transactional
+    public Long deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         userRepository.delete(user);
+
+        return userId;
     }
 
 }

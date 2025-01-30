@@ -9,7 +9,7 @@ import devkor.ontime_back.repository.*;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -78,6 +78,7 @@ public class ScheduleService {
     }
 
     // 약속 삭제
+    @Transactional
     public void deleteSchedule(UUID scheduleId, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
         // schedule을 만든 userId인지 확인
@@ -88,6 +89,7 @@ public class ScheduleService {
     }
 
     // 약속 수정
+    @Transactional
     public void modifySchedule(Long userId, ScheduleModDto scheduleModDto) {
         // schedule 확인
         Schedule schedule = scheduleRepository.findById(scheduleModDto.getScheduleId()).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleModDto.getScheduleId() + " not found."));
@@ -114,6 +116,7 @@ public class ScheduleService {
     }
 
     // 약속 추가
+    @Transactional
     public void addSchedule(ScheduleAddDto scheduleAddDto, Long userId) {
         // user 확인
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
@@ -145,6 +148,7 @@ public class ScheduleService {
     }
 
     // 버튼 누름
+    @Transactional
     public void checkIsStarted(UUID scheduleId, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
@@ -170,6 +174,7 @@ public class ScheduleService {
     }
 
     // 지각 시간 업데이트
+    @Transactional
     public void updateLatenessTime(FinishPreparationDto finishPreparationDto) {
         UUID scheduleId = finishPreparationDto.getScheduleId();
         Integer latenessTime = finishPreparationDto.getLatenessTime();

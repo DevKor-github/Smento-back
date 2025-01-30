@@ -56,7 +56,7 @@ public class UserController {
         Long userId = userAuthService.getUserIdFromToken(request);
         float punctualityScore = userService.getPunctualityScore(userId); // -1 or float 0~100 반환
 
-        String message = "-1이면 성실도 점수 초기화 직후의 상태. 0~100의 float면 성실도 점수";
+        String message = "-1이면 성실도점수 초기화 직후의 상태. 0~100의 float 자료형이면 성실도 점수";
         return ResponseEntity.ok(ApiResponseForm.success(new PunctualityScoreResponse(punctualityScore), message));
     }
 
@@ -122,6 +122,39 @@ public class UserController {
         userService.updateSpareTime(userId, updateSpareTimeDto);
 
         String message = "사용자 여유시간이 성공적으로 업데이트되었습니다!";
+        return ResponseEntity.ok(ApiResponseForm.success(null, message));
+    }
+
+
+    @Operation(
+            summary = "온보딩 (여유시간, 잊으면 안될 것들, 준비과정 첫 세팅)",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "온보딩 요청 JSON 데이터",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\n  \"spareTime\": 30,\n  \"note\": \"내 인생에 지각은 없다!!!\",\n  \"preparationList\": [\n    {\n      \"preparationId\": \"123e4567-e89b-12d3-a456-426614174011\",\n      \"preparationName\": \"기상하기\",\n      \"preparationTime\": 10,\n      \"nextPreparationId\": \"123e4567-e89b-12d3-a456-426614174012\"\n    },\n    {\n      \"preparationId\": \"123e4567-e89b-12d3-a456-426614174012\",\n      \"preparationName\": \"세수하기\",\n      \"preparationTime\": 10,\n      \"nextPreparationId\": \"123e4567-e89b-12d3-a456-426614174013\"\n    },\n    {\n      \"preparationId\": \"123e4567-e89b-12d3-a456-426614174013\",\n      \"preparationName\": \"화장하기\",\n      \"preparationTime\": 10,\n      \"nextPreparationId\": null\n    }\n  ]\n}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "온보딩 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"온보딩이 성공적으로 완료되었습니다!\",\n  \"data\": null\n}"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "온보딩 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(토큰 오류 제외 비즈니스 로직 오류는 없음)")))
+    })
+    @PutMapping("/onboarding")
+    public ResponseEntity<ApiResponseForm<?>> addInfo(HttpServletRequest request, @RequestBody UserOnboardingDto userOnboardingDto) throws Exception {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        userService.onboarding(userId, userOnboardingDto);
+
+        String message = "온보딩이 성공적으로 완료되었습니다!";
         return ResponseEntity.ok(ApiResponseForm.success(null, message));
     }
 

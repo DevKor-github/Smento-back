@@ -1,10 +1,12 @@
 package devkor.ontime_back.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@ToString
 @Getter
 public class LatenessHistoryResponse {
     private UUID scheduleId;

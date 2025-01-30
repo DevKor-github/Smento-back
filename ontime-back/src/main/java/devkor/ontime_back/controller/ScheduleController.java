@@ -4,6 +4,7 @@ import devkor.ontime_back.dto.*;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.response.ApiResponseForm;
 import devkor.ontime_back.service.ScheduleService;
+import devkor.ontime_back.service.UserAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
+    private final UserAuthService userAuthService;
 
 
     // 오늘의 약속 조회
@@ -221,8 +223,8 @@ public class ScheduleController {
             @ApiResponse(responseCode = "4XX", description = "지각 히스토리 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(토큰 오류 제외 비즈니스 로직 오류는 없음)")))
     })
     @GetMapping("/lateness-history") // 지각 히스토리 조회
-    public ResponseEntity<ApiResponseForm<List<LatenessHistoryResponse>>> getPunctualityPage(HttpServletRequest request) {
-        Long userId = scheduleService.getUserIdFromToken(request);
+    public ResponseEntity<ApiResponseForm<List<LatenessHistoryResponse>>> getLatenessHistory(HttpServletRequest request) {
+        Long userId = userAuthService.getUserIdFromToken(request);
         List<LatenessHistoryResponse> latenessHistory = scheduleService.getLatenessHistory(userId);
 
         String message = "지각 히스토리 조회 성공!";
@@ -286,7 +288,7 @@ public class ScheduleController {
             HttpServletRequest request,
             @RequestBody FinishPreparationDto finishPreparationDto) {
 
-        Long userId = scheduleService.getUserIdFromToken(request);
+        Long userId = userAuthService.getUserIdFromToken(request);
 
         scheduleService.finishSchedule(userId, finishPreparationDto);
 
