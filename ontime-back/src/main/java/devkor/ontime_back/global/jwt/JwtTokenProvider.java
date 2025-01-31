@@ -75,7 +75,7 @@ public class JwtTokenProvider {
         response.setStatus(HttpServletResponse.SC_OK);
 
         response.setHeader(accessHeader, accessToken);
-        log.info("재발급된 Access Token : {}", accessToken);
+        log.info("발급된 Access Token : {}", accessToken);
     }
 
     // accessToken + refreshToken header에 넣어서 전송

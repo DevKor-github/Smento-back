@@ -8,10 +8,8 @@ import devkor.ontime_back.global.generallogin.filter.CustomJsonUsernamePasswordA
 import devkor.ontime_back.global.generallogin.handler.LoginFailureHandler;
 import devkor.ontime_back.global.generallogin.service.LoginService;
 import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
-import devkor.ontime_back.global.oauth.CustomOAuth2UserService;
-import devkor.ontime_back.global.oauth.handler.OAuth2LoginFailureHandler;
-//import devkor.ontime_back.global.oauth.handler.OAuth2LoginSuccessHandler;
-import devkor.ontime_back.global.oauth.handler.OAuth2LoginSuccessHandler;
+import devkor.ontime_back.global.oauth.filter.KakaoLoginFilter;
+import devkor.ontime_back.global.oauth.filter.GoogleLoginFilter;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,10 +18,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,9 +30,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 인증은 CustomJsonUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
@@ -48,9 +43,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
 
     @Bean
@@ -73,15 +65,10 @@ public class SecurityConfig {
                         .requestMatchers("/health").permitAll() // 로드밸런서 연결 확인용 url
                         .anyRequest().authenticated()
                 )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/logout-success"))
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler(oAuth2LoginFailureHandler)
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                )
+                .addFilterBefore(new KakaoLoginFilter("/oauth2/kakao/registerOrLogin", jwtTokenProvider, userRepository),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new GoogleLoginFilter("/oauth2/google/registerOrLogin", jwtTokenProvider, userRepository),
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);
       // 1.jwtAuthenticationProcessingFilter 중복으로 삽입됨
