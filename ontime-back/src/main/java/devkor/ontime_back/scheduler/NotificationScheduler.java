@@ -25,7 +25,7 @@ public class NotificationScheduler {
 
     // 매일 밤 9시, 다음 날 약속이 있는 사용자에게 알림 전송
     @Scheduled(cron = "0 0 21 * * *")
-    @Scheduled(fixedRate = 10000) // 테스트용 애너테이션(아래 스케줄러가 10초마다 실행됨)
+    //@Scheduled(fixedRate = 10000) // 테스트용 애너테이션(아래 스케줄러가 10초마다 실행됨)
     public void sendEveningReminder() {
         LocalDateTime startOfTomorrow = LocalDateTime.now().plusDays(1).toLocalDate().atStartOfDay();
         LocalDateTime endOfTomorrow = startOfTomorrow.with(LocalTime.MAX);
@@ -36,7 +36,7 @@ public class NotificationScheduler {
 
     // 매일 아침 8시, 당일 약속이 있는 사용자에게 알림 전송
     @Scheduled(cron = "0 0 8 * * *")
-    @Scheduled(fixedRate = 10000) // 테스트용 애너테이션(아래 스케줄러가 10초마다 실행됨)
+    //@Scheduled(fixedRate = 10000) // 테스트용 애너테이션(아래 스케줄러가 10초마다 실행됨)
     public void sendMorningReminder() {
         LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
         LocalDateTime endOfToday = startOfToday.with(LocalTime.MAX);
