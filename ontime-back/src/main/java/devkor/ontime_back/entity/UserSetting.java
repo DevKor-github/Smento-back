@@ -18,7 +18,7 @@ public class UserSetting {
     @Id
     private UUID userSettingId; // 기본 키
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 사용자 ID (외래 키)
 
