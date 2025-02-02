@@ -8,6 +8,8 @@ import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
@@ -52,7 +54,7 @@ class UserAuthControllerTest extends ControllerTestSupport {
                 .role(Role.USER)
                 .build();
 
-        when(userAuthService.signUp(any(UserSignUpDto.class))).thenReturn(mockUser);
+        when(userAuthService.signUp(any(HttpServletRequest.class), any(HttpServletResponse.class),any(UserSignUpDto.class))).thenReturn(mockUser);
 
         // when // then
         mockMvc.perform(
@@ -64,36 +66,11 @@ class UserAuthControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("회원가입이 성공적으로 완료되었습니다. 추가 정보를 기입해주세요( {userId}/additional-info )"))
+                .andExpect(jsonPath("$.message").value("회원가입이 성공적으로 완료되었습니다. 온보딩을 진행해주세요( /user/onboarding )"))
                 .andExpect(jsonPath("$.data.userId").value(1));
      }
 
-     @DisplayName("(회원가입 직후) 추가 정보 기입에 성공한다")
-     @Test
-     void addInfo() throws Exception {
-         // given
-         UserAdditionalInfoDto userAdditionalInfoDto = UserAdditionalInfoDto.builder()
-                 .spareTime(10)
-                 .note("내 인생에 더 이상의 지각은 없다!!!")
-                 .build();
-
-         // 원래 addInfo는 User객체를 반환하지만 컨트롤러에서는 반환값을 사용하지 않으므로 null로 설정하였음.
-         when(userAuthService.addInfo(any(Long.class), any(UserAdditionalInfoDto.class))).thenReturn(null);
-
-         // when // then
-         mockMvc.perform(
-                        put("/1/additional-info")
-                                .content(objectMapper.writeValueAsString(userAdditionalInfoDto))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("200"))
-                .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("추가 정보가 성공적으로 기입되었습니다!"));
-      }
-
-    @DisplayName("비밀번호 변경에 성공한다")
+    @DisplayName("비밀번호 변경에 성공한다.")
     @Test
     void changePassword() throws Exception {
         // given
@@ -119,7 +96,7 @@ class UserAuthControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.message").value("비밀번호가 성공적으로 변경되었습니다!"));
     }
 
-    @DisplayName("계정 삭제에 성공한다")
+    @DisplayName("계정 삭제에 성공한다.")
     @Test
     void deleteUser() throws Exception {
         // given
