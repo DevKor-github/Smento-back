@@ -55,13 +55,13 @@ public class User {
     @Setter
     private String firebaseToken;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private UserSetting userSetting;
 
-    @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requesterId", cascade = CascadeType.ALL)
     private List<FriendShip> requestedFriendship = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receiverId", cascade = CascadeType.ALL)
     private List<FriendShip> receivedFriendship = new ArrayList<>();
 
     public void updateAdditionalInfo(Integer spareTime, String note) {

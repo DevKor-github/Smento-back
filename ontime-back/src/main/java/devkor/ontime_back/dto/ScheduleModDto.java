@@ -4,11 +4,13 @@ import devkor.ontime_back.entity.Place;
 import devkor.ontime_back.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@ToString
 @Getter
 public class ScheduleModDto {
 

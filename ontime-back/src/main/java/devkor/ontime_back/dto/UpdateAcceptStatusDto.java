@@ -5,7 +5,6 @@ import lombok.ToString;
 
 @ToString
 @Getter
-public class UpdatePunctualityScoreDto {
-    private Long userId;
-    private Integer latenessTime;
+public class UpdateAcceptStatusDto {
+    private String acceptStatus;
 }

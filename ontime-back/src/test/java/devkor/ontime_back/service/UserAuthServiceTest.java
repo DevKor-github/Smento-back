@@ -8,6 +8,9 @@ import devkor.ontime_back.entity.UserSetting;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.repository.UserSettingRepository;
 import devkor.ontime_back.response.GeneralException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +39,9 @@ class UserAuthServiceTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private ServletRequest httpServletRequest;
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @AfterEach
     void tearDown() {
@@ -50,7 +56,7 @@ class UserAuthServiceTest {
         UserSignUpDto userSignUpDto = getUserSignUpDto("user@example.com", "password1234", "junbeom", "a304cde3-8ee9-4054-971a-300aacc2177c");
 
         // when
-        User addedUser = userAuthService.signUp(userSignUpDto);
+        User addedUser = userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse, userSignUpDto);
         UserSetting userSetting = addedUser.getUserSetting();
 
         // then
@@ -74,10 +80,10 @@ class UserAuthServiceTest {
         UserSignUpDto userSignUpDto2 = getUserSignUpDto("user@example.com", "password1234", "junbeom2", "a304cde3-8ee9-4054-971a-300aacc2177d");
 
         // when, then
-        User addedUser1 = userAuthService.signUp(userSignUpDto1);
+        User addedUser1 = userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto1);
         assertThat(addedUser1.getId()).isNotNull();
 
-        assertThatThrownBy(() -> userAuthService.signUp(userSignUpDto2))
+        assertThatThrownBy(() -> userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto2))
                 .isInstanceOf(GeneralException.class)
                 .hasMessage("이미 존재하는 이메일입니다.");
     }
@@ -91,10 +97,10 @@ class UserAuthServiceTest {
         UserSignUpDto userSignUpDto2 = getUserSignUpDto("user2@example.com", "password1234", "junbeom", "a304cde3-8ee9-4054-971a-300aacc2177d");
 
         // when, then
-        User addedUser1 = userAuthService.signUp(userSignUpDto1);
+        User addedUser1 = userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto1);
         assertThat(addedUser1.getId()).isNotNull();
 
-        assertThatThrownBy(() -> userAuthService.signUp(userSignUpDto2))
+        assertThatThrownBy(() -> userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto2))
                 .isInstanceOf(GeneralException.class)
                 .hasMessage("이미 존재하는 이름입니다.");
     }
@@ -108,10 +114,10 @@ class UserAuthServiceTest {
         UserSignUpDto userSignUpDto2 = getUserSignUpDto("user2@example.com", "password1234", "junbeom2", "a304cde3-8ee9-4054-971a-300aacc2177c");
 
         // when, then
-        User addedUser1 = userAuthService.signUp(userSignUpDto1);
+        User addedUser1 = userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto1);
         assertThat(addedUser1.getId()).isNotNull();
 
-        assertThatThrownBy(() -> userAuthService.signUp(userSignUpDto2))
+        assertThatThrownBy(() -> userAuthService.signUp((HttpServletRequest) httpServletRequest, httpServletResponse,userSignUpDto2))
                 .isInstanceOf(GeneralException.class)
                 .hasMessage("이미 존재하는 userSettingId 입니다.");
     }

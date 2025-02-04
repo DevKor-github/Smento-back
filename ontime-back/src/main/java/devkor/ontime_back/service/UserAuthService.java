@@ -1,5 +1,6 @@
 package devkor.ontime_back.service;
 
+import com.google.api.Http;
 import devkor.ontime_back.dto.ChangePasswordDto;
 import devkor.ontime_back.dto.UserAdditionalInfoDto;
 import devkor.ontime_back.dto.UserSignUpDto;
@@ -12,6 +13,7 @@ import devkor.ontime_back.repository.UserSettingRepository;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +43,7 @@ public class UserAuthService {
 
     // 자체 로그인 회원가입
     @Transactional
-    public User signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public User signUp(HttpServletRequest request, HttpServletResponse response, UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new GeneralException(ErrorCode.EMAIL_ALREADY_EXIST);
@@ -60,7 +62,7 @@ public class UserAuthService {
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .name(userSignUpDto.getName())
-                .role(Role.USER)
+                .role(Role.GUEST)
                 .punctualityScore((float)-1)
                 .scheduleCountAfterReset(0)
                 .latenessCountAfterReset(0)
@@ -76,6 +78,14 @@ public class UserAuthService {
 
         user.setUserSetting(userSetting);
         userRepository.save(user); //CASCADE옵션 덕분에 userRepository만 save해주면 됨(userSettingRepository는 save안해줘도 부모인 user를 따라 저장됨)
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+
+        jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+
+        user.updateRefreshToken(refreshToken);
+        userRepository.saveAndFlush(user);
 
         return user;
     }

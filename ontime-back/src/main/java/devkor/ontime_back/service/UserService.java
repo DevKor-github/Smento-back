@@ -1,6 +1,8 @@
 package devkor.ontime_back.service;
 
 import devkor.ontime_back.dto.UpdateSpareTimeDto;
+import devkor.ontime_back.dto.UserAdditionalInfoDto;
+import devkor.ontime_back.dto.UserOnboardingDto;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserAuthService userAuthService;
+    private final PreparationUserService preparationUserService;
 
     // 성실도 점수 반환
     public Float getPunctualityScore(Long userId) {
@@ -72,5 +76,17 @@ public class UserService {
         userRepository.save(user);
 
         return user;
+    }
+
+    @Transactional
+    public void onboarding(Long userId, UserOnboardingDto userOnboardingDto) throws Exception {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
+
+        user.updateAdditionalInfo(userOnboardingDto.getSpareTime(), userOnboardingDto.getNote());
+        userRepository.save(user);
+        preparationUserService.setFirstPreparationUser(userId, userOnboardingDto.getPreparationList());
+        user.authorizeUser();
+        userRepository.save(user);
     }
 }
