@@ -50,7 +50,7 @@ dependencies {
 	// oauth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	// Swager
+	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
 	// firebase
