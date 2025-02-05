@@ -73,10 +73,16 @@ jobs:
         debug: true
         script: |
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources
-          echo '${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}' > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          cd /home/ubuntu/OnTime-back/ontime-back/src/main/resources
+          cat <<EOT > ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          ${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}
+          EOT
 
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
-          echo '${{ secrets.AUTHKEY_743M7R5W3W }}' > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          cd /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
+          cat <<EOT > AuthKey_743M7R5W3W.p8
+          ${{ secrets.AUTHKEY_743M7R5W3W }}
+          EOT
           
           cd /home/ubuntu/OnTime-back/ontime-back
           CONTAINER_ID=$(sudo docker ps -aq --filter "name=ontime-container")
