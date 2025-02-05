@@ -133,6 +133,10 @@ jobs:
           SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}
           ONTIME_PASSWORD=${{ secrets.ONTIME_PASSWORD }}
           ONTIME_HOST=${{ secrets.ONTIME_HOST }}
+          APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+          APPLE_CLIENT_SECRET=${{ secrets.APPLE_CLIENT_SECRET }}
+          APPLE_LOGIN_KEY=${{ secrets.APPLE_LOGIN_KEY }}
+          APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
           EOT
           
           # Docker Compose 실행
