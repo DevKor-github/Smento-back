@@ -48,7 +48,7 @@ public class AppleLoginService {
     private static final String APPLE_KEYS_URL = "https://appleid.apple.com/auth/keys";
     private static final String APPLE_TOKEN_URL = "https://appleid.apple.com/auth/token";
 
-    @Value("${apple.client-id}")
+    @Value("${apple.client.id}")
     private String clientId;
 
     @Value("${apple.team.id}")
@@ -58,7 +58,7 @@ public class AppleLoginService {
     private String keyId;
     private static final String REDIRECT_URI = "https://ontime.devkor.club/oauth2/apple/callback";
 
-    @Value("${apple.client-secret}")
+    @Value("${apple.client.secret}")
     private String privateKeyPath;
 
     private String issuer = "https://appleid.apple.com";
