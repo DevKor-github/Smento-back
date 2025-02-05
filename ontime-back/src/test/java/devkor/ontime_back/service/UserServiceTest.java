@@ -1,6 +1,8 @@
 package devkor.ontime_back.service;
 
 import devkor.ontime_back.dto.UpdateSpareTimeDto;
+import devkor.ontime_back.dto.UserAdditionalInfoDto;
+import devkor.ontime_back.dto.UserOnboardingDto;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.NoSuchElementException;
@@ -16,6 +19,12 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class UserServiceTest {

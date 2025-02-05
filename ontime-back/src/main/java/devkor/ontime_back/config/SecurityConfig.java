@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/health", "/oauth2/sign-up", "oauth2/success", "login/success", "/oauth2/google/registerOrLogin", "/oauth2/kakao/registerOrLogin", "/sign-up", "/*/additional-info").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/health").permitAll() // 로드밸런서 연결 확인용 url
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new KakaoLoginFilter("/oauth2/kakao/registerOrLogin", jwtTokenProvider, userRepository),

@@ -14,12 +14,18 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor // 기본 생성자 생성
 @AllArgsConstructor // 모든 필드를 포함하는 생성자 생성
+@Table(
+        indexes = {
+                @Index(name = "idx_schedule_user_id", columnList = "user_id"),
+                @Index(name = "idx_schedule_lateness_time", columnList = "latenessTime")
+        }
+)
 public class Schedule {
 
     @Id
     private UUID scheduleId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;

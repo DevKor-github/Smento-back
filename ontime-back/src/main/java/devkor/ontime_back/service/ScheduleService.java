@@ -85,6 +85,7 @@ public class ScheduleService {
         if (!schedule.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("User does not have permission to delete this schedule.");
         }
+        preparationScheduleRepository.deleteBySchedule(schedule);
         scheduleRepository.delete(schedule);
     }
 

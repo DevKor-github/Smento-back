@@ -30,7 +30,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     @Query("SELECT s FROM Schedule s WHERE FUNCTION('HOUR', s.scheduleTime) = :hour AND FUNCTION('MINUTE', s.scheduleTime) = :minute")
     List<Schedule> findSchedulesStartingAt(int hour, int minute);
 
-    // 지각 히스토리 조회
+    // 지각 히스토리 조회(페치조인을 했었는데 본 메서드를 사용하는 서비스메서드에서 user를 참조하지 않아서 필요없음)
     @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.latenessTime > 0")
     List<Schedule> findLatenessHistoryByUserId(@Param("userId") Long userId);
 
