@@ -30,9 +30,88 @@ jobs:
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
       # 4. application.properties 생성
-      - name: Create application.properties
+      # - name: Create application.properties
+      #   run: |
+      #     mkdir -p src/main/resources
+      #     echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > src/main/resources/application.properties
+      #     echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> src/main/resources/application.properties
+      #     echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> src/main/resources/application.properties
+      #     echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> src/main/resources/application.properties
+      #     echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> src/main/resources/application.properties
+      #     echo "spring.jpa.hibernate.ddl-auto=create" >> src/main/resources/application.properties
+      #     echo "jwt.secret-key=${{ secrets.JWT_SECRET_KEY }}" >> src/main/resources/application.properties
+      #     echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> src/main/resources/application.properties
+      #     echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> src/main/resources/application.properties
+      #     echo "jwt.access.header=${{ secrets.JWT_ACCESS_HEADER }}" >> src/main/resources/application.properties
+      #     echo "jwt.refresh.header=${{ secrets.JWT_REFRESH_HEADER }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.client-secret=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.google.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.google.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.google.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.google.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.google.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.kakao.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.registration.kakao.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.kakao.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI }}" >> src/main/resources/application.properties
+      #     echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
+      #     echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
+      #     echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
+          
+      # 5. Gradle 빌드
+      - name: Build with Gradle
         run: |
-          mkdir -p src/main/resources
+          cd ontime-back  
+          ./gradlew build -x test
+  deploy-to-ec2:
+    needs: build-and-docker
+    runs-on: ubuntu-latest
+
+    
+    steps:
+    - name: Delete existing folder
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        debug: true
+        script: |
+          sudo rm -rf /home/ubuntu/OnTime-back
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Upload files to EC2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+         host: ${{ secrets.EC2_HOST }}
+         username: ${{ secrets.EC2_USER }}
+         key: ${{ secrets.EC2_SSH_KEY }}
+         source: "./"
+         target: "/home/ubuntu/OnTime-back"
+         debug: true
+ 
+        
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        debug: true
+        script: |
+          echo '${{ secrets.SECRET_JSON }}' > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+
+          mkdir -p /home/ubuntu/OnTime-back?ontime-back/src/main/resources/key
+          echo '${{ secrets.AUTHKEY_743M7R5W3W }}' > /home/ubuntu/OnTime-back?ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          
           echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > src/main/resources/application.properties
           echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> src/main/resources/application.properties
           echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> src/main/resources/application.properties
@@ -65,47 +144,7 @@ jobs:
           echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
           echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
-      # # 4. application.properties EC2 배포
-      # - name: Upload application.properties to EC2
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USER }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     source: ./src/main/resources/application.properties
-      #     target: /home/ubuntu/OnTime-back/ontime-back
-      # 5. Gradle 빌드
-      - name: Build with Gradle
-        run: |
-          cd ontime-back  
-          ./gradlew build -x test
-  deploy-to-ec2:
-    needs: build-and-docker
-    runs-on: ubuntu-latest
-
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Upload files to EC2
-      uses: appleboy/scp-action@v0.1.7
-      with:
-         host: ${{ secrets.EC2_HOST }}
-         username: ${{ secrets.EC2_USER }}
-         key: ${{ secrets.EC2_SSH_KEY }}
-         source: "./"
-         target: "/home/ubuntu/OnTime-back"
-         debug: true
- 
-        
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        debug: true
-        script: |
+          
           cd /home/ubuntu/OnTime-back/ontime-back
           CONTAINER_ID=$(sudo docker ps -aq --filter "name=ontime-container")
           if [ ! -z "$CONTAINER_ID" ]; then
@@ -113,9 +152,13 @@ jobs:
           sudo docker rm $CONTAINER_ID
           fi
           # 기존 컨테이너 중지 및 제거
-          sudo docker-compose down || true
+          sudo docker-compose down
+          # 용량 정리
+          sudo docker container prune
+          sudo docker image prune -a
+          sudo docker volume prune
+          sudo docker network prune
           # 소스 코드 빌드 및 컨테이너 실행
-          # init.sql 변수 추가
           # .env 파일 생성
           cat <<EOT > .env
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
