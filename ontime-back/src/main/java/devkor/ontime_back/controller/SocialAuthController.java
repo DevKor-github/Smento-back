@@ -1,5 +1,7 @@
 package devkor.ontime_back.controller;
 
+import devkor.ontime_back.applelogin.AppleLoginService;
+import devkor.ontime_back.dto.OAuthAppleLoginRequestDto;
 import devkor.ontime_back.dto.OAuthGoogleUserDto;
 import devkor.ontime_back.dto.OAuthKakaoUserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,13 +12,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/oauth2")
 @RequiredArgsConstructor
 public class SocialAuthController {
+
+    private final AppleLoginService appleLoginService;
 
     @Operation(
             summary = "구글 소셜 로그인/회원가입",
@@ -70,6 +79,24 @@ public class SocialAuthController {
     @PostMapping("/kakao/registerOrLogin")
     public String kakaoRegisterOrLogin(@RequestBody OAuthKakaoUserDto oAuthKakaoUserDto, HttpServletResponse response) {
         return "카카오 로그인/회원가입 성공"; // 로그인 처리는 필터에서 적용
+    }
+
+    @PostMapping("/apple/registerOrLogin")
+    public ResponseEntity<?> appleRegisterOrLogin(@RequestBody OAuthAppleLoginRequestDto appleLoginRequestDto, HttpServletResponse response) {
+        try {
+            Authentication authentication = appleLoginService.registerOrLogin(
+                    appleLoginRequestDto.getIdToken(),
+                    appleLoginRequestDto.getAuthCode(),
+                    appleLoginRequestDto.getFullName(),
+                    response
+            );
+            return ResponseEntity.ok().body(Map.of("message", "애플 로그인/회원가입 성공"));
+
+        } catch (Exception e) {
+            log.error("애플 로그인 실패: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "애플 로그인/회원가입 실패", "message", e.getMessage()));
+        }
     }
 
 }

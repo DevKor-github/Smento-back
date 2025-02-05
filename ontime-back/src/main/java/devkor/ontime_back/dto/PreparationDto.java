@@ -1,6 +1,7 @@
 package devkor.ontime_back.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Time;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
+@Builder
 public class PreparationDto {
     private UUID preparationId;
 
