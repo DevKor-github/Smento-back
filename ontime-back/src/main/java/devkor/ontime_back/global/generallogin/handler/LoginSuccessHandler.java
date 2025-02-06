@@ -58,7 +58,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                         String responseBody = String.format(
                                 "{ \"status\": \"success\", \"code\": \"200\", \"message\": \"%s\", \"data\": { " +
                                         "\"userId\": %d, \"email\": \"%s\", \"name\": \"%s\", " +
-                                        "\"spare_time\": \"%s\", \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
+                                        "\"spareTime\": \"%s\", \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
                                 msg, user.getId(), user.getEmail(), user.getName(),
                                 user.getSpareTime(), user.getNote(), user.getPunctualityScore(), user.getRole().name()
                         );
