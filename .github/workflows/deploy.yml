@@ -48,7 +48,8 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         debug: true
         script: |
-          sudo rm -rf /home/ubuntu/OnTime-back
+          sudo find OnTime-back -type f -not \( -path "OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json" -o -path "OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8" \) -delete
+          sudo find OnTime-back -type d -empty -delete
           
     - name: Checkout code
       uses: actions/checkout@v3
