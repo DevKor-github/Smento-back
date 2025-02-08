@@ -8,10 +8,15 @@ import devkor.ontime_back.global.generallogin.filter.CustomJsonUsernamePasswordA
 import devkor.ontime_back.global.generallogin.handler.LoginFailureHandler;
 import devkor.ontime_back.global.generallogin.service.LoginService;
 import devkor.ontime_back.global.generallogin.handler.LoginSuccessHandler;
-import devkor.ontime_back.global.oauth.filter.KakaoLoginFilter;
-import devkor.ontime_back.global.oauth.filter.GoogleLoginFilter;
+import devkor.ontime_back.global.jwt.JwtUtils;
+import devkor.ontime_back.global.oauth.apple.AppleLoginFilter;
+import devkor.ontime_back.global.oauth.apple.AppleLoginService;
+import devkor.ontime_back.global.oauth.apple.ApplePublicKeyGenerator;
+import devkor.ontime_back.global.oauth.kakao.KakaoLoginFilter;
+import devkor.ontime_back.global.oauth.google.GoogleLoginFilter;
 import devkor.ontime_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,11 +44,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final LoginService loginService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-
+    private final AppleLoginService appleLoginService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,7 +65,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll()
-                        .requestMatchers("/health", "/oauth2/sign-up", "oauth2/success", "login/success", "/oauth2/google/registerOrLogin", "/oauth2/kakao/registerOrLogin", "/sign-up", "/*/additional-info").permitAll()
+                        .requestMatchers("/health", "/oauth2/sign-up", "oauth2/success", "login/success", "/oauth2/google/registerOrLogin", "/oauth2/kakao/registerOrLogin", "/oauth2/apple/registerOrLogin", "/sign-up", "/*/additional-info").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/health").permitAll() // 로드밸런서 연결 확인용 url
@@ -68,6 +74,8 @@ public class SecurityConfig {
                 .addFilterBefore(new KakaoLoginFilter("/oauth2/kakao/registerOrLogin", jwtTokenProvider, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new GoogleLoginFilter("/oauth2/google/registerOrLogin", jwtTokenProvider, userRepository),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new AppleLoginFilter("/oauth2/apple/registerOrLogin", appleLoginService, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);

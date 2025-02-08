@@ -1,8 +1,9 @@
-package devkor.ontime_back.applelogin;
+package devkor.ontime_back.global.oauth.apple;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import devkor.ontime_back.dto.AppleTokenResponseDto;
+import devkor.ontime_back.dto.OAuthAppleRequestDto;
 import devkor.ontime_back.dto.OAuthAppleUserDto;
 import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.entity.SocialType;
@@ -13,6 +14,7 @@ import devkor.ontime_back.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +22,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,10 +35,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
 import java.util.Date;
@@ -41,66 +44,31 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
 public class AppleLoginService {
 
     private static final String APPLE_KEYS_URL = "https://appleid.apple.com/auth/keys";
     private static final String APPLE_TOKEN_URL = "https://appleid.apple.com/auth/token";
-
+    private static final String REDIRECT_URI = "https://ontime.devkor.club/oauth2/apple/callback";
+    private String issuer = "https://appleid.apple.com";
     @Value("${apple.client.id}")
     private String clientId;
-
     @Value("${apple.team.id}")
     private String teamId;
-
     @Value("${apple.login.key}")
     private String keyId;
-    private static final String REDIRECT_URI = "https://ontime.devkor.club/oauth2/apple/callback";
-
     @Value("${apple.client.secret}")
     private String privateKeyPath;
 
-    private String issuer = "https://appleid.apple.com";
-
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
-    private final RestTemplate restTemplate = new RestTemplate();
-
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Authentication registerOrLogin(String identityToken, String authorizationCode, String fullName, HttpServletResponse response) throws Exception {
-        Claims tokenClaims = verifyIdentityToken(identityToken);
-        if (tokenClaims.getSubject() == null) {
-            throw new IllegalStateException("Apple 로그인 검증 실패");
-        }
-
-        String appleUserId = tokenClaims.getSubject();
-        String email = tokenClaims.get("email", String.class);
-        boolean isEmailVerified = Boolean.parseBoolean(tokenClaims.get("email_verified", String.class));
-
-        OAuthAppleUserDto oAuthAppleUserDto = new OAuthAppleUserDto(appleUserId, email, isEmailVerified, fullName);
-
-        // appleAccessToken, appleRefreshToken 반환
-        // String appleAccessToken = getAppleAccessTokenAndRefreshToken(authorizationCode).getAccessToken();
-        String appleRefreshToken = getAppleAccessTokenAndRefreshToken(authorizationCode).getRefreshToken();
-        boolean isRevoked = checkAppleLoginRevoked(appleRefreshToken);
-        if (isRevoked) {
-            throw new IllegalStateException("Apple 로그인 철회됨: 사용자가 로그인 연결을 해제함");
-        }
-
-        Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.APPLE, appleUserId);
-
-        if (existingUser.isPresent()) {
-            return handleLogin(existingUser.get(), response);
-        } else {
-            return handleRegister(oAuthAppleUserDto, response);
-        }
-    }
-
-    private Authentication handleLogin(User user, HttpServletResponse response) throws IOException {
-
+    private final RestTemplate restTemplate = new RestTemplate();
+    public Authentication handleLogin(User user, HttpServletResponse response) throws IOException {
+        log.info("handleLogin");
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
@@ -110,12 +78,14 @@ public class AppleLoginService {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        String msg = user.getRole().name().equals("GUEST") ? "유저의 ROLE이 GUEST이므로 온보딩API를 호출해 온보딩을 진행해야합니다." : "로그인에 성공하였습니다.";
+        // JSON 응답 생성
         String responseBody = String.format(
-                "{\"message\": \"%s\", \"role\": \"%s\"}",
-                user.getRole().name().equals("GUEST")
-                        ? "유저의 ROLE이 GUEST이므로 온보딩API를 호출해 온보딩을 진행해야합니다."
-                        : "로그인에 성공하였습니다.",
-                user.getRole().name()
+                "{ \"status\": \"success\", \"code\": \"200\", \"message\": \"%s\", \"data\": { " +
+                        "\"userId\": %d, \"email\": \"%s\", \"name\": \"%s\", " +
+                        "\"spareTime\": \"%s\", \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
+                msg, user.getId(), user.getEmail(), user.getName(),
+                user.getSpareTime(), user.getNote(), user.getPunctualityScore(), user.getRole().name()
         );
 
         response.getWriter().write(responseBody);
@@ -124,9 +94,11 @@ public class AppleLoginService {
         return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
     }
 
-    private Authentication handleRegister(OAuthAppleUserDto oAuthAppleUserDto, HttpServletResponse response) throws IOException {
+    public Authentication handleRegister(OAuthAppleUserDto oAuthAppleUserDto, HttpServletResponse response) throws IOException {
+        log.info("handleRegister");
+        log.info("{}", SocialType.APPLE);
         User newUser = User.builder()
-                .socialType(SocialType.GOOGLE)
+                .socialType(SocialType.APPLE)
                 .socialId(oAuthAppleUserDto.getAppleUserId())
                 .email(oAuthAppleUserDto.getEmail())
                 .name(oAuthAppleUserDto.getFullName())
@@ -154,8 +126,9 @@ public class AppleLoginService {
     }
 
     // identitytoken 검증
-    private Claims verifyIdentityToken(String identityToken) throws
+    public Claims verifyIdentityToken(String identityToken) throws
             Exception {
+        log.info("verifyIdentityToken");
         Map<String, String> headers = jwtUtils.parseHeaders(identityToken);
         // apple publickey
         ApplePublicKeyResponse applePublicKeyResponse = restTemplate.getForObject(APPLE_KEYS_URL, ApplePublicKeyResponse.class);
@@ -167,6 +140,8 @@ public class AppleLoginService {
             throw new IllegalArgumentException("Invalid JWT: Issuer mismatch. Expected: " + issuer);
         }
         // aud 확인
+        log.info("clientId: {}", clientId);
+        log.info("tokenClaims.getAudience(): {}", tokenClaims.getAudience());
         if (!clientId.equals(tokenClaims.getAudience())) {
             throw new IllegalArgumentException("Invalid JWT: Audience mismatch. Expected: " + clientId);
         }
@@ -175,22 +150,37 @@ public class AppleLoginService {
     }
 
     // apple 서버로부터 accesstoken, refreshtoken 발급
-    private AppleTokenResponse getAppleAccessTokenAndRefreshToken(String authCode) throws Exception {
+    public AppleTokenResponseDto getAppleAccessTokenAndRefreshToken(String authCode) throws Exception {
         // clientSecret
         String clientSecret = generateClientSecret();
+        log.info("getAppleAccessTokenAndRefreshToken");
+        log.info("client_id: {}", clientId);
+        log.info("client_secret: {}", clientSecret);
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "authorization_code");
+        requestBody.add("code", authCode);
+        requestBody.add("client_id", clientId);
+        requestBody.add("client_secret", clientSecret);
+        requestBody.add("redirect_uri", REDIRECT_URI);
 
-        String requestBody = String.format(
-                "grant_type=authorization_code&code=%s&client_id=%s&client_secret=%s&redirect_uri=%s",
-                authCode, clientId, clientSecret, REDIRECT_URI);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        JsonNode response = restTemplate.postForObject(APPLE_TOKEN_URL, requestBody, JsonNode.class);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(
+                APPLE_TOKEN_URL, HttpMethod.POST, requestEntity, JsonNode.class);
+
+        JsonNode response = responseEntity.getBody();
+        log.info("Apple Token Response: {}", response.toString());
+
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.treeToValue(response, AppleTokenResponse.class);
+        return objectMapper.treeToValue(response, AppleTokenResponseDto.class);
     }
 
     // clientsecret 생성
     private String generateClientSecret() throws Exception {
-
+        log.info("generageClientSecret");
         // Private Key
         String privateKeyContent = new String(Files.readAllBytes(Paths.get(privateKeyPath)))
                 .replace("-----BEGIN PRIVATE KEY-----", "")
@@ -217,11 +207,11 @@ public class AppleLoginService {
                 .signWith(privateKey, SignatureAlgorithm.ES256)
                 .compact();
     }
-
-    // Apple 로그인 철회 감지
-    public boolean checkAppleLoginRevoked(String appleRefreshToken) throws Exception {
+    public boolean appleLoginRevoked(String appleRefreshToken) throws Exception {
+        log.info("checkAppleLoginRevoked");
         String clientSecret = generateClientSecret();
-
+        log.info("client_id: {}", clientId);
+        log.info("client_secret: {}", clientSecret);
         String revokeUrl = "https://appleid.apple.com/auth/revoke";
 
         HttpHeaders headers = new HttpHeaders();
@@ -240,10 +230,11 @@ public class AppleLoginService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                     revokeUrl, HttpMethod.POST, requestEntity, String.class);
-
-            return response.getStatusCode() != HttpStatus.OK;
+            log.info("response.getStatusCode(): {}", response.getStatusCode());
+            return response.getStatusCode() != HttpStatus.OK; // -> 토큰이 아직 유효함
         } catch (HttpClientErrorException e) {
-            return true;
+            log.info("e: {}", e);
+            return true; // 요청 실패 -> 이미 철회된 refreshToken
         }
     }
 }
