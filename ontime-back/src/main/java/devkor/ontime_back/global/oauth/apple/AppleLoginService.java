@@ -73,7 +73,7 @@ public class AppleLoginService {
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
         jwtTokenProvider.updateRefreshToken(user.getEmail(), refreshToken);
-        jwtTokenProvider.sendAccessToken(response, accessToken);
+        jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -83,7 +83,7 @@ public class AppleLoginService {
         String responseBody = String.format(
                 "{ \"status\": \"success\", \"code\": \"200\", \"message\": \"%s\", \"data\": { " +
                         "\"userId\": %d, \"email\": \"%s\", \"name\": \"%s\", " +
-                        "\"spareTime\": \"%s\", \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
+                        "\"spareTime\": %d, \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
                 msg, user.getId(), user.getEmail(), user.getName(),
                 user.getSpareTime(), user.getNote(), user.getPunctualityScore(), user.getRole().name()
         );
@@ -140,8 +140,6 @@ public class AppleLoginService {
             throw new IllegalArgumentException("Invalid JWT: Issuer mismatch. Expected: " + issuer);
         }
         // aud 확인
-        log.info("clientId: {}", clientId);
-        log.info("tokenClaims.getAudience(): {}", tokenClaims.getAudience());
         if (!clientId.equals(tokenClaims.getAudience())) {
             throw new IllegalArgumentException("Invalid JWT: Audience mismatch. Expected: " + clientId);
         }
@@ -172,7 +170,6 @@ public class AppleLoginService {
                 APPLE_TOKEN_URL, HttpMethod.POST, requestEntity, JsonNode.class);
 
         JsonNode response = responseEntity.getBody();
-        log.info("Apple Token Response: {}", response.toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.treeToValue(response, AppleTokenResponseDto.class);
@@ -210,8 +207,6 @@ public class AppleLoginService {
     public boolean appleLoginRevoked(String appleRefreshToken) throws Exception {
         log.info("checkAppleLoginRevoked");
         String clientSecret = generateClientSecret();
-        log.info("client_id: {}", clientId);
-        log.info("client_secret: {}", clientSecret);
         String revokeUrl = "https://appleid.apple.com/auth/revoke";
 
         HttpHeaders headers = new HttpHeaders();
@@ -230,10 +225,8 @@ public class AppleLoginService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                     revokeUrl, HttpMethod.POST, requestEntity, String.class);
-            log.info("response.getStatusCode(): {}", response.getStatusCode());
             return response.getStatusCode() != HttpStatus.OK; // -> 토큰이 아직 유효함
         } catch (HttpClientErrorException e) {
-            log.info("e: {}", e);
             return true; // 요청 실패 -> 이미 철회된 refreshToken
         }
     }

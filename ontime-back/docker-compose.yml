@@ -48,6 +48,7 @@ services:
 
     volumes:
       - /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties:/app/src/main/resources/application.properties
+      - /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/:/app/resources/key/
     depends_on:
       - mysql # mysql 서비스가 실행된 이후에 backend를 실행
 
