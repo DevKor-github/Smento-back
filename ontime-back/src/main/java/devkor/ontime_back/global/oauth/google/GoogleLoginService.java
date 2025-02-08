@@ -12,15 +12,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,6 +33,8 @@ public class GoogleLoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/userinfo/v2/me";
+    private static final String GOOGLE_REVOKE_URL = "https://oauth2.googleapis.com/revoke?token=";
+
 
 
     public OAuthGoogleUserDto getUserInfoFromAccessToken(String accessToken) {
@@ -58,6 +63,11 @@ public class GoogleLoginService {
         jwtTokenProvider.updateRefreshToken(user.getEmail(), refreshToken);
         jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -74,7 +84,7 @@ public class GoogleLoginService {
         response.getWriter().write(responseBody);
         response.getWriter().flush();
 
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
+        return authentication;
     }
 
     public Authentication handleRegister(OAuthGoogleRequestDto oAuthGoogleRequestDto, OAuthGoogleUserDto oAuthGoogleUserDto, HttpServletResponse response) throws IOException {
@@ -93,6 +103,11 @@ public class GoogleLoginService {
         String accessToken = jwtTokenProvider.createAccessToken(newUser.getEmail(), newUser.getId());
         jwtTokenProvider.sendAccessToken(response, accessToken);
 
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                savedUser, null, Collections.singletonList(new SimpleGrantedAuthority(savedUser.getRole().name()))
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -105,8 +120,28 @@ public class GoogleLoginService {
         response.getWriter().write(responseBody);
         response.getWriter().flush();
 
-        return new UsernamePasswordAuthenticationToken(newUser, null, Collections.singletonList(new SimpleGrantedAuthority(newUser.getRole().name())));
+        return authentication;
     }
 
+    public boolean revokeToken(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        String googleRefreshToken = user.getSocialLoginToken();
+
+        RestTemplate restTemplate = new RestTemplate();
+        String revokeUrl = GOOGLE_REVOKE_URL + googleRefreshToken;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/x-www-form-urlencoded");
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                revokeUrl, HttpMethod.POST, request, String.class);
+
+        return response.getStatusCode().is2xxSuccessful();
+    }
 
 }
+

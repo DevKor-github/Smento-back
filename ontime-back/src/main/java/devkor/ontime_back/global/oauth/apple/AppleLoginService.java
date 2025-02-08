@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -67,13 +68,20 @@ public class AppleLoginService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    public Authentication handleLogin(User user, HttpServletResponse response) throws IOException {
+    public Authentication handleLogin(String appleRefreshToken, User user, HttpServletResponse response) throws IOException {
         log.info("handleLogin");
+        user.updateSocialLoginToken(appleRefreshToken);
+
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
         jwtTokenProvider.updateRefreshToken(user.getEmail(), refreshToken);
         jwtTokenProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -91,24 +99,30 @@ public class AppleLoginService {
         response.getWriter().write(responseBody);
         response.getWriter().flush();
 
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
+        return authentication;
     }
 
-    public Authentication handleRegister(OAuthAppleUserDto oAuthAppleUserDto, HttpServletResponse response) throws IOException {
+    public Authentication handleRegister(String appleRefreshToken, OAuthAppleUserDto oAuthAppleUserDto, HttpServletResponse response) throws IOException {
         log.info("handleRegister");
-        log.info("{}", SocialType.APPLE);
+
         User newUser = User.builder()
                 .socialType(SocialType.APPLE)
                 .socialId(oAuthAppleUserDto.getAppleUserId())
                 .email(oAuthAppleUserDto.getEmail())
                 .name(oAuthAppleUserDto.getFullName())
                 .role(Role.GUEST)
+                .socialLoginToken(appleRefreshToken)
                 .build();
 
         User savedUser = userRepository.save(newUser);
 
         String accessToken = jwtTokenProvider.createAccessToken(newUser.getEmail(), newUser.getId());
         jwtTokenProvider.sendAccessToken(response, accessToken);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                savedUser, null, Collections.singletonList(new SimpleGrantedAuthority(savedUser.getRole().name()))
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -122,7 +136,7 @@ public class AppleLoginService {
         response.getWriter().write(responseBody);
         response.getWriter().flush();
 
-        return new UsernamePasswordAuthenticationToken(newUser, null, Collections.singletonList(new SimpleGrantedAuthority(newUser.getRole().name())));
+        return authentication;
     }
 
     // identitytoken 검증
@@ -204,8 +218,13 @@ public class AppleLoginService {
                 .signWith(privateKey, SignatureAlgorithm.ES256)
                 .compact();
     }
-    public boolean appleLoginRevoked(String appleRefreshToken) throws Exception {
+    public boolean revokeToken(Long userId) throws Exception {
         log.info("checkAppleLoginRevoked");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        String appleRefreshToken = user.getSocialLoginToken();
+
         String clientSecret = generateClientSecret();
         String revokeUrl = "https://appleid.apple.com/auth/revoke";
 
@@ -231,3 +250,4 @@ public class AppleLoginService {
         }
     }
 }
+
