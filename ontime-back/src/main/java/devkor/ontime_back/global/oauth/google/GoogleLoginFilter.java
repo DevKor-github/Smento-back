@@ -1,7 +1,7 @@
-package devkor.ontime_back.global.oauth.filter;
+package devkor.ontime_back.global.oauth.google;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import devkor.ontime_back.dto.OAuthGoogleRequest;
+import devkor.ontime_back.dto.OAuthGoogleRequestDto;
 import devkor.ontime_back.dto.OAuthGoogleUserDto;
 import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.entity.SocialType;
@@ -45,8 +45,8 @@ public class GoogleLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         ObjectMapper objectMapper = new ObjectMapper();
-        OAuthGoogleRequest oAuthGoogleRequest = objectMapper.readValue(request.getInputStream(), OAuthGoogleRequest.class);
-        OAuthGoogleUserDto oAuthGoogleUserInfo = getUserInfoFromAccessToken(oAuthGoogleRequest.getAccessToken());
+        OAuthGoogleRequestDto oAuthGoogleRequestDto = objectMapper.readValue(request.getInputStream(), OAuthGoogleRequestDto.class);
+        OAuthGoogleUserDto oAuthGoogleUserInfo = getUserInfoFromAccessToken(oAuthGoogleRequestDto.getAccessToken());
 
         Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.GOOGLE, oAuthGoogleUserInfo.getSub());
 
