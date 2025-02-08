@@ -55,6 +55,8 @@ public class User {
     @Setter
     private String firebaseToken;
 
+    private String socialLoginToken;
+
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private UserSetting userSetting;
 
@@ -96,6 +98,10 @@ public class User {
         this.punctualityScore = (float) -1;
         this.scheduleCountAfterReset = 0;
         this.latenessCountAfterReset = 0;
+    }
+
+    public void updateSocialLoginToken(String refreshToken) {
+        this.socialLoginToken = refreshToken;
     }
 
     //여유 시간 업데이트

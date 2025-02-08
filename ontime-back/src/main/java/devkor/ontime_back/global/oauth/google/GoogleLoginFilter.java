@@ -30,14 +30,13 @@ import java.util.Optional;
 
 @Slf4j
 public class GoogleLoginFilter extends AbstractAuthenticationProcessingFilter {
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-    private static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/userinfo/v2/me";
+    private final GoogleLoginService googleLoginService;
 
 
-    public GoogleLoginFilter(String defaultFilterProcessesUrl, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public GoogleLoginFilter(String defaultFilterProcessesUrl, GoogleLoginService googleLoginService, UserRepository userRepository) {
         super(defaultFilterProcessesUrl);
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.googleLoginService = googleLoginService;
         this.userRepository = userRepository;
     }
 
@@ -46,91 +45,21 @@ public class GoogleLoginFilter extends AbstractAuthenticationProcessingFilter {
             throws AuthenticationException, IOException, ServletException {
         ObjectMapper objectMapper = new ObjectMapper();
         OAuthGoogleRequestDto oAuthGoogleRequestDto = objectMapper.readValue(request.getInputStream(), OAuthGoogleRequestDto.class);
-        OAuthGoogleUserDto oAuthGoogleUserInfo = getUserInfoFromAccessToken(oAuthGoogleRequestDto.getAccessToken());
+        OAuthGoogleUserDto oAuthGoogleUserInfo = googleLoginService.getUserInfoFromAccessToken(oAuthGoogleRequestDto.getAccessToken());
 
         Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.GOOGLE, oAuthGoogleUserInfo.getSub());
 
+
         if (existingUser.isPresent()) {
-            return handleLogin(existingUser.get(), response);
+            return googleLoginService.handleLogin(oAuthGoogleRequestDto, existingUser.get(), response);
         } else {
-            return handleRegister(oAuthGoogleUserInfo, response);
+            return googleLoginService.handleRegister(oAuthGoogleRequestDto, oAuthGoogleUserInfo, response);
         }
     }
 
-    public OAuthGoogleUserDto getUserInfoFromAccessToken(String accessToken) {
-        RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<OAuthGoogleUserDto> response = restTemplate.exchange(
-                GOOGLE_USER_INFO_URL,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                OAuthGoogleUserDto.class
-        );
-
-        return response.getBody();
-    }
-
-    private Authentication handleLogin(User user, HttpServletResponse response) throws IOException {
-
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getId());
-        String refreshToken = jwtTokenProvider.createRefreshToken();
-
-        jwtTokenProvider.updateRefreshToken(user.getEmail(), refreshToken);
-        jwtTokenProvider.sendAccessToken(response, accessToken);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        String msg = user.getRole().name().equals("GUEST") ? "유저의 ROLE이 GUEST이므로 온보딩API를 호출해 온보딩을 진행해야합니다." : "로그인에 성공하였습니다.";
-        // JSON 응답 생성
-        String responseBody = String.format(
-                "{ \"status\": \"success\", \"code\": \"200\", \"message\": \"%s\", \"data\": { " +
-                        "\"userId\": %d, \"email\": \"%s\", \"name\": \"%s\", " +
-                        "\"spareTime\": \"%s\", \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
-                msg, user.getId(), user.getEmail(), user.getName(),
-                user.getSpareTime(), user.getNote(), user.getPunctualityScore(), user.getRole().name()
-        );
-
-        response.getWriter().write(responseBody);
-        response.getWriter().flush();
-
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
-    }
-
-    private Authentication handleRegister(OAuthGoogleUserDto oAuthGoogleUserDto, HttpServletResponse response) throws IOException {
-        User newUser = User.builder()
-                .socialType(SocialType.GOOGLE)
-                .socialId(oAuthGoogleUserDto.getSub())
-                .email(oAuthGoogleUserDto.getEmail())
-                .name(oAuthGoogleUserDto.getName())
-                .imageUrl(oAuthGoogleUserDto.getPicture())
-                .role(Role.GUEST)
-                .build();
-
-        User savedUser = userRepository.save(newUser);
-
-        String accessToken = jwtTokenProvider.createAccessToken(newUser.getEmail(), newUser.getId());
-        jwtTokenProvider.sendAccessToken(response, accessToken);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        String responseBody = String.format(
-                "{\"message\": \"%s\", \"role\": \"%s\"}",
-                "회원가입이 완료되었습니다. ROLE이 GUEST이므로 온보딩이 필요합니다.",
-                savedUser.getRole().name()
-        );
-
-        response.getWriter().write(responseBody);
-        response.getWriter().flush();
-
-        return new UsernamePasswordAuthenticationToken(newUser, null, Collections.singletonList(new SimpleGrantedAuthority(newUser.getRole().name())));
-    }
 
     // 인증 성공 처리
     @Override

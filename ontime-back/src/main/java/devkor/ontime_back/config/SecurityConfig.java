@@ -12,6 +12,7 @@ import devkor.ontime_back.global.jwt.JwtUtils;
 import devkor.ontime_back.global.oauth.apple.AppleLoginFilter;
 import devkor.ontime_back.global.oauth.apple.AppleLoginService;
 import devkor.ontime_back.global.oauth.apple.ApplePublicKeyGenerator;
+import devkor.ontime_back.global.oauth.google.GoogleLoginService;
 import devkor.ontime_back.global.oauth.kakao.KakaoLoginFilter;
 import devkor.ontime_back.global.oauth.google.GoogleLoginFilter;
 import devkor.ontime_back.repository.UserRepository;
@@ -50,6 +51,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final AppleLoginService appleLoginService;
+    private final GoogleLoginService googleLoginService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -73,7 +75,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new KakaoLoginFilter("/oauth2/kakao/registerOrLogin", jwtTokenProvider, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new GoogleLoginFilter("/oauth2/google/registerOrLogin", jwtTokenProvider, userRepository),
+                .addFilterBefore(new GoogleLoginFilter("/oauth2/google/registerOrLogin", googleLoginService, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new AppleLoginFilter("/oauth2/apple/registerOrLogin", appleLoginService, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
