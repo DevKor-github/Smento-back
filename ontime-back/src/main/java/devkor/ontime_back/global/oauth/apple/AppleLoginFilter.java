@@ -72,17 +72,17 @@ public class AppleLoginFilter extends AbstractAuthenticationProcessingFilter {
             log.info("appleUserId: {}", appleUserId);
             String email = tokenClaims.get("email", String.class);
 
-            String appleRefreshToken = appleLoginService.getAppleAccessTokenAndRefreshToken(oAuthAppleRequestDto.getAuthCode()).getRefreshToken();
             // socialRefreshtoken에 저장
+            String appleRefreshToken = appleLoginService.getAppleAccessTokenAndRefreshToken(oAuthAppleRequestDto.getAuthCode()).getRefreshToken();
 
-            OAuthAppleUserDto oAuthAppleUserDto = new OAuthAppleUserDto(appleUserId, email, oAuthAppleRequestDto.getFullName());
+            OAuthAppleUserDto oAuthAppleUserDto = new OAuthAppleUserDto(appleUserId, oAuthAppleRequestDto.getEmail(), oAuthAppleRequestDto.getFullName());
 
             Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.APPLE, appleUserId);
 
             if (existingUser.isPresent()) {
-                return appleLoginService.handleLogin(existingUser.get(), response);
+                return appleLoginService.handleLogin(appleRefreshToken, existingUser.get(), response);
             } else {
-                return appleLoginService.handleRegister(oAuthAppleUserDto, response);
+                return appleLoginService.handleRegister(appleRefreshToken, oAuthAppleUserDto, response);
             }
 
         } catch (Exception e) {
@@ -92,3 +92,4 @@ public class AppleLoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
 }
+
