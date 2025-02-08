@@ -1,4 +1,4 @@
-package devkor.ontime_back.global.oauth.filter;
+package devkor.ontime_back.global.oauth.kakao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import devkor.ontime_back.dto.OAuthKakaoUserDto;

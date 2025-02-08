@@ -1,4 +1,4 @@
-package devkor.ontime_back.applelogin;
+package devkor.ontime_back.global.oauth.apple;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

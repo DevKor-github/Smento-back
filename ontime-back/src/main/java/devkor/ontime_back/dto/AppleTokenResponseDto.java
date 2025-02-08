@@ -1,10 +1,10 @@
-package devkor.ontime_back.applelogin;
+package devkor.ontime_back.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class AppleTokenResponse {
+public class AppleTokenResponseDto {
     @JsonProperty("access_token")
     private String accessToken;
 
@@ -17,7 +17,7 @@ public class AppleTokenResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
-    @JsonProperty("expires_in")
+    @JsonProperty("id_token")
     private String idToken;
 
 }

@@ -1,7 +1,6 @@
 package devkor.ontime_back.controller;
 
-import devkor.ontime_back.applelogin.AppleLoginService;
-import devkor.ontime_back.dto.OAuthAppleLoginRequestDto;
+import devkor.ontime_back.dto.OAuthAppleRequestDto;
 import devkor.ontime_back.dto.OAuthGoogleUserDto;
 import devkor.ontime_back.dto.OAuthKakaoUserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,20 +11,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/oauth2")
 @RequiredArgsConstructor
 public class SocialAuthController {
-
-    private final AppleLoginService appleLoginService;
 
     @Operation(
             summary = "구글 소셜 로그인/회원가입",
@@ -35,7 +27,7 @@ public class SocialAuthController {
                     content = @Content(
                             schema = @Schema(
                                     type = "object",
-                                    example = "{\n \"sub\": \"101129251579261120097\",\n \"name\": \"홍길동\",\n \"given_name\": \"길동\",\n \"family_name\": \"홍\",\n \"picture\": \"http://dfsklafj;ewoai.jpg\",\n \"email\": \"hong0000@gmail.com\",\n \"email_verified\": true }"
+                                    example = "{\n \"accessToken\": \"ya29.xxxxxxx\" }"
                             )
                     )
             )
@@ -81,22 +73,66 @@ public class SocialAuthController {
         return "카카오 로그인/회원가입 성공"; // 로그인 처리는 필터에서 적용
     }
 
+    @Operation(
+            summary = "애플 소셜 로그인/회원가입",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "애플 idtoken, authcode, fullname",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\n \"idToken\": \".\",\n  \"authCode\": \".\",\n  \"fullName\": \"허진서\" }"                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "카카오 로그인/회원가입 성공 (로그인시 data : login, 회원가입시 data : register", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            type = "object",
+                            example = "{\n \"status\": \"success\",\n \"code\": \"200\",\n \"message\": \"%s\",\n \"data\": { \"userId\": %d,\n \"email\": \"%s\",\n \"name\": \"%s\",\n \"spareTime\": \"%s\",\n \"note\": \"%s\",\n \"punctualityScore\": %f,\n \"role\": \"%s\" }\n }"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(이메일이 이미 존재할 경우, 이름이 이미 존재할 경우 다르게 출력)")))
+    })
     @PostMapping("/apple/registerOrLogin")
-    public ResponseEntity<?> appleRegisterOrLogin(@RequestBody OAuthAppleLoginRequestDto appleLoginRequestDto, HttpServletResponse response) {
-        try {
-            Authentication authentication = appleLoginService.registerOrLogin(
-                    appleLoginRequestDto.getIdToken(),
-                    appleLoginRequestDto.getAuthCode(),
-                    appleLoginRequestDto.getFullName(),
-                    response
-            );
-            return ResponseEntity.ok().body(Map.of("message", "애플 로그인/회원가입 성공"));
-
-        } catch (Exception e) {
-            log.error("애플 로그인 실패: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "애플 로그인/회원가입 실패", "message", e.getMessage()));
-        }
+    public String appleRegisterOrLogin(@RequestBody OAuthAppleRequestDto appleLoginRequestDto, HttpServletResponse response) {
+        return "애플 로그인/회원가입 성공";
     }
+
+    @Operation(
+            summary = "애플 소셜 로그인 회원탈퇴",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = " ",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{\n \"idToken\": \".\",\n  \"authCode\": \".\",\n  \"fullName\": \"허진서\" }"                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "카카오 로그인/회원가입 성공 (로그인시 data : login, 회원가입시 data : register", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            type = "object",
+                            example = "{\n \"status\": \"success\",\n \"code\": \"200\",\n \"message\": \"%s\",\n \"data\": { \"userId\": %d,\n \"email\": \"%s\",\n \"name\": \"%s\",\n \"spareTime\": \"%s\",\n \"note\": \"%s\",\n \"punctualityScore\": %f,\n \"role\": \"%s\" }\n }"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(이메일이 이미 존재할 경우, 이름이 이미 존재할 경우 다르게 출력)")))
+    })
+    @PostMapping("/apple/deleteUser")
+    public String appleDeleteUser(HttpServletResponse response) {
+//        String appleRefreshToken = getAppleAccessTokenAndRefreshToken(oAuthAppleRequestDto.getAuthCode()).getRefreshToken();
+//        boolean isRevoked = checkAppleLoginRevoked(appleRefreshToken);
+//        if (isRevoked) {
+//            throw new IllegalStateException("Apple 로그인 철회됨: 사용자가 로그인 연결을 해제함");
+//        }
+
+        return "애플 로그인 회원탈퇴 성공";
+    }
+
+
 
 }
