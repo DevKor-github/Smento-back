@@ -3,7 +3,9 @@ package devkor.ontime_back.repository;
 import devkor.ontime_back.entity.PreparationUser;
 import devkor.ontime_back.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +22,8 @@ public interface PreparationUserRepository extends JpaRepository<PreparationUser
     Optional<PreparationUser> findFirstPreparationUserByUser(User user);
 
     void deleteByUser(User user); // 메서드 선언
+
+    @Modifying
+    @Query("UPDATE PreparationUser p SET p.nextPreparation = NULL WHERE p.user.id = :userId")
+    void clearNextPreparationByUserId(@Param("userId") Long userId);
 }
