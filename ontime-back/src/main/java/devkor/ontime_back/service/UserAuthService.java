@@ -7,6 +7,7 @@ import devkor.ontime_back.dto.UserSignUpDto;
 import devkor.ontime_back.entity.User;
 import devkor.ontime_back.entity.UserSetting;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
+import devkor.ontime_back.repository.PreparationUserRepository;
 import devkor.ontime_back.repository.UserRepository;
 import devkor.ontime_back.entity.Role;
 import devkor.ontime_back.repository.UserSettingRepository;
@@ -31,6 +32,7 @@ public class UserAuthService {
 
     private final UserRepository userRepository;
     private final UserSettingRepository userSettingRepository;
+    private final PreparationUserRepository preparationUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -128,6 +130,7 @@ public class UserAuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
+        preparationUserRepository.clearNextPreparationByUserId(userId);
         userRepository.delete(user);
 
         return userId;
