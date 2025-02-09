@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 public class OAuthGoogleUserDto {
 
-    private String sub;           // 고유 사용자 ID
+    private String id;           // 고유 사용자 ID
     private String name;          // 사용자 이름
     @JsonProperty("given_name") // JSON의 given_name 필드와 매핑
     private String givenName;

@@ -90,7 +90,7 @@ public class GoogleLoginService {
     public Authentication handleRegister(OAuthGoogleRequestDto oAuthGoogleRequestDto, OAuthGoogleUserDto oAuthGoogleUserDto, HttpServletResponse response) throws IOException {
         User newUser = User.builder()
                 .socialType(SocialType.GOOGLE)
-                .socialId(oAuthGoogleUserDto.getSub())
+                .socialId(oAuthGoogleUserDto.getId())
                 .email(oAuthGoogleUserDto.getEmail())
                 .name(oAuthGoogleUserDto.getName())
                 .imageUrl(oAuthGoogleUserDto.getPicture())
