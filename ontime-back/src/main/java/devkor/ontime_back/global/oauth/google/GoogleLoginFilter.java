@@ -47,7 +47,7 @@ public class GoogleLoginFilter extends AbstractAuthenticationProcessingFilter {
         OAuthGoogleRequestDto oAuthGoogleRequestDto = objectMapper.readValue(request.getInputStream(), OAuthGoogleRequestDto.class);
         OAuthGoogleUserDto oAuthGoogleUserInfo = googleLoginService.getUserInfoFromAccessToken(oAuthGoogleRequestDto.getAccessToken());
 
-        Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.GOOGLE, oAuthGoogleUserInfo.getSub());
+        Optional<User> existingUser = userRepository.findBySocialTypeAndSocialId(SocialType.GOOGLE, oAuthGoogleUserInfo.getId());
 
 
         if (existingUser.isPresent()) {
