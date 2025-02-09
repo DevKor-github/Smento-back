@@ -76,9 +76,9 @@ public class GoogleLoginService {
         String responseBody = String.format(
                 "{ \"status\": \"success\", \"code\": \"200\", \"message\": \"%s\", \"data\": { " +
                         "\"userId\": %d, \"email\": \"%s\", \"name\": \"%s\", " +
-                        "\"spareTime\": %d, \"note\": \"%s\", \"punctualityScore\": %f, \"role\": \"%s\" } }",
+                        "\"spareTime\": %d, \"note\": %s, \"punctualityScore\": %f, \"role\": \"%s\" } }",
                 msg, user.getId(), user.getEmail(), user.getName(),
-                user.getSpareTime(), user.getNote(), user.getPunctualityScore(), user.getRole().name()
+                user.getSpareTime(), user.getNote() != null ? "\"" + user.getNote() + "\"" : null, user.getPunctualityScore(), user.getRole().name()
         );
 
         response.getWriter().write(responseBody);
