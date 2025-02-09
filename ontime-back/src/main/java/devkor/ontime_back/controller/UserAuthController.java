@@ -48,11 +48,11 @@ public class UserAuthController {
             @ApiResponse(responseCode = "4XX", description = "회원가입 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(이메일이 이미 존재할 경우, 이름이 이미 존재할 경우 다르게 출력)")))
     })
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponseForm<UserSignUpResponse>> signUp(HttpServletRequest request, HttpServletResponse response, @RequestBody UserSignUpDto userSignUpDto) throws Exception {
+    public ResponseEntity<ApiResponseForm<UserInfoResponse>> signUp(HttpServletRequest request, HttpServletResponse response, @RequestBody UserSignUpDto userSignUpDto) throws Exception {
         User user = userAuthService.signUp(request, response, userSignUpDto);
 
         String message = "회원가입이 성공적으로 완료되었습니다. 온보딩을 진행해주세요( /user/onboarding )";
-        UserSignUpResponse userSignUpResponse = UserSignUpResponse.builder()
+        UserInfoResponse userSignUpResponse = UserInfoResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())

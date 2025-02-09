@@ -1,6 +1,7 @@
 package devkor.ontime_back.controller;
 
 import devkor.ontime_back.dto.*;
+import devkor.ontime_back.entity.User;
 import devkor.ontime_back.response.ApiResponseForm;
 import devkor.ontime_back.service.ScheduleService;
 import devkor.ontime_back.service.UserAuthService;
@@ -156,6 +157,47 @@ public class UserController {
 
         String message = "온보딩이 성공적으로 완료되었습니다!";
         return ResponseEntity.ok(ApiResponseForm.success(null, message));
+    }
+
+    @Operation(
+            summary = "사용자 정보 조회",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "사용자 정보 조회 요청 JSON 데이터는 없음. 헤더에 토큰만 있으면 됨",
+                    content = @Content(
+                            schema = @Schema(
+                                    type = "object",
+                                    example = "{}"
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            example = "{\n  \"status\": \"success\",\n  \"code\": \"200\",\n  \"message\": \"사용자 정보 조회 성공\",\n  \"data\": {\n    \"userId\": 1,\n    \"email\": \"user@example.com\",\n    \"name\": \"junbeom\",\n    \"spareTime\": 30,\n    \"note\": \"내 인생에 지각은 없다!!!\",\n    \"punctualityScore\": -1,\n    \"role\": \"USER\"\n  }\n}"
+                    )
+            )),
+            @ApiResponse(responseCode = "4XX", description = "사용자 정보 조회 실패", content = @Content(mediaType = "application/json", schema = @Schema(example = "실패 메세지(정확히 어떤 메세지인지는 모름)")))
+    })
+    @GetMapping("/info")
+    public ResponseEntity<ApiResponseForm<UserInfoResponse>> getUserInfo(HttpServletRequest request) {
+        Long userId = userAuthService.getUserIdFromToken(request);
+
+        User user = userService.getUserInfo(userId);
+
+        UserInfoResponse userInfoResponse = UserInfoResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .spareTime(user.getSpareTime())
+                .note(user.getNote())
+                .punctualityScore(user.getPunctualityScore())
+                .build();
+
+        String message = "사용자 정보 조회 성공";
+        return ResponseEntity.ok(ApiResponseForm.success(userInfoResponse, message));
     }
 
 }

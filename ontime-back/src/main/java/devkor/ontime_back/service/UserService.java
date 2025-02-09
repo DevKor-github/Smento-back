@@ -89,4 +89,9 @@ public class UserService {
         user.authorizeUser();
         userRepository.save(user);
     }
+
+    public User getUserInfo(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 id입니다."));
+    }
 }

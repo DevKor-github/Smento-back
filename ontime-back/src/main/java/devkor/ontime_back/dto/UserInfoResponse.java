@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Builder
-public class UserSignUpResponse {
+public class UserInfoResponse {
     private Long userId;
     public String email;
     public String name;
