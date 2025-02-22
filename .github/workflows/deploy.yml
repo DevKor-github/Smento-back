@@ -1,4 +1,4 @@
-name: "Deploy"
+name: Deploy
 
 on:
   push:
@@ -9,19 +9,19 @@ jobs:
   build-and-docker:
     runs-on: ubuntu-latest
     steps:
-      # 1-1. 코드 체크아웃
+      # 코드 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v3     
-      # 1-2. JDK 설치
-      - name: Set up JDK 21 
+        uses: actions/checkout@v3
+      # JDK 설치
+      - name: Set up JDK 21 # 실행 환경에서 사용 중인 JDK 확인 (java -version)
         uses: actions/setup-java@v2
         with:
           java-version: '21'
           distribution: 'temurin'
-      # 1-3. Gradle Wrapper 검증
+      # Gradle Wrapper 검증
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
-      # 1-4. application.properties 생성
+      # application.properties 생성
       - name: Create application.properties
         run: |
           mkdir -p ontime-back/src/main/resources
@@ -61,24 +61,25 @@ jobs:
           echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> src/main/resources/application.properties
           echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
-      # 1-5. application.properties 출력
+      # application.properties 출력
       - name: Check application.properties
         run: cat ontime-back/src/main/resources/application.properties
-      # 1-6. Gradle 빌드
-      - name: Build with Gradle
-        run: |
-          cd ontime-back  
-          ./gradlew build -x test
-      # 1-7. application.properties 포함여부 확인  
+      # application.properties 포함여부 확인  
       - name: Check application.properties in JAR
         run: |
           cd ontime-back/build/libs
           jar -tf *.jar | grep application.properties
+      # 4. Gradle 빌드
+      - name: Build with Gradle
+        run: |
+          cd ontime-back  
+          ./gradlew build -x test
   deploy-to-ec2:
     needs: build-and-docker
     runs-on: ubuntu-latest
+
+    
     steps:
-    # 2-1. 특정 디렉토리 제외하고 삭제
     - name: Delete existing folder
       uses: appleboy/ssh-action@master
       with:
@@ -89,10 +90,10 @@ jobs:
         script: |
           sudo find OnTime-back -type f -not \( -path "OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json" -o -path "OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8" \) -delete
           sudo find OnTime-back -type d -empty -delete
-    # 2-2. 코드 체크아웃 (# 2-3을 위해서 필요한 과정)      
+          
     - name: Checkout code
       uses: actions/checkout@v3
-    # 2-3. ec2 서버에 파일 업로드
+      
     - name: Upload files to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -102,7 +103,8 @@ jobs:
          source: "./"
          target: "/home/ubuntu/OnTime-back"
          debug: true
-    # 2-4. ec2 서버에서 docker-compose 실행   
+ 
+        
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -113,7 +115,6 @@ jobs:
         script: |
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources
           echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
-
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
           cd /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
           cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
