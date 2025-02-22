@@ -26,10 +26,12 @@ jobs:
         run: |
           cd ontime-back  
           ./gradlew build -x test
-      - name: Move jar file
-        run: mv ontime-back/build/libs/ontime-back-0.0.1-SNAPSHOT.jar ./project.jar
-      - name: Move docker-compose file
-        run: mv ontime-back/docker-compose.yml ./docker-compose.yml
+      # 파일 위치 변경
+      - name: Move file
+        run: |
+          mv ontime-back/build/libs/ontime-back-0.0.1-SNAPSHOT.jar ./project.jar
+          mv ontime-back/docker-compose.yml ./docker-compose.yml
+      # EC2 서버에 업로드
       - name: Upload files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -43,7 +45,8 @@ jobs:
     needs: build-and-docker
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to EC2
+    # EC2 서버에 접근 + 설정 파일 생성
+    - name: SSH to EC2 & Create Config Files
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -53,7 +56,7 @@ jobs:
         script: |
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
           # .env 파일 생성
-          sudo bash -c 'cat <<EOT > .env
+          sudo bash -c 'cat <<EOT > /home/ubuntu/OnTime-back/.env
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
@@ -155,6 +158,7 @@ jobs:
     needs: create-config-files
     runs-on: ubuntu-latest
     steps:
+    # EC2 서버에 접근 + docker container 배포
     - name: SSH to EC2 & Deploy Docker Containers
       uses: appleboy/ssh-action@master
       with:
@@ -177,6 +181,6 @@ jobs:
           sudo docker network prune -f
           
           # Docker Compose 실행
-          cd /home/ubuntu/OnTime-back/ontime-back
+          cd /home/ubuntu/OnTime-back
           docker-compose up --build -d
       
