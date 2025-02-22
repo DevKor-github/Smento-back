@@ -33,8 +33,8 @@ jobs:
            username: ${{ secrets.EC2_USER }}
            key: ${{ secrets.EC2_SSH_KEY }}
            source: |
-             ontime-back/build/libs/*.jar
-             ontime-back/docker-compose.yml
+             ./build/libs/*.jar
+             ./docker-compose.yml
            target: "/home/ubuntu/OnTime-back"
            debug: true
   deploy-to-ec2:
