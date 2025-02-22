@@ -64,51 +64,51 @@ jobs:
           # 보안이 필요한 파일 생성
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
-          cho "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.jpa.hibernate.ddl-auto=create" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "jwt.secret.key=${{ secrets.JWT_SECRETKEY }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "jwt.access.header=${{ secrets.JWT_ACCESS_HEADER }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "jwt.refresh.header=${{ secrets.JWT_REFRESH_HEADER }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-secret=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "apple.client.id=${{ secrets.APPLE_CLIENT_ID }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "apple.client.secret=${{ secrets.APPLE_CLIENT_SECRET }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "apple.login.key=${{ secrets.APPLE_LOGIN_KEY }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "management.endpoints.web.exposure.include=health" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          echo "management.endpoint.health.show-details=always" >> home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          cho "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.jpa.hibernate.ddl-auto=create" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "jwt.secret.key=${{ secrets.JWT_SECRETKEY }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "jwt.access.header=${{ secrets.JWT_ACCESS_HEADER }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "jwt.refresh.header=${{ secrets.JWT_REFRESH_HEADER }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-secret=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "apple.client.id=${{ secrets.APPLE_CLIENT_ID }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "apple.client.secret=${{ secrets.APPLE_CLIENT_SECRET }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "apple.login.key=${{ secrets.APPLE_LOGIN_KEY }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "management.endpoints.web.exposure.include=health" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          echo "management.endpoint.health.show-details=always" >> /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
           
-          echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
           
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_1 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_2 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_3 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_4 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_5 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_6 }}" > home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_1 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_2 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_3 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_4 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_5 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_6 }}" > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
           
           # .env 파일 생성
           cat <<EOT > .env
