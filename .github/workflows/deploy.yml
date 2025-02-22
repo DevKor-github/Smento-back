@@ -62,7 +62,6 @@ jobs:
           echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> src/main/resources/application.properties
           echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
-
           echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
           
           echo "${{ secrets.AUTHKEY_743M7R5W3W }}" > src/main/resources/key/AuthKey_743M7R5W3W.p8
@@ -74,13 +73,11 @@ jobs:
         run: |
           cd ontime-back  
           ./gradlew build -x test
-      # ontime-back/build/libs 디렉토리 확인
-      - name: List JAR files
+      - name: Check ontime-back/build/libs
         run: |
           cd ontime-back/build/libs
           ls -al
-      # build/libs 디렉토리 확인
-      - name: List JAR files
+      - name: Check build/libs
         run: |
           cd build/libs
           ls -al
@@ -89,7 +86,6 @@ jobs:
         run: |
           cd ontime-back/build/libs
           jar -tf *.jar | grep application.properties
-      # ec2서버에 파일 업로드   
       - name: Upload necessary files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
