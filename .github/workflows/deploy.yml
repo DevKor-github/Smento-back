@@ -26,17 +26,17 @@ jobs:
         run: |
           cd ontime-back  
           ./gradlew build -x test
-      - name: Remove jar file
+      - name: Move jar file
         run: mv ontime-back/build/libs/ontime-back-0.0.1-SNAPSHOT.jar ./project.jar
+      - name: Move docker-compose file
+        run: mv ontime-back/docker-compose.yml ./docker-compose.yml
       - name: Upload files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
            host: ${{ secrets.EC2_HOST }}
            username: ${{ secrets.EC2_USER }}
            key: ${{ secrets.EC2_SSH_KEY }}
-           source: |
-             ./project.jar
-             ./ontime-back/docker-compose.yml
+           source: "./project.jar, ./docker-compose.yml"
            target: "/home/ubuntu/OnTime-back"
            debug: true
   create-config-files:
