@@ -74,11 +74,22 @@ jobs:
         run: |
           cd ontime-back  
           ./gradlew build -x test
+      # ontime-back/build/libs 디렉토리 확인
+      - name: List JAR files
+        run: |
+          cd ontime-back/build/libs
+          ls -al
+      # build/libs 디렉토리 확인
+      - name: List JAR files
+        run: |
+          cd build/libs
+          ls -al
       # application.properties 포함여부 확인  
       - name: Check application.properties in JAR
         run: |
           cd ontime-back/build/libs
           jar -tf *.jar | grep application.properties
+      # ec2서버에 파일 업로드   
       - name: Upload necessary files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
