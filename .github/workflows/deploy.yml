@@ -24,7 +24,8 @@ jobs:
       # application.properties 생성
       - name: Create application.properties
         run: |
-          mkdir -p ontime-back/src/main/resources
+          mkdir -p src/main/resources
+          mkdir -p src/main/resources/key
           echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > src/main/resources/application.properties
           echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> src/main/resources/application.properties
           echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> src/main/resources/application.properties
@@ -61,24 +62,40 @@ jobs:
           echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> src/main/resources/application.properties
           echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
           echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
+
+          echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          
+          echo "${{ secrets.AUTHKEY_743M7R5W3W }}" > src/main/resources/key/AuthKey_743M7R5W3W.p8
       # application.properties 출력
       - name: Check application.properties
-        run: cat ontime-back/src/main/resources/application.properties
+        run: cat src/main/resources/application.properties
+      # Gradle 빌드
+      - name: Build with Gradle
+        run: |
+          cd ontime-back  
+          ./gradlew build -x test
       # application.properties 포함여부 확인  
       - name: Check application.properties in JAR
         run: |
           cd ontime-back/build/libs
           jar -tf *.jar | grep application.properties
-      # 4. Gradle 빌드
-      - name: Build with Gradle
-        run: |
-          cd ontime-back  
-          ./gradlew build -x test
+      - name: Upload necessary files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+           host: ${{ secrets.EC2_HOST }}
+           username: ${{ secrets.EC2_USER }}
+           key: ${{ secrets.EC2_SSH_KEY }}
+           source: |
+             ./build/libs/*.jar
+             ./docker-compose.yml
+             ./.env
+             ./src/main/resources/application.properties
+             ./src/main/resources/key/AuthKey_743M7R5W3W.p8
+           target: "/home/ubuntu/OnTime-back"
+           debug: true
   deploy-to-ec2:
     needs: build-and-docker
     runs-on: ubuntu-latest
-
-    
     steps:
     - name: Delete existing folder
       uses: appleboy/ssh-action@master
