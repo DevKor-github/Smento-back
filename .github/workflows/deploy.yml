@@ -6,40 +6,79 @@ on:
       - deploy
 
 jobs:
-  build-and-docker:
+  build:
     runs-on: ubuntu-latest
     steps:
-      # 1. 코드 체크아웃
+      # 1-1. 코드 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: List files in Runner
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Contents of the directory:"
-          ls -la
-          
-      # 2. JDK 설치
-      - name: Set up JDK 21 # 실행 환경에서 사용 중인 JDK 확인 (java -version)
+        uses: actions/checkout@v3     
+      # 1-2. JDK 설치
+      - name: Set up JDK 21 
         uses: actions/setup-java@v2
         with:
           java-version: '21'
           distribution: 'temurin'
-      # 3. Gradle Wrapper 검증
+      # 1-3. Gradle Wrapper 검증
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
-      # 4. Gradle 빌드
+      # 1-4. application.properties 생성
+      - name: Create application.properties
+        run: |
+          mkdir -p ontime-back/src/main/resources
+          echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > src/main/resources/application.properties
+          echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> src/main/resources/application.properties
+          echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> src/main/resources/application.properties
+          echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> src/main/resources/application.properties
+          echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> src/main/resources/application.properties
+          echo "spring.jpa.hibernate.ddl-auto=create" >> src/main/resources/application.properties
+          echo "jwt.secret-key=${{ secrets.JWT_SECRET_KEY }}" >> src/main/resources/application.properties
+          echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> src/main/resources/application.properties
+          echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> src/main/resources/application.properties
+          echo "jwt.access.header=${{ secrets.JWT_ACCESS_HEADER }}" >> src/main/resources/application.properties
+          echo "jwt.refresh.header=${{ secrets.JWT_REFRESH_HEADER }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-secret=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.google.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.google.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI }}" >> src/main/resources/application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> src/main/resources/application.properties
+          echo "apple.client.id=${{ secrets.APPLE_CLIENT_ID }}" >> src/main/resources/application.properties
+          echo "apple.client.secret=${{ secrets.APPLE_CLIENT_SECRET }}" >> src/main/resources/application.properties
+          echo "apple.login.key=${{ secrets.APPLE_LOGIN_KEY }}" >> src/main/resources/application.properties
+          echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> src/main/resources/application.properties
+          echo "management.endpoints.web.exposure.include=health" >> src/main/resources/application.properties
+          echo "management.endpoint.health.show-details=always" >> src/main/resources/application.properties
+      # 1-5. application.properties 출력
+      - name: Check application.properties
+        run: cat ontime-back/src/main/resources/application.properties
+      # 1-6. Gradle 빌드
       - name: Build with Gradle
         run: |
           cd ontime-back  
           ./gradlew build -x test
+      # 1-7. application.properties 포함여부 확인  
+      - name: Check application.properties in JAR
+        run: |
+          cd ontime-back/build/libs
+          jar -tf *.jar | grep application.properties
   deploy-to-ec2:
-    needs: build-and-docker
+    needs: build
     runs-on: ubuntu-latest
-
-    
     steps:
+    # 2-1. 특정 디렉토리 제외하고 삭제
     - name: Delete existing folder
       uses: appleboy/ssh-action@master
       with:
@@ -50,10 +89,10 @@ jobs:
         script: |
           sudo find OnTime-back -type f -not \( -path "OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json" -o -path "OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8" \) -delete
           sudo find OnTime-back -type d -empty -delete
-          
+    # 2-2. 코드 체크아웃 (# 2-3을 위해서 필요한 과정)      
     - name: Checkout code
       uses: actions/checkout@v3
-      
+    # 2-3. ec2 서버에 파일 업로드
     - name: Upload files to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -63,8 +102,7 @@ jobs:
          source: "./"
          target: "/home/ubuntu/OnTime-back"
          debug: true
- 
-        
+    # 2-4. ec2 서버에서 docker-compose 실행   
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
