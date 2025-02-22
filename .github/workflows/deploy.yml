@@ -51,7 +51,7 @@ jobs:
         script: |
           sudo mkdir -p /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key
           # .env 파일 생성
-          cat <<EOT > .env
+          sudo bash -c 'cat <<EOT > .env
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
@@ -92,25 +92,25 @@ jobs:
           APPLE_CLIENT_SECRET=${{ secrets.APPLE_CLIENT_SECRET }}
           APPLE_LOGIN_KEY=${{ secrets.APPLE_LOGIN_KEY }}
           APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
-          EOT
+          EOT'
 
           # json 파일 생성
-          cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          sudo bash -c 'cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
           ${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}
-          EOT          
+          EOT'         
           
           # authkey 생성
-          cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          sudo bash -c 'cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
           ${{ secrets.AUTHKEY_743M7R5W3W_1 }}
           ${{ secrets.AUTHKEY_743M7R5W3W_2 }}
           ${{ secrets.AUTHKEY_743M7R5W3W_3 }}
           ${{ secrets.AUTHKEY_743M7R5W3W_4 }}
           ${{ secrets.AUTHKEY_743M7R5W3W_5 }}
           ${{ secrets.AUTHKEY_743M7R5W3W_6 }}
-          EOT
+          EOT'
 
           # application.properties 생성
-          cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          sudo bash -c 'cat <<EOT > /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
           spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}
           spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}
           spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
@@ -147,6 +147,7 @@ jobs:
           apple.team.id=${{ secrets.APPLE_TEAM_ID }}
           management.endpoints.web.exposure.include=health
           management.endpoint.health.show-details=always
+          EOT'
 
   deploy-to-ec2:
     needs: create-config-files
