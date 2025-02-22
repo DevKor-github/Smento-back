@@ -5,11 +5,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
-
+import jakarta.persistence.*;
+import lombok.*;
 import java.util.UUID;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Place {
 
     @Id
@@ -17,9 +19,8 @@ public class Place {
 
     private String placeName;
 
-    public Place initPlaceName(UUID placeId, String placeName) {
+    public Place(UUID placeId, String placeName) {
         this.placeId = placeId;
         this.placeName = placeName;
-        return this;
     }
 }
