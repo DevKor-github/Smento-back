@@ -147,9 +147,9 @@ jobs:
           APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
           EOT'
 
-          sudo mv ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
-          sudo mv application.properties /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
-          sudo mv AuthKey_743M7R5W3W.p8 /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          sudo mv /home/ubuntu/OnTime-back/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json /home/ubuntu/OnTime-back/ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          sudo mv /home/ubuntu/OnTime-back/application.properties /home/ubuntu/OnTime-back/ontime-back/src/main/resources/application.properties
+          sudo mv /home/ubuntu/OnTime-back/AuthKey_743M7R5W3W.p8 /home/ubuntu/OnTime-back/ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
 
   deploy-to-ec2:
     needs: create-config-files
