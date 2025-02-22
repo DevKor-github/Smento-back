@@ -78,6 +78,26 @@ jobs:
         run: |
           cd ontime-back/build/libs
           ls -al
+          pwd
+      - name: Verify files before uploading
+        run: |
+          echo "Checking JAR files..."
+          ls -al ontime-back/build/libs/
+          
+          echo "Checking docker-compose.yml..."
+          ls -al ontime-back/docker-compose.yml || echo "File not found: docker-compose.yml"
+      
+          echo "Checking .env..."
+          ls -al ontime-back/.env || echo "File not found: .env"
+      
+          echo "Checking application.properties..."
+          ls -al ontime-back/src/main/resources/application.properties || echo "File not found: application.properties"
+      
+          echo "Checking Firebase key..."
+          ls -al ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json || echo "File not found: Firebase key"
+      
+          echo "Checking AuthKey..."
+          ls -al ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8 || echo "File not found: AuthKey"
       - name: Upload necessary files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -85,12 +105,12 @@ jobs:
            username: ${{ secrets.EC2_USER }}
            key: ${{ secrets.EC2_SSH_KEY }}
            source: |
-             ./ontime-back/build/libs/*.jar
-             ./ontime-back/docker-compose.yml
-             ./ontime-back/.env
-             ./ontime-back/src/main/resources/application.properties
-             ./ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
-             ./ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+             ontime-back/build/libs/*.jar
+             ontime-back/docker-compose.yml
+             ontime-back/.env
+             ontime-back/src/main/resources/application.properties
+             ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+             ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
            target: "/home/ubuntu/OnTime-back"
            debug: true
   deploy-to-ec2:
