@@ -6,7 +6,7 @@ on:
       - deploy
 
 jobs:
-  build:
+  build-and-docker:
     runs-on: ubuntu-latest
     steps:
       # 1-1. 코드 체크아웃
@@ -75,7 +75,7 @@ jobs:
           cd ontime-back/build/libs
           jar -tf *.jar | grep application.properties
   deploy-to-ec2:
-    needs: build
+    needs: build-and-docker
     runs-on: ubuntu-latest
     steps:
     # 2-1. 특정 디렉토리 제외하고 삭제
