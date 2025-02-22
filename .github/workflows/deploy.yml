@@ -21,88 +21,12 @@ jobs:
       # Gradle Wrapper 검증
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
-      # application.properties 생성
-      - name: Create application.properties
-        run: |
-          pwd
-          mkdir -p ontime-back/src/main/resources
-          mkdir -p ontime-back/src/main/resources/key
-          echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.jpa.hibernate.ddl-auto=create" >> ontime-back/src/main/resources/application.properties
-          echo "jwt.secret.key=${{ secrets.JWT_SECRETKEY }}" >> ontime-back/src/main/resources/application.properties
-          echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> ontime-back/src/main/resources/application.properties
-          echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> ontime-back/src/main/resources/application.properties
-          echo "jwt.access.header=${{ secrets.JWT_ACCESS_HEADER }}" >> ontime-back/src/main/resources/application.properties
-          echo "jwt.refresh.header=${{ secrets.JWT_REFRESH_HEADER }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-secret=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.google.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_NAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.google.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.scope=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-name=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_NAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.token-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE }}" >> ontime-back/src/main/resources/application.properties
-          echo "apple.client.id=${{ secrets.APPLE_CLIENT_ID }}" >> ontime-back/src/main/resources/application.properties
-          echo "apple.client.secret=${{ secrets.APPLE_CLIENT_SECRET }}" >> ontime-back/src/main/resources/application.properties
-          echo "apple.login.key=${{ secrets.APPLE_LOGIN_KEY }}" >> ontime-back/src/main/resources/application.properties
-          echo "apple.team.id=${{ secrets.APPLE_TEAM_ID }}" >> ontime-back/src/main/resources/application.properties
-          echo "management.endpoints.web.exposure.include=health" >> ontime-back/src/main/resources/application.properties
-          echo "management.endpoint.health.show-details=always" >> ontime-back/src/main/resources/application.properties
-          echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
-          
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_1 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_2 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_3 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_4 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_5 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-          echo "${{ secrets.AUTHKEY_743M7R5W3W_6 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
-      - name: Check application.properties
-        run: cat ontime-back/src/main/resources/application.properties
       # Gradle 빌드
       - name: Build with Gradle
         run: |
           cd ontime-back  
           ./gradlew build -x test
-      - name: Check ontime-back/build/libs
-        run: |
-          cd ontime-back/build/libs
-          ls -al
-          pwd
-      - name: Verify files before uploading
-        run: |
-          echo "Checking JAR files..."
-          ls -al ontime-back/build/libs/
-          
-          echo "Checking docker-compose.yml..."
-          ls -al ontime-back/docker-compose.yml || echo "File not found: docker-compose.yml"
-      
-          echo "Checking .env..."
-          ls -al ontime-back/.env || echo "File not found: .env"
-      
-          echo "Checking application.properties..."
-          ls -al ontime-back/src/main/resources/application.properties || echo "File not found: application.properties"
-      
-          echo "Checking Firebase key..."
-          ls -al ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json || echo "File not found: Firebase key"
-      
-          echo "Checking AuthKey..."
-          ls -al ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8 || echo "File not found: AuthKey"
-      - name: Upload necessary files to EC2
+      - name: Upload files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
            host: ${{ secrets.EC2_HOST }}
@@ -111,8 +35,6 @@ jobs:
            source: |
              ontime-back/build/libs/*.jar
              ontime-back/docker-compose.yml
-             ontime-back/src/main/resources/application.properties
-             ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
            target: "/home/ubuntu/OnTime-back"
            debug: true
   deploy-to-ec2:
@@ -139,6 +61,14 @@ jobs:
           sudo docker image prune -a
           sudo docker volume prune
           sudo docker network prune
+          # 보안이 필요한 파일 생성
+          echo "${{ secrets.ONTIME_PUSH_FIREBASE_ADMINSDK }}" > ontime-back/src/main/resources/ontime-push-firebase-adminsdk-gnpxs-7d098872ff.json
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_1 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_2 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_3 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_4 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_5 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
+          echo "${{ secrets.AUTHKEY_743M7R5W3W_6 }}" > ontime-back/src/main/resources/key/AuthKey_743M7R5W3W.p8  
           # .env 파일 생성
           cat <<EOT > .env
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
