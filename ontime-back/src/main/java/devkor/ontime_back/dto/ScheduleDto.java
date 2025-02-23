@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor // 모든 필드를 포함하는 생성자 추가
 public class ScheduleDto {
     private UUID scheduleId;
-    private Place place;
+    private PlaceDto place;
     private String scheduleName;
     private Integer moveTime;
     private LocalDateTime scheduleTime;
