@@ -15,7 +15,7 @@ public class PreparationSchedule {
     @Id
     private UUID preparationScheduleId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
@@ -24,7 +24,7 @@ public class PreparationSchedule {
 
     private Integer preparationTime;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "next_preparation_id")
     private PreparationSchedule nextPreparation;
 

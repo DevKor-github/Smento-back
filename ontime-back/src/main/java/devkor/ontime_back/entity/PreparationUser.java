@@ -17,7 +17,7 @@ public class PreparationUser {
     @Id
     private UUID preparationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
@@ -27,7 +27,7 @@ public class PreparationUser {
 
     private Integer preparationTime;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "next_preparation_id")
     private PreparationUser nextPreparation;
 

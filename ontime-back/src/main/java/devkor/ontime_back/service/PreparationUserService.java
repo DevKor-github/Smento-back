@@ -26,13 +26,13 @@ public class PreparationUserService {
 
     public Long getUserIdFromToken(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("User ID not found in token"));
+        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("토큰에서 사용자 ID를 찾을 수 없습니다."));
     }
 
     // 회원가입 시 디폴트 준비과정 세팅
     public void setFirstPreparationUser(Long userId, List<PreparationDto> preparationDtoList) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException("User with ID " + userId + " not found.")
+                new EntityNotFoundException("사용자 ID " + userId + "에 해당하는 사용자를 찾을 수 없습니다.")
         );
         handlePreparationUsers(user, preparationDtoList, false);
 
@@ -41,9 +41,8 @@ public class PreparationUserService {
     // 준비과정 수정
     @Transactional
     public void updatePreparationUsers(Long userId, List<PreparationDto> preparationDtoList) {
-        // user 확인
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException("User with ID " + userId + " not found.")
+                new EntityNotFoundException("사용자 ID " + userId + "에 해당하는 사용자를 찾을 수 없습니다.")
         );
         handlePreparationUsers(user, preparationDtoList, true);
 
@@ -51,13 +50,9 @@ public class PreparationUserService {
 
     // 준비과정 불러오기
     public List<PreparationDto> showAllPreparationUsers(Long userId) {
-        // user 확인
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException("User with ID " + userId + " not found.")
-        );
 
-        PreparationUser firstPreparation = preparationUserRepository.findFirstPreparationUserByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException("No starting PreparationUser found for User ID: " + userId));
+        PreparationUser firstPreparation = preparationUserRepository.findFirstPreparationUserByUserIdWithNextPreparation(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자 ID " + userId + "에 대한 시작 준비 단계를 찾을 수 없습니다."));
 
         List<PreparationDto> preparationDtos = new ArrayList<>();
         PreparationUser current = firstPreparation;
