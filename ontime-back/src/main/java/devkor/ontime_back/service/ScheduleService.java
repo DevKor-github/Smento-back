@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -180,11 +179,11 @@ public class ScheduleService {
         if (Boolean.TRUE.equals(schedule.getIsChange())) {
             return preparationScheduleRepository.findBySchedule(schedule).stream()
                     .map(preparationSchedule -> new PreparationDto(
-                            preparationSchedule.getPreparationId(),
+                            preparationSchedule.getPreparationScheduleId(),
                             preparationSchedule.getPreparationName(),
                             preparationSchedule.getPreparationTime(),
                             preparationSchedule.getNextPreparation() != null
-                                    ? preparationSchedule.getNextPreparation().getPreparationId()
+                                    ? preparationSchedule.getNextPreparation().getPreparationScheduleId()
                                     : null
                     ))
                     .collect(Collectors.toList());

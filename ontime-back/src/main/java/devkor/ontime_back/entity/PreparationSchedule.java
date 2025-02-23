@@ -1,19 +1,19 @@
 package devkor.ontime_back.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.UUID;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@Builder
 public class PreparationSchedule {
     @Id
-    private UUID preparationId;
+    private UUID preparationScheduleId;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
@@ -24,13 +24,12 @@ public class PreparationSchedule {
 
     private Integer preparationTime;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "next_preparation_id")
     private PreparationSchedule nextPreparation;
 
-
-    public PreparationSchedule(UUID preparationId, Schedule schedule, String preparationName, Integer preparationTime, PreparationSchedule preparationSchedule) {
-        this.preparationId = preparationId;
+    public PreparationSchedule(UUID preparationScheduleId, Schedule schedule, String preparationName, Integer preparationTime, PreparationSchedule preparationSchedule) {
+        this.preparationScheduleId = preparationScheduleId;
         this.schedule = schedule;
         this.preparationName = preparationName;
         this.preparationTime = preparationTime;
