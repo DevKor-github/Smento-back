@@ -2,17 +2,13 @@ package devkor.ontime_back.service;
 
 import devkor.ontime_back.dto.PreparationDto;
 import devkor.ontime_back.entity.PreparationSchedule;
-import devkor.ontime_back.entity.PreparationUser;
 import devkor.ontime_back.entity.Schedule;
-import devkor.ontime_back.entity.User;
 import devkor.ontime_back.global.jwt.JwtTokenProvider;
 import devkor.ontime_back.repository.PreparationScheduleRepository;
-import devkor.ontime_back.repository.PreparationUserRepository;
 import devkor.ontime_back.repository.ScheduleRepository;
 import devkor.ontime_back.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PreparationScheduleService {
     private final PreparationScheduleRepository preparationScheduleRepository;
@@ -36,15 +32,18 @@ public class PreparationScheduleService {
         return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("User ID not found in token"));
     }
 
+    @Transactional
     public void makePreparationSchedules(Long userId, UUID scheduleId, List<PreparationDto> preparationDtoList) {
         handlePreparationSchedules(userId, scheduleId, preparationDtoList, false);
     }
 
+    @Transactional
     public void updatePreparationSchedules(Long userId, UUID scheduleId, List<PreparationDto> preparationDtoList) {
         handlePreparationSchedules(userId, scheduleId, preparationDtoList, true);
     }
 
-    private void handlePreparationSchedules(Long userId, UUID scheduleId, List<PreparationDto> preparationDtoList, boolean shouldDelete) {
+    @Transactional
+    protected void handlePreparationSchedules(Long userId, UUID scheduleId, List<PreparationDto> preparationDtoList, boolean shouldDelete) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("Schedule not found with id: " + scheduleId));
 
