@@ -17,7 +17,8 @@ import java.util.UUID;
 @Table(
         indexes = {
                 @Index(name = "idx_schedule_user_id", columnList = "user_id"),
-                @Index(name = "idx_schedule_lateness_time", columnList = "latenessTime")
+                @Index(name = "idx_schedule_lateness_time", columnList = "latenessTime"),
+                @Index(name = "idx_schedule_time", columnList = "schedule_time")
         }
 )
 public class Schedule {
@@ -30,7 +31,7 @@ public class Schedule {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place place;
 

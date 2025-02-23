@@ -9,6 +9,7 @@ import devkor.ontime_back.repository.*;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleService {
 
     private final UserService userService;
@@ -39,28 +41,33 @@ public class ScheduleService {
     // userId 추출
     public Long getUserIdFromToken(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        String refreshToken = request.getHeader("refresh-token");
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("User ID not found in token"));
+        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("token에서 userId가 추출되지 않습니다."));
     }
 
+    // scheduleId, userId를 통한 권한 확인
+    private Schedule getScheduleWithAuthorization(UUID scheduleId, Long userId) {
+        Schedule schedule = scheduleRepository.findByIdWithUser(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 일정을 찾을 수 없습니다: " + scheduleId));
+
+        if (!schedule.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("사용자가 해당 일정에 대한 권한이 없습니다.");
+        }
+
+        return schedule;
+    }
 
     // 특정 기간의 약속 조회
     public List<ScheduleDto> showSchedulesByPeriod(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         List<Schedule> periodScheduleList;
-
-        if (startDate == null && endDate != null) {
-            // StartDate가 null인 경우, EndDate 이전의 일정 모두 반환
+        if (startDate == null && endDate != null) { // StartDate가 null인 경우, EndDate 이전의 일정 모두 반환
             periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBefore(userId, endDate);
-        } else if (endDate == null && startDate != null) {
-            // EndDate가 null인 경우, StartDate 이후의 일정 모두 반환
+        } else if (endDate == null && startDate != null) { // EndDate가 null인 경우, StartDate 이후의 일정 모두 반환
             periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeAfter(userId, startDate);
-        } else if (startDate != null && endDate != null) {
-            // StartDate와 EndDate 모두 존재하는 경우, 해당 기간의 일정 반환
+        } else if (startDate != null && endDate != null) { // StartDate와 EndDate 모두 존재하는 경우, 해당 기간의 일정 반환
             periodScheduleList = scheduleRepository.findAllByUserIdAndScheduleTimeBetween(
                     userId, startDate, endDate);
-        } else {
-            // StartDate와 EndDate가 모두 null인 경우, 모든 일정 반환
-            periodScheduleList = scheduleRepository.findAllByUserId(userId);
+        } else { // StartDate와 EndDate가 모두 null인 경우, 모든 일정 반환
+            periodScheduleList = scheduleRepository.findAllByUserIdWithPlace(userId);
         }
 
         return periodScheduleList.stream()
@@ -68,44 +75,30 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    // schedule id에 따른 schedule 조회
     public ScheduleDto showScheduleByScheduleId(Long userId, UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("The specified schedule does not exist."));
-        if (!schedule.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User does not have permission to delete this schedule.");
-        }
+        Schedule schedule = getScheduleWithAuthorization(scheduleId, userId);
+
         return mapToDto(schedule);
     }
 
-    // 약속 삭제
+    // schedule 삭제
     @Transactional
     public void deleteSchedule(UUID scheduleId, Long userId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
-        // schedule을 만든 userId인지 확인
-        if (!schedule.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User does not have permission to delete this schedule.");
-        }
+        Schedule schedule = getScheduleWithAuthorization(scheduleId, userId);
+
         preparationScheduleRepository.deleteBySchedule(schedule);
-        scheduleRepository.delete(schedule);
+        scheduleRepository.deleteByScheduleId(scheduleId);
     }
 
-    // 약속 수정
+    // schedule 수정
     @Transactional
     public void modifySchedule(Long userId, ScheduleModDto scheduleModDto) {
-        // schedule 확인
-        Schedule schedule = scheduleRepository.findById(scheduleModDto.getScheduleId()).orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleModDto.getScheduleId() + " not found."));
-        // schedule을 만든 userId인지 확인
-        if (!schedule.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User does not have permission to delete this schedule.");
-        }
-        // place가 수정된 경우
-        Place place = placeRepository.findByPlaceName(scheduleModDto.getPlaceName()).orElseGet(() -> {
-            Place newPlace = new Place();
-            newPlace.initPlaceName(scheduleModDto.getPlaceId(), scheduleModDto.getPlaceName());
-            return placeRepository.save(newPlace);
-        });
+        Schedule schedule = getScheduleWithAuthorization(scheduleModDto.getScheduleId(), userId);
 
-        // scheduleDto에서 수정
+        Place place = placeRepository.findByPlaceName(scheduleModDto.getPlaceName())
+                .orElseGet(() -> placeRepository.save(new Place(scheduleModDto.getPlaceId(), scheduleModDto.getPlaceName())));
+
         schedule.updateSchedule(
                 place,
                 scheduleModDto.getScheduleName(),
@@ -116,21 +109,14 @@ public class ScheduleService {
                 scheduleModDto.getScheduleNote());
     }
 
-    // 약속 추가
+    // schedule 추가
     @Transactional
     public void addSchedule(ScheduleAddDto scheduleAddDto, Long userId) {
-        // user 확인
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다: " + userId));
+        Place place = placeRepository.findByPlaceName(scheduleAddDto.getPlaceName())
+                .orElseGet(() -> placeRepository.save(new Place(scheduleAddDto.getPlaceId(), scheduleAddDto.getPlaceName())));
 
-        // place 확인
-        // place가 없으면 추가가 여기?
-        Place place = placeRepository.findByPlaceName(scheduleAddDto.getPlaceName()).orElseGet(() -> {
-            Place newPlace = new Place();
-            newPlace.initPlaceName(scheduleAddDto.getPlaceId(), scheduleAddDto.getPlaceName());
-            return placeRepository.save(newPlace);
-        });
-
-        // schedule 추가
         Schedule schedule = Schedule.builder()
                 .scheduleId(scheduleAddDto.getScheduleId())
                 .user(user)
@@ -148,16 +134,10 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
     }
 
-    // 버튼 누름
+    // schedule 시작
     @Transactional
     public void checkIsStarted(UUID scheduleId, Long userId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule with ID " + scheduleId + " not found."));
-
-        // schedule을 만든 userId인지 확인
-        if (!schedule.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User does not have permission to delete this schedule.");
-        }
+        Schedule schedule = getScheduleWithAuthorization(scheduleId, userId);
 
         schedule.startSchedule();
     }
@@ -193,12 +173,9 @@ public class ScheduleService {
         userService.updatePunctualityScore(userId, finishPreparationDto.getLatenessTime());
     }
 
+    // schedule에 따른 preparation 조회
     public List<PreparationDto> getPreparations(Long userId, UUID scheduleId) {
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
-
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("Schedule not found with id: " + scheduleId));
+        Schedule schedule = getScheduleWithAuthorization(scheduleId, userId);
 
         if (Boolean.TRUE.equals(schedule.getIsChange())) {
             return preparationScheduleRepository.findBySchedule(schedule).stream()
@@ -228,7 +205,7 @@ public class ScheduleService {
     private ScheduleDto mapToDto(Schedule schedule) {
         return new ScheduleDto(
                 schedule.getScheduleId(),
-                schedule.getPlace(),
+                (schedule.getPlace() != null) ? new PlaceDto(schedule.getPlace().getPlaceId(), schedule.getPlace().getPlaceName()) : null,
                 schedule.getScheduleName(),
                 schedule.getMoveTime(),
                 schedule.getScheduleTime(),
