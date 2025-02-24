@@ -58,7 +58,7 @@ class ScheduleServiceTest {
         userRepository.deleteAllInBatch();
     }
 
-    @DisplayName("스케줄 id로 존재하는 스케줄을 정상 조회한다.")
+    @DisplayName("스케줄 id로 존재하는 스케줄을 조회 성공한다.")
     @Test
     void showScheduleByScheduleId_success() {
 
@@ -225,7 +225,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("특정 기간의 약속 조회 - 전체 기간 지정")
+    @DisplayName("전체 기간 지정하여 특정 기간의 약속 조회 성공한다.")
     void showSchedulesByPeriod_fullPeriod() {
         // given
         User newUser = User.builder()
@@ -303,7 +303,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("특정 기간의 약속 조회 - StartDate 이후 일정 조회")
+    @DisplayName("StartDate 이후 일정 조회하여 특정 기간의 약속 조회 성공한다.")
     void showSchedulesByPeriod_startDateOnly() {
         // given
         User newUser = User.builder()
@@ -381,7 +381,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("특정 기간의 약속 조회 - endDate 이전 일정 조회")
+    @DisplayName("endDate 이전 일정 조회하여 특정 기간의 약속 조회 성공한다.")
     void showSchedulesByPeriod_endDateOnly() {
         // given
         User newUser = User.builder()
@@ -459,7 +459,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("특정 기간의 약속 조회 - StartDate와 EndDate가 모두 null")
+    @DisplayName("StartDate와 EndDate가 모두 null인 일정 조회하여 특정 기간의 약속 조회 성공한다.")
     void showSchedulesByPeriod_allNull() {
         // given
         User newUser = User.builder()
@@ -537,7 +537,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("특정 기간의 약속 조회 - 주어진 기간 내 일정 없음")
+    @DisplayName("주어진 기간 내 일정 없는 경우 특정 기간의 약속 조회 시 빈 결과를 낸다.")
     void showSchedulesByPeriod_noSchedulesInRange() {
         // given
         User newUser = User.builder()
@@ -615,7 +615,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하는 약속 삭제 성공")
+    @DisplayName("존재하는 약속을 삭제 성공한다.")
     void deleteSchedule_success() {
         // given
         User newUser = User.builder()
@@ -656,7 +656,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자가 약속 삭제 시도 시 실패")
+    @DisplayName("다른 사용자가 약속 삭제 시도 시 실패한다.")
     void deleteSchedule_failByWrongUser() {
         // given
         User newUser1 = User.builder()
@@ -708,7 +708,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 약속 삭제 시도 시 실패")
+    @DisplayName("존재하지 않는 약속을 삭제 시도 시 실패한다.")
     void deleteSchedule_failByNonExistentSchedule() {
         // given
         User newUser1 = User.builder()
@@ -750,7 +750,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하는 약속을 정상적으로 수정")
+    @DisplayName("존재하는 약속을 수정 성공한다.")
     void modifySchedule_success() {
         // given
         User newUser = User.builder()
@@ -809,7 +809,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("새로운 장소를 추가하면서 약속 수정")
+    @DisplayName("새로운 장소를 추가하면서 약속 수정 성공한다.")
     void modifySchedule_withNewPlace() {
         // given
         User newUser = User.builder()
@@ -869,7 +869,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자가 약속 수정 시도 시 실패")
+    @DisplayName("다른 사용자가 약속 수정 시도 시 실패한다.")
     void modifySchedule_failByWrongUser() {
         // given
         User newUser1 = User.builder()
@@ -934,7 +934,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 약속 수정 시도 시 실패")
+    @DisplayName("존재하지 않는 약속 수정 시도 시 실패한다.")
     void modifySchedule_failByNonExistentSchedule() {
         // given
         User newUser = User.builder()
@@ -988,7 +988,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("기존 장소 사용하여 약속 추가 성공")
+    @DisplayName("기존 장소 사용하여 약속 추가 성공한다.")
     void addSchedule_withExistingPlace() {
         // given
         User newUser = User.builder()
@@ -1035,7 +1035,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("새로운 장소를 추가하면서 약속 추가 성공")
+    @DisplayName("새로운 장소를 추가하면서 약속 추가 성공한다.")
     void addSchedule_withNewPlace() {
         // given
         User newUser = User.builder()
@@ -1080,7 +1080,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자가 약속 추가 시 실패")
+    @DisplayName("다른 사용자가 약속 추가 시 실패한다.")
     void addSchedule_failByNonExistentUser() {
         // given
         User newUser1 = User.builder()
@@ -1121,7 +1121,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("버튼을 눌러 isStarted 값을 true로 변경 (성공)")
+    @DisplayName("버튼을 눌러 isStarted 값을 true로 변경 성공한다.")
     void checkIsStarted_success() {
         // given
         User newUser = User.builder()
@@ -1164,7 +1164,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자가 버튼을 눌러 isStarted 변경 시도 시 실패")
+    @DisplayName("다른 사용자가 버튼을 눌러 isStarted 변경 시도 시 실패한다.")
     void checkIsStarted_failByWrongUser() {
         // given
         User newUser1 = User.builder()
@@ -1215,7 +1215,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 약속에서 버튼을 누를 경우 실패")
+    @DisplayName("존재하지 않는 약속에서 버튼을 누를 경우 실패한다.")
     void checkIsStarted_failByNonExistentSchedule() {
         // given
         User newUser1 = User.builder()
@@ -1487,7 +1487,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("isChange = true 상태에서 preparationScheduleRepository를 통한 조회 성공")
+    @DisplayName("isChange = true 상태에서 preparationScheduleRepository를 통한 조회 성공한다.")
     void getPreparations_success_whenIsChangeTrue() {
         // given
         User newUser = User.builder()
@@ -1543,7 +1543,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("isChange = false 상태에서 preparationUserRepository를 통한 조회 성공")
+    @DisplayName("isChange = false 상태에서 preparationUserRepository를 통한 조회 성공한다.")
     void getPreparations_success_whenIsChangeFalse() {
         // given
         User newUser = User.builder()
@@ -1599,7 +1599,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 약속의 준비과정 조회시 실패")
+    @DisplayName("존재하지 않는 약속의 준비과정 조회시 실패한다.")
     void getPreparations_failByNonExistentSchedule(){
         // given
         User newUser = User.builder()
@@ -1654,7 +1654,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("다른 사용자가 약속의 준비과정 조회시 실패")
+    @DisplayName("다른 사용자가 약속의 준비과정 조회시 실패한다.")
     void getPreparations_failByWrongUser(){
         // given
         User newUser1 = User.builder()
