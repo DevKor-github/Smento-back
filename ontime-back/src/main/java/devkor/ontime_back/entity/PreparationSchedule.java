@@ -1,6 +1,7 @@
 package devkor.ontime_back.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PreparationSchedule {
     @Id
@@ -27,14 +29,6 @@ public class PreparationSchedule {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "next_preparation_id")
     private PreparationSchedule nextPreparation;
-
-    public PreparationSchedule(UUID preparationScheduleId, Schedule schedule, String preparationName, Integer preparationTime, PreparationSchedule preparationSchedule) {
-        this.preparationScheduleId = preparationScheduleId;
-        this.schedule = schedule;
-        this.preparationName = preparationName;
-        this.preparationTime = preparationTime;
-        this.nextPreparation = preparationSchedule;
-    }
 
     public void updateNextPreparation(PreparationSchedule nextPreparation) {
         this.nextPreparation = nextPreparation;

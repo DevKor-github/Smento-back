@@ -9,13 +9,12 @@ import devkor.ontime_back.repository.*;
 import devkor.ontime_back.response.ErrorCode;
 import devkor.ontime_back.response.GeneralException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import jakarta.servlet.http.HttpServletRequest;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,12 +35,6 @@ public class ScheduleService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PreparationScheduleRepository preparationScheduleRepository;
     private final PreparationUserRepository preparationUserRepository;
-
-    // userId 추출
-    public Long getUserIdFromToken(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("토큰에서 사용자 ID를 찾을 수 없습니다."));
-    }
 
     // scheduleId, userId를 통한 권한 확인
     private Schedule getScheduleWithAuthorization(UUID scheduleId, Long userId) {
@@ -162,7 +155,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.SCHEDULE_NOT_FOUND));
 
-        schedule.setLatenessTime(latenessTime);
+        schedule.updateLatenessTime(latenessTime);
         scheduleRepository.save(schedule);
     }
 

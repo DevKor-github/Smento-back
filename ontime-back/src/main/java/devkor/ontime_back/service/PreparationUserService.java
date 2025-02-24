@@ -9,26 +9,22 @@ import devkor.ontime_back.repository.PreparationUserRepository;
 import devkor.ontime_back.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PreparationUserService {
     private final PreparationUserRepository preparationUserRepository;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Long getUserIdFromToken(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("토큰에서 사용자 ID를 찾을 수 없습니다."));
-    }
-
+    @Transactional
     // 회원가입 시 디폴트 준비과정 세팅
     public void setFirstPreparationUser(Long userId, List<PreparationDto> preparationDtoList) {
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -71,7 +67,8 @@ public class PreparationUserService {
         return preparationDtos;
     }
 
-    private void handlePreparationUsers(User user, List<PreparationDto> preparationDtoList, boolean shouldDeleteExisting) {
+    @Transactional
+    protected void handlePreparationUsers(User user, List<PreparationDto> preparationDtoList, boolean shouldDeleteExisting) {
         if (shouldDeleteExisting) {
             preparationUserRepository.deleteByUser(user);
         }
@@ -106,7 +103,6 @@ public class PreparationUserService {
 
         preparationUserRepository.saveAll(preparationUsers);
     }
-
 
 
 }

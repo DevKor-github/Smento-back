@@ -2,17 +2,19 @@ package devkor.ontime_back.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Time;
 import java.util.UUID;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PreparationUser {
     @Id
     private UUID preparationId;
@@ -31,19 +33,8 @@ public class PreparationUser {
     @JoinColumn(name = "next_preparation_id")
     private PreparationUser nextPreparation;
 
-    public PreparationUser(UUID preparationId, User user, String preparationName, Integer preparationTime, PreparationUser preparationUser) {
-        this.preparationId = preparationId;
-        this.user = user;
-        this.preparationName = preparationName;
-        this.preparationTime = preparationTime;
-        this.nextPreparation = preparationUser;
-    }
-
     public void updateNextPreparation(PreparationUser nextPreparation) {
         this.nextPreparation = nextPreparation;
     }
 
-    public void clearNextPreparation() {
-        this.nextPreparation = null;
-    }
 }
