@@ -40,7 +40,7 @@ public class ScheduleService {
     // userId 추출
     public Long getUserIdFromToken(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("token에서 userId가 추출되지 않습니다."));
+        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("토큰에서 사용자 ID를 찾을 수 없습니다."));
     }
 
     // scheduleId, userId를 통한 권한 확인
@@ -177,7 +177,7 @@ public class ScheduleService {
         Schedule schedule = getScheduleWithAuthorization(scheduleId, userId);
 
         if (Boolean.TRUE.equals(schedule.getIsChange())) {
-            return preparationScheduleRepository.findBySchedule(schedule).stream()
+            return preparationScheduleRepository.findByScheduleWithNextPreparation(schedule).stream()
                     .map(preparationSchedule -> new PreparationDto(
                             preparationSchedule.getPreparationScheduleId(),
                             preparationSchedule.getPreparationName(),
@@ -188,7 +188,7 @@ public class ScheduleService {
                     ))
                     .collect(Collectors.toList());
         } else {
-            return preparationUserRepository.findByUser(schedule.getUser()).stream()
+            return preparationUserRepository.findByUserIdWithNextPreparation(schedule.getUser().getId()).stream()
                     .map(preparationUser -> new PreparationDto(
                             preparationUser.getPreparationId(),
                             preparationUser.getPreparationName(),
