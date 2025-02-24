@@ -3,8 +3,8 @@ package devkor.ontime_back.controller;
 import devkor.ontime_back.dto.PreparationDto;
 import devkor.ontime_back.response.ApiResponseForm;
 import devkor.ontime_back.service.PreparationUserService;
+import devkor.ontime_back.service.UserAuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +24,7 @@ public class PreparationUserController {
 
 
     private final PreparationUserService preparationUserService;
+    private final UserAuthService userAuthService;
 
     @Operation(
             summary = "사용자 준비과정 수정",
@@ -44,7 +45,7 @@ public class PreparationUserController {
     })
     @PostMapping("/modify")
     public ResponseEntity<ApiResponseForm<Void>> modifyPreparationUser(HttpServletRequest request, @RequestBody List<PreparationDto> preparationDtoList) {
-        Long userId = preparationUserService.getUserIdFromToken(request);
+        Long userId = userAuthService.getUserIdFromToken(request);
 
         preparationUserService.updatePreparationUsers(userId, preparationDtoList);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(null));
@@ -66,7 +67,7 @@ public class PreparationUserController {
     })
     @GetMapping("/show/all")
     public ResponseEntity<ApiResponseForm<List<PreparationDto>>> getAllPreparationUser(HttpServletRequest request) {
-        Long userId = preparationUserService.getUserIdFromToken(request);
+        Long userId = userAuthService.getUserIdFromToken(request);
 
         List<PreparationDto> preparationUserList = preparationUserService.showAllPreparationUsers(userId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseForm.success(preparationUserList));

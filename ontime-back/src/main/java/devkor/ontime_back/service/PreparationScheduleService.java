@@ -9,11 +9,11 @@ import devkor.ontime_back.repository.ScheduleRepository;
 import devkor.ontime_back.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +31,6 @@ public class PreparationScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Long getUserIdFromToken(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").substring(7); // "Bearer "를 제외한 토큰
-        return jwtTokenProvider.extractUserId(accessToken).orElseThrow(() -> new RuntimeException("토큰에서 사용자 ID를 찾을 수 없습니다."));
-    }
 
     @Transactional
     public void makePreparationSchedules(Long userId, UUID scheduleId, List<PreparationDto> preparationDtoList) {
