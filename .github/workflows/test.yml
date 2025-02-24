@@ -11,6 +11,22 @@ jobs:
     outputs:
       test_result: ${{ steps.run-tests.outcome }}  # 테스트 결과를 output으로 저장
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u$MYSQL_USER -p$MYSQL_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       # 1. 코드 체크아웃
       - name: Checkout repository
@@ -33,11 +49,13 @@ jobs:
           mkdir -p ontime-back/src/main/resources
           mkdir -p ontime-back/src/main/resources/key
           echo "spring.application.name=${{ secrets.SPRING_APPLICATION_NAME }}" > ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.datasource.driver-class-name=${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" >> ontime-back/src/main/resources/application.properties
-          echo "spring.jpa.hibernate.ddl-auto=${{ secrets.SPRING_JPA_HIBERNATE_DDL_AUTO }}" >> ontime-back/src/main/resources/application.properties
+          echo "spring.datasource.url=jdbc:mysql://localhost:3306/testdb?serverTimezone=UTC&useSSL=false" > src/test/resources/application.properties
+          echo "spring.datasource.username=testuser" >> src/test/resources/application.properties
+          echo "spring.datasource.password=testpass" >> src/test/resources/application.properties
+          echo "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" >> src/test/resources/application.properties
+          echo "spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect" >> src/test/resources/application.properties
+          echo "spring.jpa.hibernate.ddl-auto=update" >> src/test/resources/application.properties
+          echo "spring.sql.init.mode=always" >> src/test/resources/application.properties
           echo "jwt.secret.key=${{ secrets.JWT_SECRETKEY }}" >> ontime-back/src/main/resources/application.properties
           echo "jwt.access.expiration=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> ontime-back/src/main/resources/application.properties
           echo "jwt.refresh.expiration=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> ontime-back/src/main/resources/application.properties
