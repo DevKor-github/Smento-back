@@ -36,7 +36,7 @@ class ScheduleControllerTest extends ControllerTestSupport {
                 .writeValueAsString(object);
     }
 
-    @DisplayName("사용자의 툭정 기간 일정 조회에 성공한다.")
+    @DisplayName("사용자의 특정 기간 일정 조회에 성공한다.")
     @Test
     void getPeriodSchedule_success() throws Exception {
         // given

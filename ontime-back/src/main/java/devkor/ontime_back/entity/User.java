@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Builder
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
 
     @Id
@@ -65,14 +66,6 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "receiverId", cascade = CascadeType.ALL)
     private List<FriendShip> receivedFriendship = new ArrayList<>();
-
-    public User(Long id, String email, String password, String name, Float punctualityScore) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.punctualityScore = punctualityScore;
-    }
 
     public void updateAdditionalInfo(Integer spareTime, String note) {
         this.spareTime = spareTime;
