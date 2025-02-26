@@ -183,9 +183,6 @@ public class PreparationUserServiceTest {
                 preparationUser2Id, newUser, "아침식사", 10, preparationUser3));
         PreparationUser preparationUser1= preparationUserRepository.save(new PreparationUser(
                 preparationUser1Id, newUser, "세면", 10, preparationUser2));
-        preparationUserRepository.save(preparationUser1);
-        preparationUserRepository.save(preparationUser2);
-        preparationUserRepository.save(preparationUser3);
 
         // when
         List<PreparationDto> result = preparationUserService.showAllPreparationUsers(newUser.getId());
@@ -278,9 +275,6 @@ public class PreparationUserServiceTest {
                 UUID.randomUUID(), newUser, "아침식사", 10, preparationUser3));
         PreparationUser preparationUser1= preparationUserRepository.save(new PreparationUser(
                 UUID.randomUUID(), newUser, "알림확인", 10, preparationUser2));
-        preparationUserRepository.save(preparationUser1);
-        preparationUserRepository.save(preparationUser2);
-        preparationUserRepository.save(preparationUser3);
 
         List<PreparationDto> preparationDtoList = List.of(
                 new PreparationDto(preparationUser1Id, "세면", 10, preparationUser2Id),
